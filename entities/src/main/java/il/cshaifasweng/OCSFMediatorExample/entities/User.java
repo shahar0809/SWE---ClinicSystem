@@ -4,7 +4,7 @@ import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "patients")
+@Table(name = "Users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

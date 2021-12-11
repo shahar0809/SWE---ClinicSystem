@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 // TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
 @Entity
-@Table(name = "appointments")
+@Table(name = "Appointments")
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
