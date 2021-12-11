@@ -14,7 +14,7 @@ public class Patient extends User {
         appointments = new ArrayList<>();
     }
 
-    public Patient(String username, String SALT) {
+    public Patient(String username, byte[] SALT) {
         super(username, SALT);
     }
 

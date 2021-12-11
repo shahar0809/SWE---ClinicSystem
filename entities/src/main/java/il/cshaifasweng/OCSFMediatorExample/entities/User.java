@@ -1,10 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
+import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "patients")
 public class User {
-    /* FIELDS AND COLUMNS */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userId", nullable = false)
@@ -13,16 +14,26 @@ public class User {
     @Column(name = "username", nullable = false)
     protected String username;
 
-    @Column(name = "salt", nullable = false)
-    protected String SALT;
+    @Column(name = "passwordHash", nullable = false)
+    String hashPassword;
 
-    public User() { }
-    public User(String username, String SALT) {
-        this.username = username;
-        this.SALT = SALT;
+    @Column(name = "salt", nullable = false)
+    protected byte[] salt;
+
+    public User() {
+        try {
+            salt = SecureUtils.getSalt();
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
     }
 
-    /* GETTERS & SETTERS*/
+    public User(String username, byte[] SALT) {
+        this.username = username;
+        this.salt = SALT;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -31,12 +42,20 @@ public class User {
         this.username = username;
     }
 
-    public String getSALT() {
-        return SALT;
+    public void setPassword(String password) {
+        hashPassword = SecureUtils.getSecurePassword(password, this.salt);
     }
 
-    public void setSALT(String SALT) {
-        this.SALT = SALT;
+    public byte[] getSALT() {
+        return salt;
+    }
+
+    public void setSALT(byte[] SALT) {
+        this.salt = SALT;
+    }
+
+    public String getHashPassword() {
+        return hashPassword;
     }
 
     public Integer getId() {

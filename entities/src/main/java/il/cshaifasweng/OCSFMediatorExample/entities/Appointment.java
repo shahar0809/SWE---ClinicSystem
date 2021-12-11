@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+// TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
 @Entity
 @Table(name = "appointments")
 public class Appointment {
