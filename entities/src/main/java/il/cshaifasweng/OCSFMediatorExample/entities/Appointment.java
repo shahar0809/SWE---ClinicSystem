@@ -12,7 +12,7 @@ public class Appointment {
     @Column(name = "id", nullable = false)
     protected Integer id;
 
-    @Column(name = "patient", nullable = false)
+    @Column(name = "patient")
     @ManyToOne(cascade = CascadeType.ALL)
     protected Patient patient;
 
@@ -22,6 +22,9 @@ public class Appointment {
 
     @Column(name = "appointment_time")
     protected LocalDateTime treatmentDateTime;
+
+    @Column(name = "isAvailable")
+    protected boolean isAvailable;
 
     public Appointment() {}
 
@@ -37,6 +40,14 @@ public class Appointment {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 
     public Patient getPatient() {

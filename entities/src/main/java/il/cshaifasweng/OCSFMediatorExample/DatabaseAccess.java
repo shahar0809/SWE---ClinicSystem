@@ -14,10 +14,15 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class DatabaseAccess {
     private static Session session;
+
+    DatabaseAccess() {
+        session = getSessionFactory().openSession();
+    }
 
     /**
      * Define entities in database
@@ -67,6 +72,48 @@ public class DatabaseAccess {
         return query.getSingleResult();
     }
 
-    public void createUser(String username, String hashPassword) {
+    /**
+     * Inserts entity into the database.
+     * @param entity An entity
+     * @param <T> The type of the entity
+     */
+    public static <T> void insertEntity(T entity) {
+        session.beginTransaction();
+        session.save(entity);
+        session.getTransaction().commit();
+    }
+
+    /**
+     * Inserts a user into the database.
+     * @param username Username
+     * @param password Not encrypted password
+     */
+    public void createUser(String username, String password) {
+        session.beginTransaction();
+        User user = new User(username, password);
+        session.save(user);
+        session.getTransaction().commit();
+    }
+
+    /**
+     * Feetches a clinic from database.
+     * @param clinicName clinic's name
+     * @return The clinic entity
+     */
+    public static Clinic getClinic(String clinicName) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Clinic> criteriaQuery = builder.createQuery(Clinic.class);
+        Root<Clinic> rootEntry = criteriaQuery.from(Clinic.class);
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("name"), clinicName));
+        Query<Clinic> query = session.createQuery(criteriaQuery);
+        return query.getSingleResult();
+    }
+
+    public static void setOpeningHours(Clinic clinic, LocalDateTime openingHours) {
+        clinic.setOpeningHours(openingHours);
+    }
+
+    public static void setClosingHours(Clinic clinic, LocalDateTime closingHours) {
+        clinic.setOpeningHours(closingHours);
     }
 }

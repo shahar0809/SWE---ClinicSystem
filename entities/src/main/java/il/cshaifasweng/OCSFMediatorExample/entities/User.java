@@ -29,9 +29,16 @@ public class User {
         }
     }
 
-    public User(String username, byte[] SALT) {
+    public User(String username, String password) {
+        try {
+            this.salt = SecureUtils.getSalt();
+        } catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
         this.username = username;
-        this.salt = SALT;
+        this.hashPassword = SecureUtils.getSecurePassword(password, salt);
     }
 
     public String getUsername() {

@@ -7,6 +7,11 @@ import java.util.List;
 @Entity
 @Table(name = "Patients")
 public class Patient extends User {
+    @Column(name = "patientId")
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int patientId;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
     private List<Appointment> appointments;
 
@@ -14,8 +19,8 @@ public class Patient extends User {
         appointments = new ArrayList<>();
     }
 
-    public Patient(String username, byte[] SALT) {
-        super(username, SALT);
+    public Patient(String username, String password) {
+        super(username, password);
     }
 
     public List<Appointment> getAppointments() {
