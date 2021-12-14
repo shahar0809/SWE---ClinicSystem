@@ -11,6 +11,12 @@
             <artifactId>hibernate-core</artifactId>
             <version>5.4.12.Final</version>
         </dependency>
+        <dependency>
+            <groupId>il.cshaifasweng.OCSFMediatorExample</groupId>
+            <artifactId>utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <parent>
     <groupId>il.cshaifasweng</groupId>

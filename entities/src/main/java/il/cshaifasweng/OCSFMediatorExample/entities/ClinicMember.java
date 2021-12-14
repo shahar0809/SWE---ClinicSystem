@@ -34,8 +34,8 @@ public class ClinicMember extends User {
         this.role = role;
     }
 
-    public ClinicMember(String username, byte[] SALT, int employeeNum, String firstName, String lastName, String email, String role) {
-        super(username, SALT);
+    public ClinicMember(String username, String password, int employeeNum, String firstName, String lastName, String email, String role) {
+        super(username, password);
         this.employeeNum = employeeNum;
         this.firstName = firstName;
         this.lastName = lastName;
