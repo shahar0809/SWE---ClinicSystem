@@ -1,4 +1,5 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
+
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
 import javax.persistence.*;

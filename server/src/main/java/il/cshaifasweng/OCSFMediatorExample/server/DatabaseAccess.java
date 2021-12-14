@@ -14,12 +14,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class DatabaseAccess {
     private Session session;
 
-    DatabaseAccess() {
+    public DatabaseAccess() {
         session = getSessionFactory().openSession();
     }
 
@@ -38,6 +39,8 @@ public class DatabaseAccess {
         configuration.addAnnotatedClass(ClinicManager.class);
         configuration.addAnnotatedClass(ClinicEmployee.class);
         configuration.addAnnotatedClass(HospitalManager.class);
+        configuration.addAnnotatedClass(Appointment.class);
+        configuration.addAnnotatedClass(ClinicMember.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -108,11 +111,11 @@ public class DatabaseAccess {
         return query.getSingleResult();
     }
 
-    public void setOpeningHours(Clinic clinic, LocalDateTime openingHours) {
+    public void setOpeningHours(Clinic clinic, LocalTime openingHours) {
         clinic.setOpeningHours(openingHours);
     }
 
-    public void setClosingHours(Clinic clinic, LocalDateTime closingHours) {
+    public void setClosingHours(Clinic clinic, LocalTime closingHours) {
         clinic.setOpeningHours(closingHours);
     }
 }
