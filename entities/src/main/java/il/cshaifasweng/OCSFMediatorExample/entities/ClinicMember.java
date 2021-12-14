@@ -7,7 +7,6 @@ import javax.persistence.Id;
 // TODO: Decide if we need table of all clinic members
 @Entity
 public class ClinicMember extends User {
-    @Id
     @Column(name = "employeeNum", nullable = false)
     protected int employeeNum;
 
