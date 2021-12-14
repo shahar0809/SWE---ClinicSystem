@@ -28,8 +28,7 @@ public class PrimaryController {
     @FXML
     public void initialize() {
         clinicList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        GetAllClinicsRequest requestAllClinic = new GetAllClinicsRequest((List<String>) clinicList);
+        GetAllClinicsRequest requestAllClinic = new GetAllClinicsRequest();
         App.getClient().sendRequest(requestAllClinic);
         clinicList.getSelectionModel().selectedItemProperty().addListener((observableValue, newValue, oldValue) -> operatingHours.clear());
     }
@@ -71,7 +70,9 @@ public class PrimaryController {
     }
 
     void updateListOfClinic(List<Clinic> clinics) {
-        clinicList.getItems().addAll(String.valueOf(clinics));
+        for( Clinic clinic: clinics) {
+            clinicList.getItems().add(clinic.getName());
+        }
     }
 }
 

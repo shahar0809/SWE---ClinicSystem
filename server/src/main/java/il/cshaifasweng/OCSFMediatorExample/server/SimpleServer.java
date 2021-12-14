@@ -66,11 +66,7 @@ public class SimpleServer extends AbstractServer {
 	}
 
 	protected Response getALLClinicRequest(GetAllClinicsRequest request) {
-		List<Clinic> clinicList = new LinkedList<>();
-		for(String clinicName : request.clinicNameList) {
-			clinicList.add(dataBase.getClinic(clinicName));
-		}
-		GetAllClinicsResponse allClinics = new GetAllClinicsResponse(clinicList);
+		GetAllClinicsResponse allClinics = new GetAllClinicsResponse(dataBase.getAll(Clinic.class));
 		return allClinics;
 	}
 }
