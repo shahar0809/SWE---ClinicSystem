@@ -1,9 +1,14 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
 import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
 import il.cshaifasweng.OCSFMediatorExample.entities.Warning;
+
+import java.io.IOException;
 
 public class SimpleClient extends AbstractClient {
 	
@@ -15,10 +20,15 @@ public class SimpleClient extends AbstractClient {
 
 	@Override
 	protected void handleMessageFromServer(Object msg) {
-		if (msg.getClass().equals(Warning.class)) {
-			EventBus.getDefault().post(new WarningEvent((Warning) msg));
+		if (msg instanceof GetAllClinicsResponse) {
+			App.getController().updateListOfClinic(((GetAllClinicsResponse) msg).clinics);
 		}
-
+		if (msg instanceof GetClinicResponse) {
+			App.getController().updateWorkingHours(((GetClinicResponse) msg).clinic);
+		}
+		if (msg instanceof UpdateActiveHoursResponse) {
+			App.getController().updateHours();
+		}
 	}
 	
 	public static SimpleClient getClient() {
@@ -28,4 +38,11 @@ public class SimpleClient extends AbstractClient {
 		return client;
 	}
 
+	public void sendRequest(Object msg) {
+		try {
+			client.sendToServer(msg);
+		} catch (IOException e) {
+			System.out.println("Error");
+		}
+	}
 }

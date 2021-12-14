@@ -1,7 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "Clinics")
@@ -15,9 +15,9 @@ public class Clinic {
     protected String name;
 
     @Column(name = "openingHours")
-    protected LocalDateTime openingHours;
+    protected LocalTime openingHours;
     @Column(name = "closingHours")
-    protected LocalDateTime closeingHours;
+    protected LocalTime closingHours;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "clinic")
     ClinicManager clinicManager;
@@ -40,20 +40,20 @@ public class Clinic {
         this.name = name;
     }
 
-    public LocalDateTime getOpeningHours() {
+    public LocalTime getOpeningHours() {
         return openingHours;
     }
 
-    public void setOpeningHours(LocalDateTime openingHours) {
+    public void setOpeningHours(LocalTime openingHours) {
         this.openingHours = openingHours;
     }
 
-    public LocalDateTime getCloseingHours() {
-        return closeingHours;
+    public LocalTime getClosingHours() {
+        return closingHours;
     }
 
-    public void setCloseingHours(LocalDateTime closeingHours) {
-        this.closeingHours = closeingHours;
+    public void setClosingHours(LocalTime closingHours) {
+        this.closingHours = closingHours;
     }
 
     public ClinicManager getClinicManager() {

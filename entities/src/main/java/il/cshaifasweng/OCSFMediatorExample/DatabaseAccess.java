@@ -15,12 +15,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public class DatabaseAccess {
     private static Session session;
 
-    DatabaseAccess() {
+    public DatabaseAccess() {
         session = getSessionFactory().openSession();
     }
 
@@ -109,11 +110,11 @@ public class DatabaseAccess {
         return query.getSingleResult();
     }
 
-    public static void setOpeningHours(Clinic clinic, LocalDateTime openingHours) {
+    public static void setOpeningHours(Clinic clinic, LocalTime openingHours) {
         clinic.setOpeningHours(openingHours);
     }
 
-    public static void setClosingHours(Clinic clinic, LocalDateTime closingHours) {
+    public static void setClosingHours(Clinic clinic, LocalTime closingHours) {
         clinic.setOpeningHours(closingHours);
     }
 }
