@@ -1,7 +1,6 @@
-package il.cshaifasweng.OCSFMediatorExample;
+package il.cshaifasweng.OCSFMediatorExample.server;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class DatabaseAccess {
-    private static Session session;
+    private Session session;
 
     DatabaseAccess() {
         session = getSessionFactory().openSession();
@@ -29,7 +28,7 @@ public class DatabaseAccess {
      * @return Session Factory
      * @throws HibernateException
      */
-    private static SessionFactory getSessionFactory() throws HibernateException {
+    private SessionFactory getSessionFactory() throws HibernateException {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Patient.class);
         configuration.addAnnotatedClass(User.class);
@@ -37,7 +36,7 @@ public class DatabaseAccess {
         configuration.addAnnotatedClass(Nurse.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(ClinicManager.class);
-        configuration.addAnnotatedClass(ClinicMember.class);
+        configuration.addAnnotatedClass(ClinicEmployee.class);
         configuration.addAnnotatedClass(HospitalManager.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
@@ -47,7 +46,7 @@ public class DatabaseAccess {
         return configuration.buildSessionFactory(serviceRegistry);
     }
 
-    public static <T> List<T> getAll(Class<T> object) {
+    public <T> List<T> getAll(Class<T> object) {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
         Root<T> rootEntry = criteriaQuery.from(object);
@@ -77,7 +76,7 @@ public class DatabaseAccess {
      * @param entity An entity
      * @param <T> The type of the entity
      */
-    public static <T> void insertEntity(T entity) {
+    public <T> void insertEntity(T entity) {
         session.beginTransaction();
         session.save(entity);
         session.getTransaction().commit();
@@ -96,11 +95,11 @@ public class DatabaseAccess {
     }
 
     /**
-     * Feetches a clinic from database.
+     * Fetches a clinic from database.
      * @param clinicName clinic's name
      * @return The clinic entity
      */
-    public static Clinic getClinic(String clinicName) {
+    public Clinic getClinic(String clinicName) {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Clinic> criteriaQuery = builder.createQuery(Clinic.class);
         Root<Clinic> rootEntry = criteriaQuery.from(Clinic.class);
@@ -109,11 +108,11 @@ public class DatabaseAccess {
         return query.getSingleResult();
     }
 
-    public static void setOpeningHours(Clinic clinic, LocalDateTime openingHours) {
+    public void setOpeningHours(Clinic clinic, LocalDateTime openingHours) {
         clinic.setOpeningHours(openingHours);
     }
 
-    public static void setClosingHours(Clinic clinic, LocalDateTime closingHours) {
+    public void setClosingHours(Clinic clinic, LocalDateTime closingHours) {
         clinic.setOpeningHours(closingHours);
     }
 }

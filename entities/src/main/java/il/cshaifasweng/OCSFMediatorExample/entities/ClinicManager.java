@@ -3,7 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 import javax.persistence.*;
 
 @Entity
-public class ClinicManager extends ClinicMember {
+public class ClinicManager extends ClinicEmployee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

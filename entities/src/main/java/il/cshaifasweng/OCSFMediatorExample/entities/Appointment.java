@@ -16,9 +16,9 @@ public class Appointment {
     @ManyToOne(cascade = CascadeType.ALL)
     protected Patient patient;
 
-    @Column(name = "doctor", nullable = false)
+    @Column(name = "clinicMember", nullable = false)
     @ManyToOne(cascade = CascadeType.ALL)
-    protected Doctor doctor;
+    protected ClinicMember clinicMember;
 
     @Column(name = "appointment_time")
     protected LocalDateTime treatmentDateTime;
@@ -28,9 +28,9 @@ public class Appointment {
 
     public Appointment() {}
 
-    public Appointment(Patient patient, Doctor doctor, LocalDateTime treatmentDateTime) {
+    public Appointment(Patient patient, ClinicMember doctor, LocalDateTime treatmentDateTime) {
         this.patient = patient;
-        this.doctor = doctor;
+        this.clinicMember = doctor;
         this.treatmentDateTime = treatmentDateTime;
     }
 
@@ -40,6 +40,14 @@ public class Appointment {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public ClinicMember getClinicMember() {
+        return clinicMember;
+    }
+
+    public void setClinicMember(ClinicMember clinicMember) {
+        this.clinicMember = clinicMember;
     }
 
     public boolean isAvailable() {
@@ -56,14 +64,6 @@ public class Appointment {
 
     public void setPatient(Patient patient) {
         this.patient = patient;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
     }
 
     public LocalDateTime getTreatmentDateTime() {
