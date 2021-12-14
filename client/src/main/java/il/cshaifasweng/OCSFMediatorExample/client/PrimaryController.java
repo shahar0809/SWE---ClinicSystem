@@ -13,12 +13,6 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class PrimaryController {
-//    private App app;
-//
-//    public PrimaryController(App app) {
-//        this.app = app;
-//    }
-
     @FXML
     private ListView<String> clinicList;
 
@@ -50,8 +44,7 @@ public class PrimaryController {
         String newWorkingHours = operatingHours.getText();
         if (newWorkingHours.isEmpty())
             return;
-        // TODO: Update selected clinic with newWorkingHours
-        Hours hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3, newWorkingHours.length())));
+        Hours hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3)));
         UpdateActiveHoursRequest requestUpdateActiveHours = new UpdateActiveHoursRequest(hours, selectedClinic);
         App.getClient().sendRequest(requestUpdateActiveHours);
 
