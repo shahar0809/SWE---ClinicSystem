@@ -1,27 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PrimaryController">
-   <children>
-      <Label alignment="CENTER" text="מרפאות בקופה" />
-      <ListView fx:id="clinicList" />
-      <Label alignment="CENTER" text="שעות פעילות" />
-      <HBox alignment="CENTER" spacing="5.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#onUpdate" text="עדכן" />
-            <TextField fx:id="operatingHours" />
-            <Button mnemonicParsing="false" onAction="#onRetrieve" text="אחזר" />
-         </children>
-      </HBox>
-   </children>
-   <padding>
-      <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />
-   </padding>
+<VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17"
+      fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PrimaryController">
+    <children>
+        <Label alignment="CENTER" text="Available Clinics"/>
+        <ListView fx:id="clinicList"/>
+        <Label alignment="CENTER" text="Operating Hours"/>
+        <HBox alignment="CENTER" spacing="5.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#onUpdate" text="Update"/>
+                <TextField fx:id="operatingHours"/>
+                <Button mnemonicParsing="false" onAction="#onRetrieve" text="Fetch"/>
+            </children>
+        </HBox>
+    </children>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="15.0"/>
+    </padding>
 </VBox>
