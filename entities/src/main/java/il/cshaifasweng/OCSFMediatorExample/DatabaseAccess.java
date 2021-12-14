@@ -40,6 +40,7 @@ public class DatabaseAccess {
         configuration.addAnnotatedClass(ClinicManager.class);
         configuration.addAnnotatedClass(ClinicMember.class);
         configuration.addAnnotatedClass(HospitalManager.class);
+        configuration.addAnnotatedClass(Appointment.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())

@@ -19,10 +19,12 @@ public class Clinic {
     @Column(name = "closingHours")
     protected LocalTime closingHours;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "clinic")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "clinicManager")
     ClinicManager clinicManager;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hospitalManager")
     HospitalManager hospitalManager;
 
     public Clinic() {

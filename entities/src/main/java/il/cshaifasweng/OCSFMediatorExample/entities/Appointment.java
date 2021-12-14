@@ -12,12 +12,12 @@ public class Appointment {
     @Column(name = "id", nullable = false)
     protected Integer id;
 
-    @Column(name = "patient")
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "patient")
     protected Patient patient;
 
-    @Column(name = "doctor", nullable = false)
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)    
+    @JoinColumn(name = "doctor", nullable = false)
     protected Doctor doctor;
 
     @Column(name = "appointment_time")
