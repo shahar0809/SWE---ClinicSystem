@@ -3,10 +3,11 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "Users")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userId", nullable = false)

@@ -1,11 +1,12 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "Clinics")
-public class Clinic {
+public class Clinic implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -28,6 +29,12 @@ public class Clinic {
     HospitalManager hospitalManager;
 
     public Clinic() {
+    }
+
+    public Clinic(String name, LocalTime openingHours, LocalTime closingHours) {
+        this.name = name;
+        this.openingHours = openingHours;
+        this.closingHours = closingHours;
     }
 
     public int getId() {

@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
+import javafx.application.Platform;
 import org.greenrobot.eventbus.EventBus;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
@@ -21,13 +22,13 @@ public class SimpleClient extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		if (msg instanceof GetAllClinicsResponse) {
-			App.getController().updateListOfClinic(((GetAllClinicsResponse) msg).clinics);
+			Platform.runLater(()-> App.getController().updateListOfClinic(((GetAllClinicsResponse) msg).clinics));
 		}
 		if (msg instanceof GetClinicResponse) {
-			App.getController().updateWorkingHours(((GetClinicResponse) msg).clinic);
+			Platform.runLater(()-> App.getController().updateWorkingHours(((GetClinicResponse) msg).clinic));
 		}
 		if (msg instanceof UpdateActiveHoursResponse) {
-			App.getController().updateHours();
+			Platform.runLater(()-> App.getController().updateHours());
 		}
 	}
 	

@@ -9,6 +9,7 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,13 +17,22 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Warning;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
+import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 
 public class SimpleServer extends AbstractServer {
 	protected DatabaseAccess dataBase;
 
 	public SimpleServer(int port) {
 		super(port);
+
 		dataBase = new DatabaseAccess();
+
+		if (dataBase.getAll(Clinic.class).isEmpty())
+		{
+			dataBase.insertEntity(new Clinic("clinic1", LocalTime.now(), LocalTime.now()));
+			dataBase.insertEntity(new Clinic("clinic2", LocalTime.now(), LocalTime.now()));
+			dataBase.insertEntity(new Clinic("clinic3", LocalTime.now(), LocalTime.now()));
+		}
 	}
 
 	@Override
