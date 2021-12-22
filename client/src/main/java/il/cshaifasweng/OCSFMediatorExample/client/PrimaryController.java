@@ -8,6 +8,7 @@ import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -26,16 +27,7 @@ public class PrimaryController {
         App.getClient().sendRequest(requestAllClinic);
         clinicList.getSelectionModel().selectedItemProperty().addListener((observableValue, newValue, oldValue) -> operatingHours.clear());
     }
-
-    @FXML
-    void onRetrieve(ActionEvent event) {
-        String selectedClinic = clinicList.getSelectionModel().getSelectedItem();
-        if (selectedClinic == null)
-            return;
-        GetClinicRequest requestClinic = new GetClinicRequest(selectedClinic);
-        App.getClient().sendRequest(requestClinic);
-    }
-
+    
     @FXML
     void onUpdate(ActionEvent event) {
         String selectedClinic = clinicList.getSelectionModel().getSelectedItem();
@@ -64,6 +56,14 @@ public class PrimaryController {
         for (Clinic clinic : clinics) {
             clinicList.getItems().add(clinic.getName());
         }
+    }
+
+    public void onMouseClick(MouseEvent mouseEvent) {
+        String selectedClinic = clinicList.getSelectionModel().getSelectedItem();
+        if (selectedClinic == null)
+            return;
+        GetClinicRequest requestClinic = new GetClinicRequest(selectedClinic);
+        App.getClient().sendRequest(requestClinic);
     }
 }
 
