@@ -20,12 +20,12 @@ public class SimpleServer extends AbstractServer {
     public SimpleServer(int port) {
         super(port);
 
-        dataBase = new DatabaseAccess();
+        dataBase = DatabaseAccess.getInstance();
 
         if (dataBase.getAll(Clinic.class).isEmpty()) {
-            dataBase.insertEntity(new Clinic("clinic1", LocalTime.now(), LocalTime.now()));
-            dataBase.insertEntity(new Clinic("clinic2", LocalTime.now(), LocalTime.now()));
-            dataBase.insertEntity(new Clinic("clinic3", LocalTime.now(), LocalTime.now()));
+            dataBase.insertEntity(new Clinic("clinic1",  LocalTime.of(10,43)  ,  LocalTime.of(17,43)));
+            dataBase.insertEntity(new Clinic("clinic2",  LocalTime.of(9,17)  ,  LocalTime.of(16,05)));
+            dataBase.insertEntity(new Clinic("clinic3",  LocalTime.of(11,36)  ,  LocalTime.of(19,34)));
         }
     }
 

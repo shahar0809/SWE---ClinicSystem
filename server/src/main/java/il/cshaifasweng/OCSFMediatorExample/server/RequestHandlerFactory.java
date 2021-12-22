@@ -1,2 +1,4 @@
-package il.cshaifasweng.OCSFMediatorExample.server;public class RequestHandlerFactory {
+package il.cshaifasweng.OCSFMediatorExample.server;
+
+public interface RequestHandlerFactory {
 }
