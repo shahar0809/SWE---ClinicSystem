@@ -138,4 +138,20 @@ public final class DatabaseAccess {
         session.flush();
         session.getTransaction().commit();
     }
+
+    public void setCovidTestStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setCovidTestStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setCovidTestEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setCovidTestEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
 }
