@@ -4,10 +4,14 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.UpdateCovidTestHoursRequest;
+
 import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.Response;
 import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.UpdateCovidTestHoursResponse;
+
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 
@@ -54,6 +58,15 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - updateActiveHoursRequest");
             }
         }
+
+        if (msg instanceof UpdateCovidTestHoursRequest) {
+            try {
+                //need to add the check if the client is a manager otherwise throw exception.
+                client.sendToClient(UpdateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidTestHoursRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -71,5 +84,12 @@ public class SimpleServer extends AbstractServer {
     protected Response getALLClinicRequest(GetAllClinicsRequest request) {
         GetAllClinicsResponse allClinics = new GetAllClinicsResponse(dataBase.getAll(Clinic.class));
         return allClinics;
+    }
+
+    protected Response UpdateCovidTestHoursRequest(UpdateCovidTestHoursRequest request) {
+        dataBase.setCovidTestStartHour(dataBase.getClinic(request.clinicName), request.activeHours.openingHours);
+        dataBase.setCovidTestEndHour(dataBase.getClinic(request.clinicName), request.activeHours.closingHours);
+        UpdateCovidTestHoursResponse response = new UpdateCovidTestHoursResponse();
+        return response;
     }
 }
