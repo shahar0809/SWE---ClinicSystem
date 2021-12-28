@@ -4,14 +4,18 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
+import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.time.LocalTime;
-import java.util.List;
 
 public class PrimaryController {
     @FXML
@@ -22,6 +26,7 @@ public class PrimaryController {
 
     @FXML
     public void initialize() {
+        EventBus.getDefault().register(this);
         clinicList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         GetAllClinicsRequest requestAllClinic = new GetAllClinicsRequest();
         App.getClient().sendRequest(requestAllClinic);
@@ -41,19 +46,22 @@ public class PrimaryController {
         App.getClient().sendRequest(requestUpdateActiveHours);
     }
 
-    void updateHours() {
+    @Subscribe
+    public void updateHours(UpdateActiveHoursResponse response) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "Working Hours Updated!", ButtonType.OK);
         alert.setHeaderText("Success");
         alert.show();
     }
 
-    void updateWorkingHours(Clinic clinic) {
-        String workingHours = clinic.getOpeningHours().toString() + " - " + clinic.getClosingHours().toString();
+    @Subscribe
+    public void updateWorkingHours(GetClinicResponse response) {
+        String workingHours = response.clinic.getOpeningHours().toString() + " - " + response.clinic.getClosingHours().toString();
         operatingHours.setText(workingHours);
     }
 
-    void updateListOfClinic(List<Clinic> clinics) {
-        for (Clinic clinic : clinics) {
+    @Subscribe
+    public void updateListOfClinic(GetAllClinicsResponse response) {
+        for (Clinic clinic : response.clinics) {
             clinicList.getItems().add(clinic.getName());
         }
     }
