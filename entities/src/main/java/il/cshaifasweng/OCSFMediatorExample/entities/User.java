@@ -7,6 +7,8 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "Users")
+@DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING,
+        name = "userType")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
