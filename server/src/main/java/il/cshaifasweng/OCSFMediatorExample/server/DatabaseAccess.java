@@ -154,4 +154,12 @@ public final class DatabaseAccess {
         session.flush();
         session.getTransaction().commit();
     }
+
+    public LocalTime getCovidTestStartHour(Clinic clinic) {
+        return clinic.getCovidTestStartHour();
+    }
+
+    public LocalTime getCovidTestEndHour(Clinic clinic) {
+        return clinic.getCovidTestEndHour();
+    }
 }
