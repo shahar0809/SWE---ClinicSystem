@@ -1,18 +1,17 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
-import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
-import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
-import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
-import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
-import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
-import il.cshaifasweng.OCSFMediatorExample.response.Response;
-import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
+import il.cshaifasweng.OCSFMediatorExample.requests.*;
+import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
+import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
@@ -37,6 +36,7 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - getALLClinicRequest");
             }
+            return;
         }
 
         if (msg instanceof GetClinicRequest) {
@@ -45,6 +45,7 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - getClinicRequest");
             }
+            return;
         }
 
         if (msg instanceof UpdateActiveHoursRequest) {
@@ -53,6 +54,25 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - updateActiveHoursRequest");
             }
+            return;
+        }
+
+        if (msg instanceof LoginRequest) {
+            try {
+                client.sendToClient(handleLoginRequest((LoginRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - LoginRequest");
+            }
+            return;
+        }
+
+        if (msg instanceof RegisterRequest) {
+            try {
+                client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - RegisterRequest");
+            }
+            return;
         }
     }
 
@@ -71,5 +91,27 @@ public class SimpleServer extends AbstractServer {
     protected Response getALLClinicRequest(GetAllClinicsRequest request) {
         GetAllClinicsResponse allClinics = new GetAllClinicsResponse(dataBase.getAll(Clinic.class));
         return allClinics;
+    }
+
+    protected Response handleLoginRequest(LoginRequest request) {
+        User user;
+        try {
+            user = dataBase.getUser(request.username);
+        } catch (NoResultException e) {
+            return new LoginResponse("User not found!");
+        }
+        String securePassword = SecureUtils.getSecurePassword(request.password, user.getSALT());
+        if (!Objects.equals(user.getHashPassword(), securePassword))
+            return new LoginResponse("Incorrect password!");
+        return new LoginResponse(user);
+    }
+
+    protected Response handleRegisterRequest(RegisterRequest request) {
+        try {
+            dataBase.getUser(request.username);
+            return new RegisterResponse("Username is already taken!");
+        } catch (NoResultException ignored) {
+        }
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password));
     }
 }
