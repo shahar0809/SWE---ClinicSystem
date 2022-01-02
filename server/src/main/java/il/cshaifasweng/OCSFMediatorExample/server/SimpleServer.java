@@ -7,6 +7,7 @@ import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
+import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
@@ -74,6 +75,22 @@ public class SimpleServer extends AbstractServer {
             }
             return;
         }
+
+        if (msg instanceof UpdateCovidTestHoursRequest) {
+            try {
+                client.sendToClient(UpdateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidTestHoursRequest");
+            }
+        }
+
+        if (msg instanceof GetCovidTestHoursRequest) {
+            try {
+                client.sendToClient(getCovidTestHoursRequest((GetCovidTestHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getClinicRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -113,5 +130,66 @@ public class SimpleServer extends AbstractServer {
         } catch (NoResultException ignored) {
         }
         return new RegisterResponse(dataBase.createPatient(request.username, request.password));
+    }
+
+
+    /*
+    -> change the hours of the Corona tests, and if there is a patient who had already
+        set a test appointment not between the new hours:
+        1. check if there is an available appointment:
+            yes -> set this appointment to the patient and send him message about the change
+                    (the patient can cancel or set another appointment as he want)
+            no -> send message that the appointment has been canceled and that there is no available
+                    appointments at the moment.
+     */
+    protected Response UpdateCovidTestHoursRequest(UpdateCovidTestHoursRequest request) {
+        Clinic clinic = dataBase.getClinic(request.clinicName);
+        LocalTime oldStartH = dataBase.getCovidTestStartHour(clinic);
+        LocalTime oldEndH = dataBase.getCovidTestEndHour(clinic);
+        LocalTime newStartH = request.activeHours.openingHours, newEndH = request.activeHours.closingHours;
+        List<Appointment> Canceled=new ArrayList<Appointment>();
+
+        if(oldStartH.isBefore(newStartH)){
+            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, getFreeAppointments(...)));
+        }
+        if(newEndH.isBefore(oldEndH)){
+            //Canceled.addAll(CanceledAppointments(newEndH, oldEndH, getFreeAppointments(...)));
+        }
+
+        // Update test hours
+        dataBase.setCovidTestStartHour(clinic, newStartH);
+        dataBase.setCovidTestEndHour(clinic, oldEndH);
+
+        // go through the list and ask to get appointment if one of them didn't succeeded to get one
+        // send to the rest that there is no available
+        for(Appointment test : Canceled ){
+            //if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
+            //{**send message**}
+        }
+
+        UpdateCovidTestHoursResponse response = new UpdateCovidTestHoursResponse();
+        return response;
+    }
+
+    protected Response getCovidTestHoursRequest(GetCovidTestHoursRequest request) {
+        GetCovidTestHoursResponse response = new GetCovidTestHoursResponse(new Hours(dataBase.getCovidTestStartHour(dataBase.getClinic(request.clinicName))
+                ,dataBase.getCovidTestEndHour(dataBase.getClinic(request.clinicName))));
+        return response;
+    }
+
+    /*
+    -> help function: which return a list of all the appointments that is between (from, to)
+     */
+    private List<Appointment> CanceledAppointments (LocalTime from, LocalTime to, List<Appointment> appointmentsList){
+        List<Appointment> Canceled=new ArrayList<Appointment>();
+        LocalTime testH;
+        for(Appointment test : appointmentsList ){
+            testH = test.getTreatmentDateTime().toLocalTime();
+            if (testH.isBefore(to) && testH.isAfter(from)){
+                Canceled.add(test);
+                // CancelAppointmentRequest(...);
+            }
+        }
+        return Canceled;
     }
 }
