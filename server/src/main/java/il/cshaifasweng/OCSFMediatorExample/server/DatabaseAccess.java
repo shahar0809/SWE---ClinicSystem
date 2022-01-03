@@ -71,14 +71,13 @@ public final class DatabaseAccess {
      * Fetches user from the database.
      *
      * @param username     The username of the user
-     * @param hashPassword The hashed password of the user
      * @return User
      */
-    public User getUser(String username, String hashPassword) {
+    public User getUser(String username) {
         CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
-        criteriaQuery.select(rootEntry).where(builder.and(builder.equal(rootEntry.get("username"), username), builder.equal(rootEntry.get(","), hashPassword)));
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("username"), username));
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
@@ -106,6 +105,20 @@ public final class DatabaseAccess {
         User user = new User(username, password);
         session.save(user);
         session.getTransaction().commit();
+    }
+
+    /**
+     * Inserts a Patient into the database.
+     *
+     * @param username Username
+     * @param password Not encrypted password
+     */
+    public Patient createPatient(String username, String password) {
+        session.beginTransaction();
+        Patient patient = new Patient(username, password);
+        session.save(patient);
+        session.getTransaction().commit();
+        return patient;
     }
 
     /**

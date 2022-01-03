@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17"
-      fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PrimaryController">
+      fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ClinicEditorController">
     <children>
         <Label alignment="CENTER" text="Available Clinics"/>
         <ListView fx:id="clinicList" onMouseClicked="#onMouseClick"/>

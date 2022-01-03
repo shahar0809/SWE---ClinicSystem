@@ -17,7 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.time.LocalTime;
 
-public class PrimaryController {
+public class ClinicEditorController {
     @FXML
     private ListView<String> clinicList;
 
