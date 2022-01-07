@@ -78,11 +78,12 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("ClinicEditor");
+        App.setRoot("PrimaryManager");
     }
 
     @Subscribe
     public void handleRegisterResponse(RegisterResponse response) throws IOException {
+        System.out.println("got here\n");
         if (response.error != null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, response.error, ButtonType.OK);
             alert.setHeaderText("Error");
@@ -90,7 +91,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("ClinicEditor");
+        App.setRoot("PrimaryManager");
     }
 
 }
