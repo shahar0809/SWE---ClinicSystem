@@ -40,6 +40,9 @@ public class Clinic implements Serializable {
         this.name = name;
         this.openingHours = openingHours;
         this.closingHours = closingHours;
+        // As a default value
+        this.CTstartHour = openingHours;
+        this.CTendHour = closingHours;
     }
 
     public int getId() {

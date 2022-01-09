@@ -1,8 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -44,39 +46,48 @@ public class UpdateHoursController {
         if (newWorkingHours.isEmpty())
             return;
         Hours hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3)));
-
-        if(selectedService == "Covid Test Hours"){
-//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
-            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
+        if(selectedService.equals("Covid Test Hours")){
+            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
+//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
             App.getClient().sendRequest(requestUpdateActiveHours);
-        }else if (selectedService == "Service Name#2"){
+        }else if (selectedService.equals("Service Name#2")){
             //***
+            System.out.println("hello");//***
         }
     }
 
     @Subscribe
     public void updateTestHours(UpdateCovidTestHoursResponse response) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Working Hours Updated!", ButtonType.OK);
-        alert.setHeaderText("Success");
-        alert.show();
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Covid Test Hours Updated!", ButtonType.OK);
+            alert.setHeaderText("Success");
+            alert.show();
+        });
+
     }
 
     @Subscribe
-    public void getTestHours(GetCovidTestHoursResponse response) {
-        String workingHours = response.testHours.openingHours.toString() + " - " + response.testHours.closingHours.toString();
-        operatingServicesHours.setText(workingHours);
+    public void getTestHours(GetClinicResponse response) {
+
+        Platform.runLater(()->{
+            String Service = SevicesHoursList.getSelectionModel().getSelectedItem();
+            if(Service.equals("Covid Test Hours")){
+                String workingHours = response.clinic.getCovidTestStartHour().toString() + " - " + response.clinic.getCovidTestEndHour().toString();
+                operatingServicesHours.setText(workingHours);
+            }else if (Service.equals("Service Name#2")){
+                System.out.println("hello");//***
+            }
+        });
+
     }
 
     public void onMouseClick(MouseEvent mouseEvent) {
         String selectedService = SevicesHoursList.getSelectionModel().getSelectedItem();
         if (selectedService == null)
             return;
-        if(selectedService == "Covid Test Hours"){
-//            GetCovidTestHoursRequest requestHours = new GetCovidTestHoursRequest(App.getManager().getClinic().getName());
-            GetCovidTestHoursRequest requestHours = new GetCovidTestHoursRequest("clinic1");
-            App.getClient().sendRequest(requestHours);
-        }else if (selectedService == "Service Name#2"){
-            //***
-        }
+        GetClinicRequest requestClinic = new GetClinicRequest(App.getManager().getClinic().getName());
+
+//        GetClinicRequest requestClinic = new GetClinicRequest("clinic1");
+        App.getClient().sendRequest(requestClinic);
     }
 }

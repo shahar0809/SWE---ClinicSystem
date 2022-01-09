@@ -27,13 +27,10 @@ public class SimpleServer extends AbstractServer {
         dataBase = DatabaseAccess.getInstance();
 
         if (dataBase.getAll(Clinic.class).isEmpty()) {
-            dataBase.insertEntity(new Clinic("clinic11",  LocalTime.of(10,43)  ,  LocalTime.of(17,43)));
+            dataBase.insertEntity(new Clinic("clinic1",  LocalTime.of(10,43)  ,  LocalTime.of(17,43)));
             dataBase.insertEntity(new Clinic("clinic2",  LocalTime.of(9,17)  ,  LocalTime.of(16,05)));
             dataBase.insertEntity(new Clinic("clinic3",  LocalTime.of(11,36)  ,  LocalTime.of(19,34)));
         }
-        dataBase.insertEntity(new ClinicManager("sample1", "123456", 3,"m1", "c1","abcd@gmail.com" ,dataBase.getClinic("clinic1")));
-        dataBase.getClinic("clinic1").setCovidTestEndHour( LocalTime.of(21,17));
-        dataBase.getClinic("clinic1").setCovidTestStartHour( LocalTime.of(9,17));
 
     }
 
@@ -157,16 +154,30 @@ public class SimpleServer extends AbstractServer {
         LocalTime newStartH = request.activeHours.openingHours, newEndH = request.activeHours.closingHours;
         List<Appointment> Canceled=new ArrayList<Appointment>();
 
+        if(newEndH.isBefore(newStartH)){
+            LocalTime temp = newStartH;
+            newStartH = newEndH;
+            newEndH = temp;
+        }
+
+        //**************OPENING/CLOSING CLINIC HOURS ******************
+//        if(newStartH.isBefore(openingHour(...))){
+//            newStartH = openingHour(...);
+//        }
+//        if(newEndH.isAfter(closingHour(..,))){
+//            newEndH=closingHour(..,);
+//        }
+
+        //**************Cancel/order Appointment & send message/mail ******************
 //        if(oldStartH.isBefore(newStartH)){
 //            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, getFreeAppointments(...)));
 //        }
 //        if(newEndH.isBefore(oldEndH)){
 //            //Canceled.addAll(CanceledAppointments(newEndH, oldEndH, getFreeAppointments(...)));
 //        }
-
         // Update test hours
         dataBase.setCovidTestStartHour(clinic, newStartH);
-        dataBase.setCovidTestEndHour(clinic, oldEndH);
+        dataBase.setCovidTestEndHour(clinic, newEndH);
 
 //        // go through the list and ask to get appointment if one of them didn't succeeded to get one
 //        // send to the rest that there is no available
