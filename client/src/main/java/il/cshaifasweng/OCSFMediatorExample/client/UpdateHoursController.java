@@ -1,6 +1,4 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
-
-import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
@@ -28,7 +26,7 @@ public class UpdateHoursController {
         SevicesHoursList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         SevicesHoursList.getItems().add("Covid Test Hours");
-        SevicesHoursList.getItems().add("Service Name#2");
+        SevicesHoursList.getItems().add("Covid Vaccine Hours");
         SevicesHoursList.getItems().add("Service Name#3");
         SevicesHoursList.getItems().add("Service Name#4");
 
@@ -47,13 +45,14 @@ public class UpdateHoursController {
             return;
         Hours hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3)));
         if(selectedService.equals("Covid Test Hours")){
-            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
-//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
+//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
+            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
             App.getClient().sendRequest(requestUpdateActiveHours);
-        }else if (selectedService.equals("Service Name#2")){
-            //***
-            System.out.println("hello");//***
-        }
+        }else if (selectedService.equals("Covid Vaccine Hours")){
+//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
+            UpdateCovidVaccineHoursRequest requestUpdateActiveHours = new UpdateCovidVaccineHoursRequest(hours, "clinic1");
+            App.getClient().sendRequest(requestUpdateActiveHours);
+        }//************ADD OTHER SERVICES*******
     }
 
     @Subscribe
@@ -63,20 +62,30 @@ public class UpdateHoursController {
             alert.setHeaderText("Success");
             alert.show();
         });
+    }
+
+    @Subscribe
+    public void updateVaccineHours(UpdateCovidVaccineHoursResponse response) {
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Covid Vaccine Hours Updated!", ButtonType.OK);
+            alert.setHeaderText("Success");
+            alert.show();
+        });
 
     }
 
     @Subscribe
-    public void getTestHours(GetClinicResponse response) {
+    public void getHours(GetClinicResponse response) {
 
         Platform.runLater(()->{
             String Service = SevicesHoursList.getSelectionModel().getSelectedItem();
             if(Service.equals("Covid Test Hours")){
                 String workingHours = response.clinic.getCovidTestStartHour().toString() + " - " + response.clinic.getCovidTestEndHour().toString();
                 operatingServicesHours.setText(workingHours);
-            }else if (Service.equals("Service Name#2")){
-                System.out.println("hello");//***
-            }
+            }else if (Service.equals("Covid Vaccine Hours")){
+                String workingHours = response.clinic.getCovidVaccineStartHour().toString() + " - " + response.clinic.getCovidVaccineEndHour().toString();
+                operatingServicesHours.setText(workingHours);
+            }//************ADD OTHER SERVICES*******
         });
 
     }
@@ -85,9 +94,8 @@ public class UpdateHoursController {
         String selectedService = SevicesHoursList.getSelectionModel().getSelectedItem();
         if (selectedService == null)
             return;
-        GetClinicRequest requestClinic = new GetClinicRequest(App.getManager().getClinic().getName());
-
-//        GetClinicRequest requestClinic = new GetClinicRequest("clinic1");
+//        GetClinicRequest requestClinic = new GetClinicRequest(App.getManager().getClinic().getName());
+        GetClinicRequest requestClinic = new GetClinicRequest("clinic1");
         App.getClient().sendRequest(requestClinic);
     }
 }

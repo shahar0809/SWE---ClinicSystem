@@ -25,6 +25,11 @@ public class Clinic implements Serializable {
     @Column(name = "CovidTestsEndHour")
     protected LocalTime CTendHour;
 
+    @Column(name = "CovidVaccinesStartHour")
+    protected LocalTime CVstartHour;
+    @Column(name = "CovidVaccinesEndHour")
+    protected LocalTime CVendHour;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "clinicManager")
     ClinicManager clinicManager;
@@ -43,6 +48,8 @@ public class Clinic implements Serializable {
         // As a default value
         this.CTstartHour = openingHours;
         this.CTendHour = closingHours;
+        this.CVstartHour = openingHours;
+        this.CVendHour = closingHours;
     }
 
     public int getId() {
@@ -103,5 +110,21 @@ public class Clinic implements Serializable {
 
     public void setCovidTestEndHour(LocalTime endHour) {
         this.CTendHour = endHour;
+    }
+
+    public LocalTime getCovidVaccineStartHour() {
+        return CVstartHour;
+    }
+
+    public void setCovidVaccineStartHour(LocalTime startHour) {
+        this.CVstartHour = startHour;
+    }
+
+    public LocalTime getCovidVaccineEndHour() {
+        return CVendHour;
+    }
+
+    public void setCovidVaccineEndHour(LocalTime endHour) {
+        this.CVendHour = endHour;
     }
 }

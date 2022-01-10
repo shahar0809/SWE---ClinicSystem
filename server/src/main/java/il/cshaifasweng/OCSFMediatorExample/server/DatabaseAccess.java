@@ -168,11 +168,34 @@ public final class DatabaseAccess {
         session.getTransaction().commit();
     }
 
-    public LocalTime getCovidTestStartHour(Clinic clinic) {
-        return clinic.getCovidTestStartHour();
-    }
+    public LocalTime getCovidTestStartHour(Clinic clinic) { return clinic.getCovidTestStartHour();}
 
     public LocalTime getCovidTestEndHour(Clinic clinic) {
         return clinic.getCovidTestEndHour();
     }
+
+    public void setCovidVaccineStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setCovidVaccineStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setCovidVaccineEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setCovidVaccineEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public LocalTime getCovidVaccineStartHour(Clinic clinic) {
+        return clinic.getCovidVaccineStartHour();
+    }
+
+    public LocalTime getCovidVaccineEndHour(Clinic clinic) {
+        return clinic.getCovidVaccineEndHour();
+    }
+
 }

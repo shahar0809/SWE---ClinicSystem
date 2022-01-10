@@ -96,6 +96,22 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - getClinicRequest");
             }
         }
+
+        if (msg instanceof UpdateCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(updateCovidVaccineHoursRequest((UpdateCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidVaccineHoursRequest");
+            }
+        }
+
+        if (msg instanceof GetCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getClinicRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -190,11 +206,61 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
+    protected Response updateCovidVaccineHoursRequest(UpdateCovidVaccineHoursRequest request) {
+        Clinic clinic = dataBase.getClinic(request.clinicName);
+        LocalTime oldStartH = dataBase.getCovidVaccineStartHour(clinic);
+        LocalTime oldEndH = dataBase.getCovidVaccineEndHour(clinic);
+        LocalTime newStartH = request.activeHours.openingHours, newEndH = request.activeHours.closingHours;
+        List<Appointment> Canceled=new ArrayList<Appointment>();
+
+        if(newEndH.isBefore(newStartH)){
+            LocalTime temp = newStartH;
+            newStartH = newEndH;
+            newEndH = temp;
+        }
+
+        //**************OPENING/CLOSING CLINIC HOURS ******************
+//        if(newStartH.isBefore(openingHour(...))){
+//            newStartH = openingHour(...);
+//        }
+//        if(newEndH.isAfter(closingHour(..,))){
+//            newEndH=closingHour(..,);
+//        }
+
+        //**************Cancel/order Appointment & send message/mail ******************
+//        if(oldStartH.isBefore(newStartH)){
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, getFreeAppointments(...)));
+//        }
+//        if(newEndH.isBefore(oldEndH)){
+//            //Canceled.addAll(CanceledAppointments(newEndH, oldEndH, getFreeAppointments(...)));
+//        }
+        // Update test hours
+        dataBase.setCovidVaccineStartHour(clinic, newStartH);
+        dataBase.setCovidVaccineEndHour(clinic, newEndH);
+
+//        // go through the list and ask to get appointment if one of them didn't succeeded to get one
+//        // send to the rest that there is no available
+//        for(Appointment test : Canceled ){
+//            //if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
+//            //{**send message**}
+//        }
+
+        UpdateCovidVaccineHoursResponse response = new UpdateCovidVaccineHoursResponse();
+        return response;
+    }
+
     protected Response getCovidTestHoursRequest(GetCovidTestHoursRequest request) {
         GetCovidTestHoursResponse response = new GetCovidTestHoursResponse(new Hours(dataBase.getCovidTestStartHour(dataBase.getClinic(request.clinicName))
                 ,dataBase.getCovidTestEndHour(dataBase.getClinic(request.clinicName))));
         return response;
     }
+
+    protected Response getCovidVaccineHoursRequest(GetCovidVaccineHoursRequest request) {
+        GetCovidVaccineHoursResponse response = new GetCovidVaccineHoursResponse(new Hours(dataBase.getCovidVaccineStartHour(dataBase.getClinic(request.clinicName))
+                ,dataBase.getCovidVaccineEndHour(dataBase.getClinic(request.clinicName))));
+        return response;
+    }
+
 
     /*
     -> help function: which return a list of all the appointments that is between (from, to)
