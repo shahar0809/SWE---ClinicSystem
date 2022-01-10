@@ -21,7 +21,7 @@ public final class DatabaseAccess {
     private Session session;
     private CriteriaBuilder builder;
 
-    private DatabaseAccess() {
+    DatabaseAccess() {
         session = getSessionFactory().openSession();
         builder = session.getCriteriaBuilder();
     }
@@ -152,11 +152,13 @@ public final class DatabaseAccess {
      * @param <T> The appointment type
      * @return A list of all available appointments
      */
-    public <T> List<T> getFreeAppointments(Class<T> object) {
+    public <T> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
         CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
         Root<T> rootEntry = criteriaQuery.from(object);
-        criteriaQuery.where(builder.and(builder.equal(rootEntry.type(), object),
-                builder.equal(rootEntry.get("isAvailable"), true)));
+        criteriaQuery.where(builder.and(
+                builder.equal(rootEntry.type(), object),
+                builder.equal(rootEntry.get("isAvailable"), true)),
+                builder.equal(rootEntry.get("clinic"), clinic));
 
         Query<T> query = session.createQuery(criteriaQuery);
         return query.getResultList();

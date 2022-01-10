@@ -1,8 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
 public class ReserveAppointmentResponse extends Response {
-    public ReserveAppointmentResponse(boolean succeed) {
-        super(succeed);
+    public ReserveAppointmentResponse(boolean isSuccessful) {
+        super(isSuccessful);
     }
 
     @Override

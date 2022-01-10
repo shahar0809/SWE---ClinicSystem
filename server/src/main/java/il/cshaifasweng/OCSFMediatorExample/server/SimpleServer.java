@@ -1,18 +1,16 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
-import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
-import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
-import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
-import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
-import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
-import il.cshaifasweng.OCSFMediatorExample.response.Response;
-import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
+import il.cshaifasweng.OCSFMediatorExample.requests.*;
+import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
@@ -23,6 +21,9 @@ public class SimpleServer extends AbstractServer {
         initDatabase();
     }
 
+    /**
+     * Initialize database with fake data, if empty.
+     */
     private void initDatabase() {
         if (dataBase.getAll(Clinic.class).isEmpty()) {
             dataBase.insertEntity(new Clinic("clinic1", LocalTime.now(), LocalTime.now()));
@@ -157,22 +158,20 @@ public class SimpleServer extends AbstractServer {
         return allClinics;
     }
 
-    protected Response getFreeAppointmentsRequest(ReserveAppointmentRequest request, Appointment appointment) {
-        List<Appointment> Appointment = new ArrayList<Appointment>();
-        GetAllClinicsResponse allAppointments;
+    protected <T> Response getFreeAppointmentsRequest(GetFreeAppointmentRequest<T> request) {
+        List<T> appointments = new ArrayList<>();
+        GetFreeAppointmentsResponse<T> allAppointments;
+
         try {
-            request.classType();
             for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                covidVaccines.addAll(dataBase.getFreeAppointments(clinic, appointment instent));
+                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic));
             }
-            allAppointments = new ReserveAppointmentResponse(true);
+            allAppointments = new GetFreeAppointmentsResponse<>(true, appointments);
         }
         catch (Exception e) {
-            allAppointments = new ReserveAppointmentResponse(true);
+            allAppointments = new GetFreeAppointmentsResponse<>(false, appointments);
         }
         return allAppointments;
-
-
 
     }
 }
