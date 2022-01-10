@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
-public class UpdateActiveHoursResponse implements Response {
+public class UpdateActiveHoursResponse extends Response {
     public boolean succeed;
 
     public UpdateActiveHoursResponse() {
