@@ -31,6 +31,7 @@ public class SimpleServer extends AbstractServer {
             dataBase.insertEntity(new Clinic("clinic2", LocalTime.now(), LocalTime.now()));
             dataBase.insertEntity(new Clinic("clinic3", LocalTime.now(), LocalTime.now()));
         }
+        List<Clinic> clinics = dataBase.getAll(Clinic.class);
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
             dataBase.insertEntity(new Patient("p1", "pass1"));
@@ -47,28 +48,40 @@ public class SimpleServer extends AbstractServer {
         }
         List<Nurse> nursesList = dataBase.getAll(Nurse.class);
 
-        if (dataBase.getAll(Doctor.class).isEmpty()) {
-            dataBase.insertEntity(new FamilyDoctor("d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
+        if (dataBase.getAll(ProfessionDoctor.class).isEmpty()) {
+            dataBase.insertEntity(new ProfessionDoctor("d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
             dataBase.insertEntity(new ProfessionDoctor("d2", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor"));
             dataBase.insertEntity(new ProfessionDoctor("d3", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor"));
             dataBase.insertEntity(new ProfessionDoctor("d4", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor"));
         }
-        List<Doctor> doctorsList = dataBase.getAll(Doctor.class);
+        List<ProfessionDoctor> professionDoctorList = dataBase.getAll(ProfessionDoctor.class);
+
+        if (dataBase.getAll(FamilyDoctor.class).isEmpty()) {
+            dataBase.insertEntity(new FamilyDoctor("d21", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
+            dataBase.insertEntity(new FamilyDoctor("d22", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor"));
+            dataBase.insertEntity(new FamilyDoctor("d23", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor"));
+            dataBase.insertEntity(new FamilyDoctor("d24", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor"));
+        }
+        List<FamilyDoctor> familyDoctorsList = dataBase.getAll(FamilyDoctor.class);
 
         if (dataBase.getAll(Appointment.class).isEmpty()) {
-            dataBase.insertEntity(new NurseAppointment(patientList.get(0), nursesList.get(0), LocalDateTime.now()));
-            dataBase.insertEntity(new NurseAppointment(patientList.get(1), nursesList.get(1), LocalDateTime.now()));
-            dataBase.insertEntity(new NurseAppointment(patientList.get(3), nursesList.get(2), LocalDateTime.now()));
+            dataBase.insertEntity(new NurseAppointment(patientList.get(0), nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new NurseAppointment(patientList.get(1), nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new NurseAppointment(patientList.get(3), nursesList.get(2), LocalDateTime.now(), clinics.get(0)));
 
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(0), (ProfessionDoctor)doctorsList.get(1), LocalDateTime.now()));
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(3), (ProfessionDoctor)doctorsList.get(3), LocalDateTime.now()));
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(1), (ProfessionDoctor)doctorsList.get(2), LocalDateTime.now()));
+            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(0), professionDoctorList.get(1), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(3), professionDoctorList.get(3), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(1), professionDoctorList.get(2), LocalDateTime.now(), clinics.get(0)));
 
-            dataBase.insertEntity(new VaccineAppointment(patientList.get(3), LocalDateTime.now()));
-            dataBase.insertEntity(new VaccineAppointment(patientList.get(0), LocalDateTime.now()));
+            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(0), LocalDateTime.now(), familyDoctorsList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(2), LocalDateTime.now(), familyDoctorsList.get(3), clinics.get(0)));
+            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(1), LocalDateTime.now(), familyDoctorsList.get(0), clinics.get(0)));
 
-            dataBase.insertEntity(new CovidTestAppointment(patientList.get(3), LocalDateTime.now()));
-            dataBase.insertEntity(new CovidTestAppointment(patientList.get(0), LocalDateTime.now()));
+            dataBase.insertEntity(new CovidVaccineAppointment(patientList.get(3), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
+            dataBase.insertEntity(new CovidVaccineAppointment(patientList.get(0), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
+
+            dataBase.insertEntity(new CovidTestAppointment(patientList.get(3), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new CovidTestAppointment(patientList.get(0), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
         }
     }
 

@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Nurses")
 @DiscriminatorValue("Nurse")
 public class Nurse extends ClinicMember {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "nurse")

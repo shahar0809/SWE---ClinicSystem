@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -8,7 +10,8 @@ import java.time.LocalTime;
 @Table(name = "Clinics")
 public class Clinic implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     @Column(name = "id", nullable = false)
     protected int id;
 

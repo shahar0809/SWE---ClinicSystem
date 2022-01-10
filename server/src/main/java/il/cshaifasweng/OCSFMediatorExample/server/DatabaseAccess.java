@@ -35,7 +35,6 @@ public class DatabaseAccess {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Patient.class);
         configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(Doctor.class);
         configuration.addAnnotatedClass(Nurse.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(ClinicManager.class);
@@ -49,7 +48,8 @@ public class DatabaseAccess {
         configuration.addAnnotatedClass(ProfessionDoctor.class);
         configuration.addAnnotatedClass(ProfessionDoctorAppointment.class);
         configuration.addAnnotatedClass(NurseAppointment.class);
-        configuration.addAnnotatedClass(VaccineAppointment.class);
+        configuration.addAnnotatedClass(CovidVaccineAppointment.class);
+        configuration.addAnnotatedClass(FluVaccineAppointment.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -100,12 +100,13 @@ public class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    public void createUser(String username, String password) {
-        session.beginTransaction();
-        User user = new User(username, password);
-        session.save(user);
-        session.getTransaction().commit();
-    }
+    // TODO: User is an abstract class, so can't create an instance of it. Create an instance and pass it to insertEntity
+    //    public void createUser(String username, String password) {
+    //        session.beginTransaction();
+    //        User user = new User(username, password);
+    //        session.save(user);
+    //        session.getTransaction().commit();
+    //    }
 
     /**
      * Fetches a clinic from database.

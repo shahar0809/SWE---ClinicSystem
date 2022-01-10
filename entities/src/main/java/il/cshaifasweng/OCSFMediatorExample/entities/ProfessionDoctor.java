@@ -1,13 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class ProfessionDoctor extends Doctor {
+@DiscriminatorValue("professionDoctor")
+public class ProfessionDoctor extends ClinicMember {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "professionDoctor")
     private List<ProfessionDoctorAppointment> appointments;
 

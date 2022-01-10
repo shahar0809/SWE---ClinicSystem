@@ -10,8 +10,8 @@ public class ProfessionDoctorAppointment extends Appointment {
         super();
     }
 
-    public ProfessionDoctorAppointment(Patient patient, ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime) {
-        super(patient, treatmentDateTime);
+    public ProfessionDoctorAppointment(Patient patient, ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime, Clinic clinic) {
+        super(patient, treatmentDateTime, professionDoctor, clinic);
         this.professionDoctor = professionDoctor;
     }
 
@@ -19,7 +19,13 @@ public class ProfessionDoctorAppointment extends Appointment {
         return professionDoctor;
     }
 
+    public ProfessionDoctorAppointment(LocalDateTime treatmentDateTime, ProfessionDoctor professionDoctor, Clinic clinic) {
+        super(treatmentDateTime, professionDoctor, clinic);
+        this.professionDoctor = professionDoctor;
+    }
+
     public void setProfessionDoctor(ProfessionDoctor professionDoctor) {
+        super.setMember(professionDoctor);
         this.professionDoctor = professionDoctor;
     }
 

@@ -6,17 +6,18 @@ import java.time.LocalDateTime;
 @Entity
 @DiscriminatorValue("FamilyDoctorAppointment")
 public class FamilyDoctorAppointment extends Appointment {
-    public FamilyDoctorAppointment(FamilyDoctor doctor) {
-        this.familyDoctor = doctor;
-    }
-
-    public FamilyDoctorAppointment(Patient patient, LocalDateTime treatmentDateTime, FamilyDoctor doctor) {
-        super(patient, treatmentDateTime);
+    public FamilyDoctorAppointment(Patient patient, LocalDateTime treatmentDateTime, FamilyDoctor doctor, Clinic clinic) {
+        super(patient, treatmentDateTime, doctor, clinic);
         this.familyDoctor = doctor;
     }
 
     public FamilyDoctor getFamilyDoctor() {
         return familyDoctor;
+    }
+
+    public FamilyDoctorAppointment(LocalDateTime treatmentDateTime, FamilyDoctor familyDoctor, Clinic clinic) {
+        super(treatmentDateTime, familyDoctor, clinic);
+        this.familyDoctor = familyDoctor;
     }
 
     public void setFamilyDoctor(FamilyDoctor familyDoctor) {

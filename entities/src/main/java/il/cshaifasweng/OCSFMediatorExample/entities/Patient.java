@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Patients")
-@DiscriminatorValue("Patient")
+@PrimaryKeyJoinColumn(name="id")
 public class Patient extends User {
     @Column(name = "patientId")
 

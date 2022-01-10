@@ -11,7 +11,11 @@ public class CovidTestAppointment extends Appointment {
         super();
     }
 
-    public CovidTestAppointment(Patient patient, LocalDateTime treatmentDateTime) {
-        super(patient, treatmentDateTime);
+    public CovidTestAppointment(Patient patient, LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
+        super(patient, treatmentDateTime, member, clinic);
+    }
+
+    public CovidTestAppointment(LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
+        super(treatmentDateTime, member, clinic);
     }
 }
