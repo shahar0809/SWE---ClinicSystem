@@ -1,8 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.CovidVaccineAppointment;
+import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.ReserveFreeAppointmentRequest;
+import il.cshaifasweng.OCSFMediatorExample.response.ReserveAppointmentResponse;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -12,14 +13,13 @@ import org.greenrobot.eventbus.Subscribe;
 public class AppointmentController {
 
     @FXML
-    private ListView<CovidVaccineAppointment> covidVaccineList;
-    final ObservableList<CovidVaccineAppointment> covidVaccine = FXCollections.observableArrayList();
+    private ListView<CovidVaccine> covidVaccineList;
+
+    final ObservableList<CovidVaccine> covidVaccine = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
-
-
         covidVaccineList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         ReserveFreeAppointmentRequest requestFreeAppointment = new ReserveFreeAppointmentRequest();
         App.getClient().sendRequest(requestFreeAppointment);

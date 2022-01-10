@@ -1,16 +1,19 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
+import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.time.LocalTime;
-import java.util.List;
 
 public class PrimaryController {
     @FXML
@@ -21,21 +24,13 @@ public class PrimaryController {
 
     @FXML
     public void initialize() {
+        EventBus.getDefault().register(this);
         clinicList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         GetAllClinicsRequest requestAllClinic = new GetAllClinicsRequest();
         App.getClient().sendRequest(requestAllClinic);
         clinicList.getSelectionModel().selectedItemProperty().addListener((observableValue, newValue, oldValue) -> operatingHours.clear());
     }
-
-    @FXML
-    void onRetrieve(ActionEvent event) {
-        String selectedClinic = clinicList.getSelectionModel().getSelectedItem();
-        if (selectedClinic == null)
-            return;
-        GetClinicRequest requestClinic = new GetClinicRequest(selectedClinic);
-        App.getClient().sendRequest(requestClinic);
-    }
-
+    
     @FXML
     void onUpdate(ActionEvent event) {
         String selectedClinic = clinicList.getSelectionModel().getSelectedItem();
@@ -49,21 +44,27 @@ public class PrimaryController {
         App.getClient().sendRequest(requestUpdateActiveHours);
     }
 
-    void updateHours() {
+    @Subscribe
+    public void updateHours(UpdateActiveHoursResponse response) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "Working Hours Updated!", ButtonType.OK);
         alert.setHeaderText("Success");
         alert.show();
     }
 
-    void updateWorkingHours(Clinic clinic) {
-        String workingHours = clinic.getOpeningHours().toString() + " - " + clinic.getClosingHours().toString();
+    @Subscribe
+    public void updateWorkingHours(GetClinicResponse response) {
+        String workingHours = response.clinic.getOpeningHours().toString() + " - " + response.clinic.getClosingHours().toString();
         operatingHours.setText(workingHours);
     }
 
-    void updateListOfClinic(List<Clinic> clinics) {
-        for (Clinic clinic : clinics) {
-            clinicList.getItems().add(clinic.getName());
-        }
+
+
+    public void onMouseClick(MouseEvent mouseEvent) {
+        String selectedClinic = clinicList.getSelectionModel().getSelectedItem();
+        if (selectedClinic == null)
+            return;
+        GetClinicRequest requestClinic = new GetClinicRequest(selectedClinic);
+        App.getClient().sendRequest(requestClinic);
     }
 }
 

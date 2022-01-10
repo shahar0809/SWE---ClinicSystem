@@ -4,16 +4,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+
 <VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17"
-      fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PrimaryController">
+      fx:controller="il.cshaifasweng.OCSFMediatorExample.client.VaccineController">
     <children>
-        <Label alignment="CENTER" text="Available Clinics"/>
-        <ListView fx:id="clinicList" onMouseClicked="#onMouseClick"/>
-        <Label alignment="CENTER" text="Operating Hours"/>
+        <Label alignment="CENTER" text="Available Covid Vaccine"/>
+        <ListView fx:id="covidVaccineList" onMouseClicked="#onMouseClick"/>
         <HBox alignment="CENTER" spacing="5.0">
             <children>
-                <Button mnemonicParsing="false" onAction="#onUpdate" text="Update"/>
-                <TextField fx:id="operatingHours"/>
+                <Button mnemonicParsing="false" onAction="#onUpdate" text="Reserve Appointment"/>
             </children>
         </HBox>
     </children>

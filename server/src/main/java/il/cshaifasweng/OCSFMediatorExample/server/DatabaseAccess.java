@@ -16,13 +16,21 @@ import javax.persistence.criteria.Root;
 import java.time.LocalTime;
 import java.util.List;
 
-public class DatabaseAccess {
+public final class DatabaseAccess {
+    private static DatabaseAccess instance;
     private Session session;
     private CriteriaBuilder builder;
 
-    public DatabaseAccess() {
+    private DatabaseAccess() {
         session = getSessionFactory().openSession();
         builder = session.getCriteriaBuilder();
+    }
+
+    public static DatabaseAccess getInstance() {
+        if (instance == null) {
+            instance = new DatabaseAccess();
+        }
+        return instance;
     }
 
     /**
@@ -77,7 +85,7 @@ public class DatabaseAccess {
     public User getUser(String username, String hashPassword) {
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
-        criteriaQuery.select(rootEntry).where(builder.and(builder.equal(rootEntry.get("username"), username), builder.equal(rootEntry.get("hashPassword"), hashPassword)));
+        criteriaQuery.select(rootEntry).where(builder.and(builder.equal(rootEntry.get("username"), username), builder.equal(rootEntry.get(","), hashPassword)));
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
