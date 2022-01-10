@@ -1,18 +1,19 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
 import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
-import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
-import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
-import il.cshaifasweng.OCSFMediatorExample.response.Response;
-import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
@@ -54,22 +55,71 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - updateActiveHoursRequest");
             }
         }
+
+        if (msg instanceof ReserveAppointmentRequest) {
+            try {
+                client.sendToClient(getFreeAppointmentsRequest((ReserveAppointmentRequest) msg, ((ReserveAppointmentRequest) msg).appointment));
+            } catch (IOException e) {
+                System.out.println("Error - getALLCovidVaccineRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
-        dataBase.setOpeningHours(dataBase.getClinic(request.clinicName), request.activeHours.openingHours);
-        dataBase.setClosingHours(dataBase.getClinic(request.clinicName), request.activeHours.closingHours);
-        UpdateActiveHoursResponse response = new UpdateActiveHoursResponse();
+        UpdateActiveHoursResponse response;
+        try {
+            dataBase.setOpeningHours(dataBase.getClinic(request.clinicName), request.activeHours.openingHours);
+            dataBase.setClosingHours(dataBase.getClinic(request.clinicName), request.activeHours.closingHours);
+            response = new UpdateActiveHoursResponse(true);
+        }
+        catch (Exception e) {
+            response = new UpdateActiveHoursResponse(false);
+        }
         return response;
     }
 
     protected Response getClinicRequest(GetClinicRequest request) {
-        GetClinicResponse response = new GetClinicResponse(dataBase.getClinic(request.clinicName));
+        Clinic clinic = null;
+        GetClinicResponse response;
+        try {
+            clinic = dataBase.getClinic(request.clinicName);
+            response = new GetClinicResponse(clinic, true);
+        }
+        catch (Exception e) {
+            response = new GetClinicResponse(clinic, false);
+        }
         return response;
     }
 
     protected Response getALLClinicRequest(GetAllClinicsRequest request) {
-        GetAllClinicsResponse allClinics = new GetAllClinicsResponse(dataBase.getAll(Clinic.class));
+        List<Clinic> clinics = new ArrayList<Clinic>();
+        GetAllClinicsResponse allClinics;
+        try {
+            clinics = dataBase.getAll(Clinic.class);
+            allClinics = new GetAllClinicsResponse(clinics, true);
+        }
+        catch (Exception e) {
+            allClinics = new GetAllClinicsResponse(clinics, false);
+        }
         return allClinics;
+    }
+
+    protected Response getFreeAppointmentsRequest(ReserveAppointmentRequest request, Appointment appointment) {
+        List<Appointment> Appointment = new ArrayList<Appointment>();
+        GetAllClinicsResponse allAppointments;
+        try {
+            request.classType();
+            for (Clinic clinic : dataBase.getAll(Clinic.class)) {
+                covidVaccines.addAll(dataBase.getFreeAppointments(clinic, appointment instent));
+            }
+            allAppointments = new ReserveAppointmentResponse(true);
+        }
+        catch (Exception e) {
+            allAppointments = new ReserveAppointmentResponse(true);
+        }
+        return allAppointments;
+
+
+
     }
 }
