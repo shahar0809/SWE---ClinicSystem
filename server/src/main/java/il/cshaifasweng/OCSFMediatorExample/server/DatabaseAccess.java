@@ -43,6 +43,7 @@ public final class DatabaseAccess {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Patient.class);
         configuration.addAnnotatedClass(User.class);
+        configuration.addAnnotatedClass(Doctor.class);
         configuration.addAnnotatedClass(Nurse.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(ClinicManager.class);
@@ -82,10 +83,11 @@ public final class DatabaseAccess {
      * @param hashPassword The hashed password of the user
      * @return User
      */
-    public User getUser(String username, String hashPassword) {
+    public User getUser(String username) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
-        criteriaQuery.select(rootEntry).where(builder.and(builder.equal(rootEntry.get("username"), username), builder.equal(rootEntry.get(","), hashPassword)));
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("username"), username));
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
@@ -108,13 +110,26 @@ public final class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    // TODO: User is an abstract class, so can't create an instance of it. Create an instance and pass it to insertEntity
-    //    public void createUser(String username, String password) {
-    //        session.beginTransaction();
-    //        User user = new User(username, password);
-    //        session.save(user);
-    //        session.getTransaction().commit();
-    //    }
+//    public void createUser(String username, String password) {
+//        session.beginTransaction();
+//        User user = new User(username, password);
+//        session.save(user);
+//        session.getTransaction().commit();
+//    }
+
+    /**
+     * Inserts a Patient into the database.
+     *
+     * @param username Username
+     * @param password Not encrypted password
+     */
+    public Patient createPatient(String username, String password) {
+        session.beginTransaction();
+        Patient patient = new Patient(username, password);
+        session.save(patient);
+        session.getTransaction().commit();
+        return patient;
+    }
 
     /**
      * Fetches a clinic from database.

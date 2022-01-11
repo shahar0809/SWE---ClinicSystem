@@ -5,13 +5,16 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
+import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
@@ -93,6 +96,7 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - getALLClinicRequest");
             }
+            return;
         }
 
         if (msg instanceof GetClinicRequest) {
@@ -101,6 +105,7 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - getClinicRequest");
             }
+            return;
         }
 
         if (msg instanceof UpdateActiveHoursRequest) {
@@ -109,6 +114,25 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - updateActiveHoursRequest");
             }
+            return;
+        }
+
+        if (msg instanceof LoginRequest) {
+            try {
+                client.sendToClient(handleLoginRequest((LoginRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - LoginRequest");
+            }
+            return;
+        }
+
+        if (msg instanceof RegisterRequest) {
+            try {
+                client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - RegisterRequest");
+            }
+            return;
         }
 
         if (msg instanceof ReserveFreeAppointmentsRequest) {
@@ -187,6 +211,28 @@ public class SimpleServer extends AbstractServer {
             allClinics = new GetAllClinicsResponse(clinics, false);
         }
         return allClinics;
+    }
+
+    protected Response handleLoginRequest(LoginRequest request) {
+        User user;
+        try {
+            user = dataBase.getUser(request.username);
+        } catch (NoResultException e) {
+            return new LoginResponse("User not found!");
+        }
+        String securePassword = SecureUtils.getSecurePassword(request.password, user.getSALT());
+        if (!Objects.equals(user.getHashPassword(), securePassword))
+            return new LoginResponse("Incorrect password!");
+        return new LoginResponse(user);
+    }
+
+    protected Response handleRegisterRequest(RegisterRequest request) {
+        try {
+            dataBase.getUser(request.username);
+            return new RegisterResponse("Username is already taken!");
+        } catch (NoResultException ignored) {
+        }
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password));
     }
 
     protected Response getFreeAppointmentsRequest(ReserveFreeAppointmentsRequest request) {
@@ -268,4 +314,6 @@ public class SimpleServer extends AbstractServer {
         }
         return response;
     }
+}
+
 }
