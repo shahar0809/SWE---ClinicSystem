@@ -1,8 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
-public class ReservePatientResponse extends Response {
+public class ReservePatientAppointmentResponse extends Response {
 
-    public ReservePatientResponse(boolean succeed) {
+    public ReservePatientAppointmentResponse(boolean succeed) {
         super(succeed);
     }
 

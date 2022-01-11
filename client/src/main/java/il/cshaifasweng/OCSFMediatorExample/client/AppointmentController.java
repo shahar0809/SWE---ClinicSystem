@@ -1,8 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
-import il.cshaifasweng.OCSFMediatorExample.requests.ReserveFreeAppointmentRequest;
-import il.cshaifasweng.OCSFMediatorExample.response.ReserveAppointmentResponse;
+import il.cshaifasweng.OCSFMediatorExample.requests.ReserveFreeAppointmentsRequest;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,7 +19,7 @@ public class AppointmentController {
     public void initialize() {
         EventBus.getDefault().register(this);
         covidVaccineList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        ReserveFreeAppointmentRequest requestFreeAppointment = new ReserveFreeAppointmentRequest();
+        ReserveFreeAppointmentsRequest requestFreeAppointment = new ReserveFreeAppointmentsRequest();
         App.getClient().sendRequest(requestFreeAppointment);
     }
 

@@ -1,10 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
 import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 
-public class ReserveFreeAppointmentResponse extends Response {
+public class ReserveFreeAppointmentsResponse extends Response {
 
-    public ReserveFreeAppointmentResponse(boolean succeed) {
+    public ReserveFreeAppointmentsResponse(boolean succeed) {
         super(succeed);
     }
 

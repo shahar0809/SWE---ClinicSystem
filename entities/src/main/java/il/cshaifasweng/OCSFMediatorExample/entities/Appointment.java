@@ -75,4 +75,9 @@ public class Appointment implements Serializable {
     public void setTreatmentDateTime(LocalDateTime treatmentDateTime) {
         this.treatmentDateTime = treatmentDateTime;
     }
+
+    @Override
+    public int compareTo(Appointment appointment) {
+        return this.treatmentDateTime.compareTo(appointment.getTreatmentDateTime());
+    }
 }
