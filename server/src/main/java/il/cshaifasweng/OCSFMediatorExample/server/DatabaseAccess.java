@@ -51,14 +51,8 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(HospitalManager.class);
         configuration.addAnnotatedClass(Appointment.class);
         configuration.addAnnotatedClass(ClinicMember.class);
-        configuration.addAnnotatedClass(CovidTestAppointment.class);
         configuration.addAnnotatedClass(FamilyDoctor.class);
-        configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
         configuration.addAnnotatedClass(ProfessionDoctor.class);
-        configuration.addAnnotatedClass(ProfessionDoctorAppointment.class);
-        configuration.addAnnotatedClass(NurseAppointment.class);
-        configuration.addAnnotatedClass(CovidVaccineAppointment.class);
-        configuration.addAnnotatedClass(FluVaccineAppointment.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -170,19 +164,19 @@ public final class DatabaseAccess {
 
     /**
      * Gets free appointments of a certain type.
-     * @param object The class of the appointment type (.class)
-     * @param <T> The appointment type
+     * @param clinic The clinic to search within
+     * @param type The appointment type
      * @return A list of all available appointments
      */
-    public <T> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
-        CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
-        Root<T> rootEntry = criteriaQuery.from(object);
+    public List<Appointment> getFreeAppointments(Clinic clinic, AppointmentType type) {
+        CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+        Root<Appointment> rootEntry = criteriaQuery.from(Appointment.class);
         criteriaQuery.where(builder.and(
-                builder.equal(rootEntry.type(), object),
+                builder.equal(rootEntry.get("appointmentType"), type.toString()),
                 builder.equal(rootEntry.get("isAvailable"), true)),
                 builder.equal(rootEntry.get("clinic"), clinic));
 
-        Query<T> query = session.createQuery(criteriaQuery);
+        Query<Appointment> query = session.createQuery(criteriaQuery);
         return query.getResultList();
     }
 }

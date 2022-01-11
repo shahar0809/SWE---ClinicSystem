@@ -1,8 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
+import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetClinicResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.UpdateActiveHoursResponse;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
@@ -57,7 +59,12 @@ public class ClinicEditorController {
         operatingHours.setText(workingHours);
     }
 
-
+    @Subscribe
+    public void updateListOfClinic(GetAllClinicsResponse response) {
+        for (Clinic clinic : response.clinics) {
+            clinicList.getItems().add(clinic.getName());
+        }
+    }
 
     public void onMouseClick(MouseEvent mouseEvent) {
         String selectedClinic = clinicList.getSelectionModel().getSelectedItem();

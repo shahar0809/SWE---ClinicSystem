@@ -78,7 +78,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("ClinicEditor");
+        App.setRoot("appointment");
     }
 
     @Subscribe
@@ -90,7 +90,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("ClinicEditor");
+        App.setRoot("appointment");
     }
 
 }

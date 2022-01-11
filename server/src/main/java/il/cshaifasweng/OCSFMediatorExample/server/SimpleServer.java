@@ -68,23 +68,23 @@ public class SimpleServer extends AbstractServer {
         List<FamilyDoctor> familyDoctorsList = dataBase.getAll(FamilyDoctor.class);
 
         if (dataBase.getAll(Appointment.class).isEmpty()) {
-            dataBase.insertEntity(new NurseAppointment(patientList.get(0), nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new NurseAppointment(patientList.get(1), nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new NurseAppointment(patientList.get(3), nursesList.get(2), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(0), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(1), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(3), LocalDateTime.now(), nursesList.get(2), clinics.get(0)));
 
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(0), professionDoctorList.get(1), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(3), professionDoctorList.get(3), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(1), professionDoctorList.get(2), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(0), LocalDateTime.now(), professionDoctorList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(3), LocalDateTime.now(), professionDoctorList.get(3), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(1), LocalDateTime.now(), professionDoctorList.get(2), clinics.get(0)));
 
-            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(0), LocalDateTime.now(), familyDoctorsList.get(1), clinics.get(0)));
-            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(2), LocalDateTime.now(), familyDoctorsList.get(3), clinics.get(0)));
-            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(1), LocalDateTime.now(), familyDoctorsList.get(0), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(0), LocalDateTime.now(), familyDoctorsList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(2), LocalDateTime.now(), familyDoctorsList.get(3), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(1), LocalDateTime.now(), familyDoctorsList.get(0), clinics.get(0)));
 
-            dataBase.insertEntity(new CovidVaccineAppointment(patientList.get(3), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
-            dataBase.insertEntity(new CovidVaccineAppointment(patientList.get(0), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(3), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(0), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
 
-            dataBase.insertEntity(new CovidTestAppointment(patientList.get(3), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
-            dataBase.insertEntity(new CovidTestAppointment(patientList.get(0), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(3), LocalDateTime.now(), nursesList.get(1), clinics.get(0)));
+            dataBase.insertEntity(new Appointment(patientList.get(0), LocalDateTime.now(), nursesList.get(0), clinics.get(0)));
         }
     }
 
@@ -252,17 +252,17 @@ public class SimpleServer extends AbstractServer {
         try {
             if ("CovidVaccine".equals(request.appointmentType)) {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                    appointments.addAll(dataBase.getFreeAppointments(CovidVaccineAppointment.class, clinic));
+                    appointments.addAll(dataBase.getFreeAppointments(clinic, AppointmentType.CovidVaccine));
                 }
             }
             if ("FluVaccine".equals(request.appointmentType)) {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                    appointments.addAll(dataBase.getFreeAppointments(FluVaccineAppointment.class, clinic));
+                    appointments.addAll(dataBase.getFreeAppointments(clinic, AppointmentType.FluVaccine));
                 }
             }
             if ("CovidCheck".equals(request.appointmentType)) {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                    appointments.addAll(dataBase.getFreeAppointments(CovidTestAppointment.class, clinic));
+                    appointments.addAll(dataBase.getFreeAppointments(clinic, AppointmentType.CovidTest));
                 }
             }
             appointments.sort(appointmentComparator);

@@ -13,7 +13,7 @@ import java.util.Comparator;
 @DiscriminatorColumn(name="appointmentType",
         discriminatorType = DiscriminatorType.STRING)
 @Table(name = "Appointments")
-public abstract class Appointment implements Serializable {
+public class Appointment implements Serializable {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
@@ -109,25 +109,3 @@ public abstract class Appointment implements Serializable {
     }
 }
 
-/**
- * Enum for appointments type to fetch from database.
- */
-enum AppointmentType {
-    CovidTest("CovidTestAppointment"),
-    FamilyDoctor("FamilyDoctorAppointment"),
-    Nurse("NurseAppointmentAppointment"),
-    ProfessionDoctor("ProfessionDoctorAppointment"),
-    FluVaccine("FluVaccineAppointment"),
-    CovidVaccine("CovidVaccineAppointment");
-
-    private final String type;
-
-    AppointmentType(final String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return type;
-    }
-}
