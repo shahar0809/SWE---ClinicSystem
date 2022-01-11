@@ -61,7 +61,7 @@ public class AppointmentController {
         changingLabel.setText("Your Appointment");
         changingButton.setText("Cancel");
 
-        ReservePatientAppointmentRequest requestFreeAppointment = new ReservePatientAppointmentRequest(activeUser.getUsername());
+        ReservePatientAppointmentRequest requestFreeAppointment = new ReservePatientAppointmentRequest(App.getActiveUser().getUsername());
         App.getClient().sendRequest(requestFreeAppointment);
     }
 
@@ -119,11 +119,11 @@ public class AppointmentController {
         if (selectedAppointment == null)
             return;
         if (changingButton.getText().equals("Cancel")) {
-            DeleteAppointmentRequest requestDeleteAppointment = new DeleteAppointmentRequest(selectedAppointment, activeUser.getUsername());
+            DeleteAppointmentRequest requestDeleteAppointment = new DeleteAppointmentRequest(selectedAppointment, App.getActiveUser().getUsername());
             App.getClient().sendRequest(requestDeleteAppointment);
         }
         if (changingButton.getText().equals("Covid Vaccine Available Appointment") || changingButton.getText().equals("Flu Vaccine Available Appointment") || changingButton.getText().equals("Covid Test Available Appointment")) {
-            AddAppointmentRequest requestAddAppointment = new AddAppointmentRequest(selectedAppointment, activeUser.getUsername());
+            AddAppointmentRequest requestAddAppointment = new AddAppointmentRequest(selectedAppointment, App.getActiveUser().getUsername());
             App.getClient().sendRequest(requestAddAppointment);
         }
     }
