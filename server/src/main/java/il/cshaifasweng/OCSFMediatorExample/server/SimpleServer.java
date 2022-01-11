@@ -223,21 +223,21 @@ public class SimpleServer extends AbstractServer {
         try {
             user = dataBase.getUser(request.username);
         } catch (NoResultException e) {
-            return new LoginResponse("User not found!");
+            return new LoginResponse("User not found!", true);
         }
         String securePassword = SecureUtils.getSecurePassword(request.password, user.getSALT());
         if (!Objects.equals(user.getHashPassword(), securePassword))
-            return new LoginResponse("Incorrect password!");
-        return new LoginResponse(user);
+            return new LoginResponse("Incorrect password!", true);
+        return new LoginResponse(user, true);
     }
 
     protected Response handleRegisterRequest(RegisterRequest request) {
         try {
             dataBase.getUser(request.username);
-            return new RegisterResponse("Username is already taken!");
+            return new RegisterResponse("Username is already taken!", true);
         } catch (NoResultException ignored) {
         }
-        return new RegisterResponse(dataBase.createPatient(request.username, request.password));
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password), true);
     }
 
     protected Response getFreeAppointmentsRequest(ReserveFreeAppointmentsRequest request) {
