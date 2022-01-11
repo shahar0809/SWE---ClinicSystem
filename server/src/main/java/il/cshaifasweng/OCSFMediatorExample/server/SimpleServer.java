@@ -11,6 +11,8 @@ import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class SimpleServer extends AbstractServer {
@@ -54,9 +56,9 @@ public class SimpleServer extends AbstractServer {
             }
         }
 
-        if (msg instanceof ReserveAppointmentRequest) {
+        if (msg instanceof ReserveFreeAppointmentsRequest) {
             try {
-                client.sendToClient(getFreeAppointmentsRequest((ReserveAppointmentRequest) msg));
+                client.sendToClient(getFreeAppointmentsRequest((ReserveFreeAppointmentsRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - getALLCovidVaccineRequest");
             }
@@ -64,7 +66,7 @@ public class SimpleServer extends AbstractServer {
 
         if (msg instanceof ReservePatientAppointmentRequest) {
             try {
-                client.sendToClient(getPatientAppointmentsRequest((ReservePatientAppointmentRequest) msg);
+                client.sendToClient(getPatientAppointmentsRequest((ReservePatientAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - ReservePatientAppointmentRequest");
             }
@@ -72,7 +74,7 @@ public class SimpleServer extends AbstractServer {
 
         if (msg instanceof GetGreenPassRequest) {
             try {
-                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg);
+                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetGreenPassRequest");
             }
@@ -116,6 +118,12 @@ public class SimpleServer extends AbstractServer {
     }
 
     protected Response getFreeAppointmentsRequest(ReserveFreeAppointmentsRequest request) {
+        Comparator<Appointment> appointmentComparator = new Comparator<Appointment>() {
+            @Override
+            public int compare(Appointment appointment1, Appointment appointment2) {
+                return appointment1.getTreatmentDateTime().compareTo(appointment2.getTreatmentDateTime());
+            }
+        };
         List<Appointment> appointments = new ArrayList<Appointment>();
         ReserveFreeAppointmentsResponse response;
         try {
@@ -134,9 +142,11 @@ public class SimpleServer extends AbstractServer {
                     appointments.addAll(dataBase.getFreeAppointments(clinic, CovidCheck.class));
                 }
             }
-            response = new ReserveFreeAppointmentsResponse(true);
+            appointments.sort(appointmentComparator);
+            response = new ReserveFreeAppointmentsResponse(appointments, true);
         } catch (Exception e) {
-            response = new ReserveFreeAppointmentsResponse(false);
+            appointments.sort(appointmentComparator);
+            response = new ReserveFreeAppointmentsResponse(appointments,false);
         }
         return response;
     }

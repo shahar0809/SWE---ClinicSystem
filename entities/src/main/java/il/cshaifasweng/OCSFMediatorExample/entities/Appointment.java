@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 // TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
 @Entity
@@ -74,10 +75,5 @@ public class Appointment implements Serializable {
 
     public void setTreatmentDateTime(LocalDateTime treatmentDateTime) {
         this.treatmentDateTime = treatmentDateTime;
-    }
-
-    @Override
-    public int compareTo(Appointment appointment) {
-        return this.treatmentDateTime.compareTo(appointment.getTreatmentDateTime());
     }
 }
