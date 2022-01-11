@@ -19,9 +19,11 @@ import java.util.List;
 public final class DatabaseAccess {
     private static DatabaseAccess instance;
     private Session session;
+    private CriteriaBuilder builder;
 
-    private DatabaseAccess() {
+    DatabaseAccess() {
         session = getSessionFactory().openSession();
+        builder = session.getCriteriaBuilder();
     }
 
     public static DatabaseAccess getInstance() {
@@ -41,7 +43,6 @@ public final class DatabaseAccess {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Patient.class);
         configuration.addAnnotatedClass(User.class);
-        configuration.addAnnotatedClass(Doctor.class);
         configuration.addAnnotatedClass(Nurse.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(ClinicManager.class);
@@ -49,6 +50,14 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(HospitalManager.class);
         configuration.addAnnotatedClass(Appointment.class);
         configuration.addAnnotatedClass(ClinicMember.class);
+        configuration.addAnnotatedClass(CovidTestAppointment.class);
+        configuration.addAnnotatedClass(FamilyDoctor.class);
+        configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
+        configuration.addAnnotatedClass(ProfessionDoctor.class);
+        configuration.addAnnotatedClass(ProfessionDoctorAppointment.class);
+        configuration.addAnnotatedClass(NurseAppointment.class);
+        configuration.addAnnotatedClass(CovidVaccineAppointment.class);
+        configuration.addAnnotatedClass(FluVaccineAppointment.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -58,7 +67,6 @@ public final class DatabaseAccess {
     }
 
     public <T> List<T> getAll(Class<T> object) {
-        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
         Root<T> rootEntry = criteriaQuery.from(object);
         CriteriaQuery<T> allCriteriaQuery = criteriaQuery.select(rootEntry);
@@ -75,7 +83,6 @@ public final class DatabaseAccess {
      * @return User
      */
     public User getUser(String username, String hashPassword) {
-        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
         criteriaQuery.select(rootEntry).where(builder.and(builder.equal(rootEntry.get("username"), username), builder.equal(rootEntry.get(","), hashPassword)));
@@ -101,12 +108,13 @@ public final class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    public void createUser(String username, String password) {
-        session.beginTransaction();
-        User user = new User(username, password);
-        session.save(user);
-        session.getTransaction().commit();
-    }
+    // TODO: User is an abstract class, so can't create an instance of it. Create an instance and pass it to insertEntity
+    //    public void createUser(String username, String password) {
+    //        session.beginTransaction();
+    //        User user = new User(username, password);
+    //        session.save(user);
+    //        session.getTransaction().commit();
+    //    }
 
     /**
      * Fetches a clinic from database.
@@ -115,7 +123,6 @@ public final class DatabaseAccess {
      * @return The clinic entity
      */
     public Clinic getClinic(String clinicName) {
-        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<Clinic> criteriaQuery = builder.createQuery(Clinic.class);
         Root<Clinic> rootEntry = criteriaQuery.from(Clinic.class);
         criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("name"), clinicName));
@@ -137,5 +144,23 @@ public final class DatabaseAccess {
         session.save(clinic);
         session.flush();
         session.getTransaction().commit();
+    }
+
+    /**
+     * Gets free appointments of a certain type.
+     * @param object The class of the appointment type (.class)
+     * @param <T> The appointment type
+     * @return A list of all available appointments
+     */
+    public <T> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
+        CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
+        Root<T> rootEntry = criteriaQuery.from(object);
+        criteriaQuery.where(builder.and(
+                builder.equal(rootEntry.type(), object),
+                builder.equal(rootEntry.get("isAvailable"), true)),
+                builder.equal(rootEntry.get("clinic"), clinic));
+
+        Query<T> query = session.createQuery(criteriaQuery);
+        return query.getResultList();
     }
 }

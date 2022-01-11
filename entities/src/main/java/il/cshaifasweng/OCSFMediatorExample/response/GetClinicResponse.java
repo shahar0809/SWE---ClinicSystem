@@ -5,8 +5,8 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 public class GetClinicResponse extends Response {
     public Clinic clinic;
 
-    public GetClinicResponse(Clinic clinic, boolean succeed) {
-        super(succeed);
+    public GetClinicResponse(Clinic clinic, boolean isSuccessful) {
+        super(isSuccessful);
         this.clinic = clinic;
     }
 

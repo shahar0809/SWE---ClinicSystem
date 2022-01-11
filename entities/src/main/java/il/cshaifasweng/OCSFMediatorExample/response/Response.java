@@ -3,10 +3,18 @@ package il.cshaifasweng.OCSFMediatorExample.response;
 import java.io.Serializable;
 
 public abstract class Response implements Serializable {
-    public boolean succeed;
+    protected boolean isSuccessful;
 
-    public Response(boolean succeed) {
-        this.succeed = succeed;
+    public boolean isSuccessful() {
+        return isSuccessful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        isSuccessful = successful;
+    }
+
+    public Response(boolean isSuccessful) {
+        this.isSuccessful = isSuccessful;
     }
 
     public abstract String getType();

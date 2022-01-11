@@ -3,11 +3,9 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
 import javax.persistence.*;
 
 @Entity
+@PrimaryKeyJoinColumn(name="userID")
+@DiscriminatorValue("clinicManager")
 public class ClinicManager extends ClinicEmployee {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    protected int id;
-
     @OneToOne(mappedBy = "clinicManager")
     Clinic clinic;
 

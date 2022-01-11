@@ -1,11 +1,14 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
-// TODO: Decide if we need table of all clinic members
 @Entity
-public class ClinicEmployee extends User {
+@PrimaryKeyJoinColumn(name="userID")
+@Table(name = "clinicEmployees")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="employeeType",
+        discriminatorType = DiscriminatorType.STRING)
+public abstract class ClinicEmployee extends User {
     @Column(name = "employeeNum", nullable = false)
     protected int employeeNum;
 

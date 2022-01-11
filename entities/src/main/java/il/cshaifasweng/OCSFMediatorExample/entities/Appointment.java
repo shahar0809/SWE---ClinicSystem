@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -7,23 +9,40 @@ import java.util.Comparator;
 
 // TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="appointmentType",
+        discriminatorType = DiscriminatorType.STRING)
 @Table(name = "Appointments")
-public class Appointment implements Serializable {
+public abstract class Appointment implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
+    @Column(name = "id")
     protected Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "patient")
     protected Patient patient;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "clinicMember", nullable = false)
-    protected ClinicMember clinicMember;
-
-    @Column(name = "appointment_time")
+    @Column(name = "appointment_time", nullable = false)
     protected LocalDateTime treatmentDateTime;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "member", nullable = false)
+    protected ClinicMember member;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "clinic", nullable = false)
+    protected Clinic clinic;
+
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "treatmentDateTime=" + treatmentDateTime +
+                ", member=" + member +
+                ", clinic=" + clinic +
+                '}';
+    }
 
     @Column(name = "isAvailable")
     protected boolean isAvailable;
@@ -31,26 +50,38 @@ public class Appointment implements Serializable {
     public Appointment() {
     }
 
-    public Appointment(Patient patient, ClinicMember doctor, LocalDateTime treatmentDateTime) {
-        this.patient = patient;
-        this.clinicMember = doctor;
+    public Appointment(LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
         this.treatmentDateTime = treatmentDateTime;
+        this.member = member;
+        this.clinic = clinic;
+    }
+
+    public Appointment(Patient patient, LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
+        this.patient = patient;
+        this.treatmentDateTime = treatmentDateTime;
+        this.member = member;
+        this.clinic = clinic;
+        this.isAvailable = true;
+    }
+
+    public ClinicMember getMember() {
+        return member;
+    }
+
+    public void setMember(ClinicMember member) {
+        this.member = member;
+    }
+
+    public void setClinic(Clinic clinic) {
+        this.clinic = clinic;
+    }
+
+    public Clinic getClinic() {
+        return clinic;
     }
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ClinicMember getClinicMember() {
-        return clinicMember;
-    }
-
-    public void setClinicMember(ClinicMember clinicMember) {
-        this.clinicMember = clinicMember;
     }
 
     public boolean isAvailable() {
@@ -75,5 +106,28 @@ public class Appointment implements Serializable {
 
     public void setTreatmentDateTime(LocalDateTime treatmentDateTime) {
         this.treatmentDateTime = treatmentDateTime;
+    }
+}
+
+/**
+ * Enum for appointments type to fetch from database.
+ */
+enum AppointmentType {
+    CovidTest("CovidTestAppointment"),
+    FamilyDoctor("FamilyDoctorAppointment"),
+    Nurse("NurseAppointmentAppointment"),
+    ProfessionDoctor("ProfessionDoctorAppointment"),
+    FluVaccine("FluVaccineAppointment"),
+    CovidVaccine("CovidVaccineAppointment");
+
+    private final String type;
+
+    AppointmentType(final String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return type;
     }
 }
