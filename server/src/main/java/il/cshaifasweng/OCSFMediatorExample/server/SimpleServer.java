@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -127,12 +126,28 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - ReservePatientAppointmentRequest");
             }
         }
+//
+//        if (msg instanceof GetGreenPassRequest) {
+//            try {
+//                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
+//            } catch (IOException e) {
+//                System.out.println("Error - GetGreenPassRequest");
+//            }
+//        }
 
-        if (msg instanceof GetGreenPassRequest) {
+        if (msg instanceof AddAppointmentRequest) {
             try {
-                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
+                client.sendToClient(addAppointmentsRequest((AddAppointmentRequest) msg));
             } catch (IOException e) {
-                System.out.println("Error - GetGreenPassRequest");
+                System.out.println("Error - AddAppointmentRequest");
+            }
+        }
+
+        if (msg instanceof DeleteAppointmentRequest) {
+            try {
+                client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - DeleteAppointmentRequest");
             }
         }
     }
@@ -186,17 +201,17 @@ public class SimpleServer extends AbstractServer {
         try {
             if ("CovidVaccine".equals(request.appointmentType)) {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                    appointments.addAll(dataBase.getFreeAppointments(clinic, CovidVaccine.class));
+                    appointments.addAll(dataBase.getFreeAppointments(CovidVaccineAppointment.class, clinic));
                 }
             }
             if ("FluVaccine".equals(request.appointmentType)) {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                    appointments.addAll(dataBase.getFreeAppointments(clinic, FluVaccine.class));
+                    appointments.addAll(dataBase.getFreeAppointments(FluVaccineAppointment.class, clinic));
                 }
             }
             if ("CovidCheck".equals(request.appointmentType)) {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                    appointments.addAll(dataBase.getFreeAppointments(clinic, CovidCheck.class));
+                    appointments.addAll(dataBase.getFreeAppointments(CovidTestAppointment.class, clinic));
                 }
             }
             appointments.sort(appointmentComparator);
@@ -212,24 +227,45 @@ public class SimpleServer extends AbstractServer {
         List<Appointment> appointments = new ArrayList<Appointment>();
         ReservePatientAppointmentResponse allAppointments;
         try {
-            Patiant patiant = dataBase.getPatiant(request.patient).getAppointments;
-            allAppointments = new ReservePatientAppointmentResponse(true);
+            appointments = dataBase.getPatient(request.username).getAppointments();
+            allAppointments = new ReservePatientAppointmentResponse(appointments, true);
         } catch (Exception e) {
-            allAppointments = new ReservePatientAppointmentResponse(true);
+            allAppointments = new ReservePatientAppointmentResponse(appointments, true);
         }
         return allAppointments;
     }
+//
+//    protected Response getGreenPassRequest(GetGreenPassRequest request) {
+//        Patient patient = new Patient();
+//        GetGreenPassResponse response;
+//        try {
+//            patient = dataBase.getPatiant(request.patient);
+//            response = new GetGreenPassResponse(patient.getCovidVaccine, true);
+//        } catch (Exception e) {
+//            response = new GetGreenPassResponse(patient.getCovidVaccine, true);
+//        }
+//        return response;
+//    }
 
-    protected Response getGreenPassRequest(GetGreenPassRequest request) {
-        Patient patient = new Patient();
-        GetGreenPassResponse response;
+    protected Response addAppointmentsRequest(AddAppointmentRequest request) {
+        AddAppointmentResponse response;
         try {
-            patient = dataBase.getPatiant(request.patient);
-            response = new GetGreenPassResponse(true, patient.getCovidVaccine);
+            dataBase.getPatient(request.username).addAppointment(request.appointment);
+            response = new AddAppointmentResponse(true);
         } catch (Exception e) {
-            response = new GetGreenPassResponse(true, patient.getCovidVaccine);
+            response = new AddAppointmentResponse(true);
         }
         return response;
     }
 
+    protected Response deleteAppointmentsRequest(DeleteAppointmentRequest request) {
+        DeleteAppointmentResponse response;
+        try {
+            dataBase.getPatient(request.username).deleteAppointment(request.appointment);
+            response = new DeleteAppointmentResponse(true);
+        } catch (Exception e) {
+            response = new DeleteAppointmentResponse(true);
+        }
+        return response;
+    }
 }

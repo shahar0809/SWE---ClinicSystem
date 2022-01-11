@@ -1,13 +1,19 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
-public class ReservePatientAppointmentResponse extends Response {
+import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
 
-    public ReservePatientAppointmentResponse(boolean succeed) {
-        super(succeed);
+import java.util.List;
+
+public class ReservePatientAppointmentResponse extends Response {
+    public List<Appointment> appointments;
+
+    public ReservePatientAppointmentResponse(List<Appointment> appointments, boolean isSuccessful) {
+        super(isSuccessful);
+        this.appointments = appointments;
     }
 
     @Override
     public String getType() {
-        return "ReservePatientResponse";
+        return "ReservePatientAppointmentResponse";
     }
 }

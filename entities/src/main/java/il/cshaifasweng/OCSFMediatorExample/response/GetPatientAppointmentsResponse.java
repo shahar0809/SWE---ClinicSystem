@@ -1,9 +1,16 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
-public class GetPatientAppointmentsResponse extends Response {
+import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
+import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 
-    public GetPatientAppointmentsResponse(boolean isSuccessful) {
+import java.util.List;
+
+public class GetPatientAppointmentsResponse extends Response {
+    public List<Appointment> appointment;
+
+    public GetPatientAppointmentsResponse(List<Appointment> appointment, boolean isSuccessful) {
         super(isSuccessful);
+        this.appointment = appointment;
     }
 
     @Override

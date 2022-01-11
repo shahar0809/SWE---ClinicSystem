@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Patients")
-@PrimaryKeyJoinColumn(name="id")
+@PrimaryKeyJoinColumn(name = "id")
 public class Patient extends User {
     @Column(name = "patientId")
 
@@ -30,5 +30,14 @@ public class Patient extends User {
 
     public void addAppointment(Appointment appointment) {
         appointments.add(appointment);
+    }
+
+    public void deleteAppointment(Appointment appointment) {
+        for (Appointment oneAppointment : appointments) {
+            if (appointment.getId().equals(oneAppointment.getId())) {
+                appointments.remove(appointment);
+            }
+        }
+
     }
 }
