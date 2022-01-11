@@ -73,5 +73,9 @@ public class ClinicEditorController {
         GetClinicRequest requestClinic = new GetClinicRequest(selectedClinic);
         App.getClient().sendRequest(requestClinic);
     }
+
+    public void stop() throws Exception {
+        EventBus.getDefault().unregister(this);
+    }
 }
 

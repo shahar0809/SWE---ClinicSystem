@@ -98,4 +98,8 @@ public class UpdateHoursController {
 //        GetClinicRequest requestClinic = new GetClinicRequest("clinic1");
         App.getClient().sendRequest(requestClinic);
     }
+
+    public void stop() throws Exception {
+        EventBus.getDefault().unregister(this);
+    }
 }
