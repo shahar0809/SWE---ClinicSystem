@@ -25,7 +25,22 @@ public class Patient extends User {
     }
 
     public List<Appointment> getAppointments() {
-        return appointments;
+        List<Appointment> reserveAppointments = new ArrayList<>();
+        for(Appointment appointment : appointments) {
+            if(!appointment.cameToAppointment()) {
+                reserveAppointments.add(appointment);
+            }
+        }
+        return reserveAppointments;
+    }
+
+    public boolean gotCovidVaccine() {
+        for(Appointment appointment : appointments) {
+            if(appointment.cameToAppointment() && appointment instanceof CovidVaccin) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addAppointment(Appointment appointment) {

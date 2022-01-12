@@ -138,14 +138,6 @@ public final class DatabaseAccess {
         return query.getSingleResult();
     }
 
-    public Patient getPatient(String username) {
-        CriteriaQuery<Patient> criteriaQuery = builder.createQuery(Patient.class);
-        Root<Patient> rootEntry = criteriaQuery.from(Patient.class);
-        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("username"), username));
-        Query<Patient> query = session.createQuery(criteriaQuery);
-        return query.getSingleResult();
-    }
-
     public void setOpeningHours(Clinic clinic, LocalTime openingHours) {
         session.beginTransaction();
         clinic.setOpeningHours(openingHours);

@@ -171,14 +171,13 @@ public class SimpleServer extends AbstractServer {
             return;
         }
 
-        //
-//        if (msg instanceof GetGreenPassRequest) {
-//            try {
-//                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
-//            } catch (IOException e) {
-//                System.out.println("Error - GetGreenPassRequest");
-//            }
-//        }
+        if (msg instanceof GetGreenPassRequest) {
+            try {
+                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetGreenPassRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -278,7 +277,7 @@ public class SimpleServer extends AbstractServer {
         List<Appointment> appointments = new ArrayList<Appointment>();
         ReservePatientAppointmentResponse allAppointments;
         try {
-            appointments = dataBase.getPatient(request.username).getAppointments();
+            appointments = ((Patient) dataBase.getUser(request.username)).getAppointments();
             allAppointments = new ReservePatientAppointmentResponse(appointments, true);
         } catch (Exception e) {
             allAppointments = new ReservePatientAppointmentResponse(appointments, true);
@@ -289,7 +288,7 @@ public class SimpleServer extends AbstractServer {
     protected Response addAppointmentsRequest(AddAppointmentRequest request) {
         AddAppointmentResponse response;
         try {
-            dataBase.getPatient(request.username).addAppointment(request.appointment);
+            ((Patient) dataBase.getUser(request.username)).addAppointment(request.appointment);
             response = new AddAppointmentResponse(true);
         } catch (Exception e) {
             response = new AddAppointmentResponse(true);
@@ -301,7 +300,7 @@ public class SimpleServer extends AbstractServer {
         DeleteAppointmentResponse response;
         try {
             request.appointment.setAvailable(true);
-            dataBase.getPatient(request.username).deleteAppointment(request.appointment);
+            ((Patient) dataBase.getUser(request.username)).deleteAppointment(request.appointment);
             response = new DeleteAppointmentResponse(true);
         } catch (Exception e) {
             response = new DeleteAppointmentResponse(true);
@@ -309,16 +308,16 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
-//    protected Response getGreenPassRequest(GetGreenPassRequest request) {
-//        Patient patient = new Patient();
-//        GetGreenPassResponse response;
-//        try {
-//            patient = dataBase.getPatiant(request.patient);
-//            response = new GetGreenPassResponse(patient.getCovidVaccine, true);
-//        } catch (Exception e) {
-//            response = new GetGreenPassResponse(patient.getCovidVaccine, true);
-//        }
-//        return response;
-//    }
+    protected Response getGreenPassRequest(GetGreenPassRequest request) {
+        Patient patient = new Patient();
+        GetGreenPassResponse response;
+        try {
+            patient = ((Patient) dataBase.getUser(request.username));
+            response = new GetGreenPassResponse(patient.gotCovidVaccine(), true);
+        } catch (Exception e) {
+            response = new GetGreenPassResponse(patient.gotCovidVaccine(), true);
+        }
+        return response;
+    }
 
 }

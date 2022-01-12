@@ -3,10 +3,10 @@ package il.cshaifasweng.OCSFMediatorExample.requests;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
 public class GetGreenPassRequest implements Request {
-    public User user;
+    public String username;
 
-    public GetGreenPassRequest(User user) {
-        this.user = user;
+    public GetGreenPassRequest(String username) {
+        this.username = username;
     }
 
     @Override

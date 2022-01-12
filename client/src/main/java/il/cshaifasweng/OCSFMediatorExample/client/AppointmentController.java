@@ -105,13 +105,13 @@ public class AppointmentController {
         });
     }
 
-//    @FXML
-//    void onGetGreenPass(ActionEvent event) {
-//        changingLabel.setText("Answer The Following Question");
-//        changingButton.setText("Finish");
-//        GetGreenPassRequest requestGreenPass = new GetGreenPassRequest();
-//        App.getClient().sendRequest(requestGreenPass);
-//    }
+    @FXML
+    void onGetGreenPass(ActionEvent event) {
+        changingLabel.setText("Answer The Following Question");
+        changingButton.setText("Finish");
+        GetGreenPassRequest requestGreenPass = new GetGreenPassRequest(App.getActiveUser().getUsername());
+        App.getClient().sendRequest(requestGreenPass);
+    }
 
     @FXML
     void onButton(ActionEvent event) {
