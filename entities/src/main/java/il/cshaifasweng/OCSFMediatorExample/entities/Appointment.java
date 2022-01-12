@@ -47,6 +47,9 @@ public class Appointment implements Serializable {
     @Column(name = "isAvailable")
     protected boolean isAvailable;
 
+    @Column(name = "cameToAppointment")
+    protected boolean cameToAppointment;
+
     public Appointment() {
     }
 
@@ -62,6 +65,7 @@ public class Appointment implements Serializable {
         this.member = member;
         this.clinic = clinic;
         this.isAvailable = true;
+        this.cameToAppointment = false;
     }
 
     public ClinicMember getMember() {
@@ -90,6 +94,14 @@ public class Appointment implements Serializable {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public boolean cameToAppointment() {
+        return cameToAppointment;
+    }
+
+    public void cameToAppointment(boolean isCame) {
+        cameToAppointment = isCame;
     }
 
     public Patient getPatient() {

@@ -38,6 +38,5 @@ public class Patient extends User {
                 appointments.remove(appointment);
             }
         }
-
     }
 }

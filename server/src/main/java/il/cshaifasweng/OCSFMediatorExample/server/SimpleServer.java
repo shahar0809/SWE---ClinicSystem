@@ -300,6 +300,7 @@ public class SimpleServer extends AbstractServer {
     protected Response deleteAppointmentsRequest(DeleteAppointmentRequest request) {
         DeleteAppointmentResponse response;
         try {
+            request.appointment.setAvailable(true);
             dataBase.getPatient(request.username).deleteAppointment(request.appointment);
             response = new DeleteAppointmentResponse(true);
         } catch (Exception e) {
