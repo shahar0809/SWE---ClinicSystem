@@ -103,20 +103,6 @@ public final class DatabaseAccess {
     }
 
     /**
-     * Inserts a user into the database.
-     *
-     * @param username Username
-     * @param password Not encrypted password
-     */
-    // TODO: User is an abstract class, so can't create an instance of it. Create an instance and pass it to insertEntity
-    //    public void createUser(String username, String password) {
-    //        session.beginTransaction();
-    //        User user = new User(username, password);
-    //        session.save(user);
-    //        session.getTransaction().commit();
-    //    }
-
-    /**
      * Fetches a clinic from database.
      *
      * @param clinicName clinic's name
@@ -152,7 +138,7 @@ public final class DatabaseAccess {
      * @param <T> The appointment type
      * @return A list of all available appointments
      */
-    public <T> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
+    public <T extends Appointment> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
         CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
         Root<T> rootEntry = criteriaQuery.from(object);
         criteriaQuery.where(builder.and(

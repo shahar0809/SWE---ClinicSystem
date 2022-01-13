@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @DiscriminatorColumn(name="appointmentType",
         discriminatorType = DiscriminatorType.STRING)
 @Table(name = "Appointments")
-public abstract class Appointment implements Serializable {
+public abstract class Appointment implements Serializable, Comparable<Appointment> {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name = "increment", strategy = "increment")
@@ -41,6 +41,11 @@ public abstract class Appointment implements Serializable {
                 ", member=" + member +
                 ", clinic=" + clinic +
                 '}';
+    }
+
+    @Override
+    public int compareTo(Appointment o) {
+        return this.treatmentDateTime.compareTo(o.treatmentDateTime);
     }
 
     @Column(name = "isAvailable")

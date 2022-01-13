@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.response;
 import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
 import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GetFreeAppointmentsResponse<T> extends Response {
@@ -10,7 +11,7 @@ public class GetFreeAppointmentsResponse<T> extends Response {
 
     public GetFreeAppointmentsResponse(boolean isSuccessful, List<T> appointments) {
         super(isSuccessful);
-        this.appointments = appointments;
+        this.appointments = Collections.sort(appointments);
     }
 
     public List<T> getAppointments() {

@@ -158,7 +158,7 @@ public class SimpleServer extends AbstractServer {
         return allClinics;
     }
 
-    protected <T> Response getFreeAppointmentsRequest(GetFreeAppointmentRequest<T> request) {
+    protected <T extends Appointment> Response getFreeAppointmentsRequest(GetFreeAppointmentRequest<T> request) {
         List<T> appointments = new ArrayList<>();
         GetFreeAppointmentsResponse<T> allAppointments;
 
@@ -171,6 +171,7 @@ public class SimpleServer extends AbstractServer {
         catch (Exception e) {
             allAppointments = new GetFreeAppointmentsResponse<>(false, appointments);
         }
+
         return allAppointments;
 
     }
