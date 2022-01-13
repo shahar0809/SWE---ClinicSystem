@@ -36,7 +36,7 @@ public class Patient extends User {
 
     public boolean gotCovidVaccine() {
         for(Appointment appointment : appointments) {
-            if(appointment.cameToAppointment() && appointment instanceof CovidVaccin) {
+            if(appointment.cameToAppointment() && appointment instanceof CovidVaccineAppointment) {
                 return true;
             }
         }

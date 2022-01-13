@@ -100,7 +100,7 @@ public class Appointment implements Serializable {
         return cameToAppointment;
     }
 
-    public void cameToAppointment(boolean isCame) {
+    public void setCameToAppointment(boolean isCame) {
         cameToAppointment = isCame;
     }
 
