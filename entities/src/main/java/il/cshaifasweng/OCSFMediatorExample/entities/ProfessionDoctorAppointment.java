@@ -14,7 +14,7 @@ public class ProfessionDoctorAppointment extends Appointment {
         super(patient, treatmentDateTime, professionDoctor, clinic);
     }
 
-    public ProfessionDoctorAppointment(LocalDateTime treatmentDateTime, ProfessionDoctor professionDoctor, Clinic clinic) {
+    public ProfessionDoctorAppointment(ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(treatmentDateTime, professionDoctor, clinic);
     }
 }

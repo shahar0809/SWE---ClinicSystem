@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 // TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
 @Entity
@@ -51,6 +52,9 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     @Column(name = "isAvailable")
     protected boolean isAvailable;
 
+    @Column(name = "patientArrived")
+    protected boolean patientArrived;
+
     public Appointment() {
     }
 
@@ -58,6 +62,7 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
         this.treatmentDateTime = treatmentDateTime;
         this.member = member;
         this.clinic = clinic;
+        this.isAvailable = true;
     }
 
     public Appointment(Patient patient, LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
@@ -66,6 +71,7 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
         this.member = member;
         this.clinic = clinic;
         this.isAvailable = true;
+        this.patientArrived = false;
     }
 
     public ClinicMember getMember() {
@@ -96,6 +102,14 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
         isAvailable = available;
     }
 
+    public boolean hasPatientArrived() {
+        return patientArrived;
+    }
+
+    public void setPatientArrived(boolean patientArrived) {
+        this.patientArrived = patientArrived;
+    }
+
     public Patient getPatient() {
         return patient;
     }
@@ -113,25 +127,3 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     }
 }
 
-/**
- * Enum for appointments type to fetch from database.
- */
-enum AppointmentType {
-    CovidTest("CovidTestAppointment"),
-    FamilyDoctor("FamilyDoctorAppointment"),
-    Nurse("NurseAppointmentAppointment"),
-    ProfessionDoctor("ProfessionDoctorAppointment"),
-    FluVaccine("FluVaccineAppointment"),
-    CovidVaccine("CovidVaccineAppointment");
-
-    private final String type;
-
-    AppointmentType(final String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return type;
-    }
-}

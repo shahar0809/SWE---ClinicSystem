@@ -13,4 +13,8 @@ public class NurseAppointment extends Appointment {
     public NurseAppointment(Patient patient, Nurse nurse, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(patient, treatmentDateTime, nurse, clinic);
     }
+
+    public NurseAppointment(Nurse nurse, LocalDateTime treatmentDateTime, Clinic clinic) {
+        super(treatmentDateTime, nurse, clinic);
+    }
 }

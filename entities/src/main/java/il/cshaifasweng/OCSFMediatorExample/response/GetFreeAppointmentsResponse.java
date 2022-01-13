@@ -6,12 +6,18 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 import java.util.Collections;
 import java.util.List;
 
-public class GetFreeAppointmentsResponse<T> extends Response {
+public class GetFreeAppointmentsResponse<T extends Appointment> extends Response {
     private List<T> appointments;
 
-    public GetFreeAppointmentsResponse(boolean isSuccessful, List<T> appointments) {
+    public GetFreeAppointmentsResponse(List<T> appointments, boolean isSuccessful) {
         super(isSuccessful);
-        this.appointments = Collections.sort(appointments);
+        this.appointments = appointments;
+    }
+
+    public GetFreeAppointmentsResponse(List<T> appointments, boolean isSuccessful, String error) {
+        super(isSuccessful, error);
+        Collections.sort(appointments);
+        this.appointments = appointments;
     }
 
     public List<T> getAppointments() {
@@ -20,10 +26,6 @@ public class GetFreeAppointmentsResponse<T> extends Response {
 
     public void setAppointments(List<T> appointments) {
         this.appointments = appointments;
-    }
-
-    public GetFreeAppointmentsResponse(boolean isSuccessful) {
-        super(isSuccessful);
     }
 
     @Override

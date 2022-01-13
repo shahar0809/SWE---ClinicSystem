@@ -1,19 +1,17 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "Users")
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS )
-public abstract class User implements Serializable {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class User implements Serializable {
     @Id
-    @GeneratedValue(generator = "increment")
-    @GenericGenerator(name = "increment", strategy = "increment")
-    @Column(name = "userID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userId", nullable = false)
     protected int id;
 
     @Column(name = "username", nullable = false)

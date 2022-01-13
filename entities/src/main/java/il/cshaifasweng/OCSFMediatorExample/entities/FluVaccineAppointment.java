@@ -11,11 +11,11 @@ public class FluVaccineAppointment extends Appointment {
         super();
     }
 
-    public FluVaccineAppointment(Patient patient, LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
+    public FluVaccineAppointment(Patient patient, ClinicMember member, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(patient, treatmentDateTime, member, clinic);
     }
 
-    public FluVaccineAppointment(LocalDateTime treatmentDateTime, ClinicMember member, Clinic clinic) {
+    public FluVaccineAppointment(ClinicMember member, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(treatmentDateTime, member, clinic);
     }
 }

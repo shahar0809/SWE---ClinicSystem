@@ -50,14 +50,15 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(HospitalManager.class);
         configuration.addAnnotatedClass(Appointment.class);
         configuration.addAnnotatedClass(ClinicMember.class);
-        configuration.addAnnotatedClass(CovidTestAppointment.class);
         configuration.addAnnotatedClass(FamilyDoctor.class);
-        configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
         configuration.addAnnotatedClass(ProfessionDoctor.class);
         configuration.addAnnotatedClass(ProfessionDoctorAppointment.class);
+        configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
         configuration.addAnnotatedClass(NurseAppointment.class);
-        configuration.addAnnotatedClass(CovidVaccineAppointment.class);
+        configuration.addAnnotatedClass(CovidTestAppointment.class);
+        configuration.addAnnotatedClass(CovidTestAppointment.class);
         configuration.addAnnotatedClass(FluVaccineAppointment.class);
+        configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -78,14 +79,14 @@ public final class DatabaseAccess {
     /**
      * Fetches user from the database.
      *
-     * @param username     The username of the user
-     * @param hashPassword The hashed password of the user
+     * @param username The username of the user
      * @return User
      */
-    public User getUser(String username, String hashPassword) {
+    public User getUser(String username) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
-        criteriaQuery.select(rootEntry).where(builder.and(builder.equal(rootEntry.get("username"), username), builder.equal(rootEntry.get(","), hashPassword)));
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("username"), username));
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
@@ -100,6 +101,20 @@ public final class DatabaseAccess {
         session.beginTransaction();
         session.save(entity);
         session.getTransaction().commit();
+    }
+
+    /**
+     * Inserts a Patient into the database.
+     *
+     * @param username Username
+     * @param password Not encrypted password
+     */
+    public Patient createPatient(String username, String password) {
+        session.beginTransaction();
+        Patient patient = new Patient(username, password);
+        session.save(patient);
+        session.getTransaction().commit();
+        return patient;
     }
 
     /**
@@ -134,17 +149,16 @@ public final class DatabaseAccess {
 
     /**
      * Gets free appointments of a certain type.
-     * @param object The class of the appointment type (.class)
-     * @param <T> The appointment type
+     * @param clinic The clinic to search within
      * @return A list of all available appointments
      */
     public <T extends Appointment> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
         CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
         Root<T> rootEntry = criteriaQuery.from(object);
+
         criteriaQuery.where(builder.and(
-                builder.equal(rootEntry.type(), object),
-                builder.equal(rootEntry.get("isAvailable"), true)),
-                builder.equal(rootEntry.get("clinic"), clinic));
+                builder.equal(rootEntry.get("isAvailable"), true),
+                builder.equal(rootEntry.get("clinic"), clinic)));
 
         Query<T> query = session.createQuery(criteriaQuery);
         return query.getResultList();

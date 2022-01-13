@@ -7,6 +7,11 @@ import java.util.List;
 public class GetAllClinicsResponse extends Response {
     public List<Clinic> clinics;
 
+    public GetAllClinicsResponse(List<Clinic> clinics, boolean isSuccessful, String error) {
+        super(isSuccessful, error);
+        this.clinics = clinics;
+    }
+
     public GetAllClinicsResponse(List<Clinic> clinics, boolean isSuccessful) {
         super(isSuccessful);
         this.clinics = clinics;

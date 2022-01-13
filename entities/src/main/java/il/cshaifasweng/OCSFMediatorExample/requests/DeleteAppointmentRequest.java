@@ -3,12 +3,11 @@ package il.cshaifasweng.OCSFMediatorExample.requests;
 import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
-public class ReserveAppointmentRequest implements Request {
+public class DeleteAppointmentRequest implements Request {
     Appointment appointment;
     User user;
 
-
-    public ReserveAppointmentRequest(Appointment appointment, User user) {
+    public DeleteAppointmentRequest(Appointment appointment, User user) {
         this.appointment = appointment;
         this.user = user;
     }
@@ -23,6 +22,6 @@ public class ReserveAppointmentRequest implements Request {
 
     @Override
     public String getType() {
-        return "ReserveFreeAppointmentRequest";
+        return "DeleteAppointmentRequest";
     }
 }

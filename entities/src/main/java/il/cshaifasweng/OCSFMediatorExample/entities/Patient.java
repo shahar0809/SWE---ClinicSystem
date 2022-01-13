@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Patients")
-@PrimaryKeyJoinColumn(name="id")
+@PrimaryKeyJoinColumn(name = "id")
 public class Patient extends User {
     @Column(name = "patientId")
 
@@ -25,10 +25,33 @@ public class Patient extends User {
     }
 
     public List<Appointment> getAppointments() {
-        return appointments;
+        List<Appointment> reserveAppointments = new ArrayList<>();
+        for(Appointment appointment : appointments) {
+            if(!appointment.hasPatientArrived()) {
+                reserveAppointments.add(appointment);
+            }
+        }
+        return reserveAppointments;
+    }
+
+    public boolean gotCovidVaccine() {
+        for(Appointment appointment : appointments) {
+            if(appointment.hasPatientArrived() && appointment instanceof CovidVaccineAppointment) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addAppointment(Appointment appointment) {
         appointments.add(appointment);
+    }
+
+    public void deleteAppointment(Appointment appointment) {
+        for (Appointment oneAppointment : appointments) {
+            if (appointment.getId().equals(oneAppointment.getId())) {
+                appointments.remove(appointment);
+            }
+        }
     }
 }
