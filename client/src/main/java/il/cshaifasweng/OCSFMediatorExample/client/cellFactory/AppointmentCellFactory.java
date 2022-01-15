@@ -8,14 +8,16 @@ import javafx.util.Callback;
 public class AppointmentCellFactory implements Callback<ListView<Appointment>, ListCell<Appointment>> {
     @Override
     public ListCell<Appointment> call(ListView<Appointment> param) {
-        return new ListCell<>(){
+        return new ListCell<>() {
             @Override
-            public void updateItem(Appointment appointment, boolean empty) {
-                super.updateItem(appointment, empty);
-                if (empty || appointment == null) {
+            protected void updateItem(Appointment item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (item == null || empty) {
                     setText(null);
+                    setGraphic(null);
                 } else {
-                    setText(appointment.toString());
+                    setText(item.toString());
                 }
             }
         };

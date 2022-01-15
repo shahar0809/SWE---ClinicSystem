@@ -1,23 +1,25 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.client.cellFactory.AppointmentCellFactory;
-import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.CovidTestAppointment;
-import il.cshaifasweng.OCSFMediatorExample.entities.CovidVaccineAppointment;
-import il.cshaifasweng.OCSFMediatorExample.entities.FluVaccineAppointment;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
 import javafx.scene.control.Button;
@@ -26,7 +28,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class AppointmentController {
+public class AppointmentController extends Application {
 
     @FXML
     private ResourceBundle resources;
@@ -50,13 +52,51 @@ public class AppointmentController {
     private ListView<Appointment> listView;
     private ObservableList<Appointment> appointmentsList;
 
-    @FXML
-    public void initialize() {
+    @Override
+    public void start(Stage stage) {
         EventBus.getDefault().register(this);
         appointmentsList = FXCollections.observableArrayList();
+
+        appointmentsList.add(new CovidTestAppointment(new Nurse(), LocalDateTime.now(), new Clinic("c1")));
+        appointmentsList.add(new CovidTestAppointment(new Nurse(), LocalDateTime.now(), new Clinic("c2")));
+
         listView = new ListView<>(appointmentsList);
         listView.setCellFactory(new AppointmentCellFactory());
 
+        listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        stage.setScene(new Scene(listView));
+        stage.show();
+    }
+
+    @FXML
+    public void initialize() {
+        EventBus.getDefault().register(this);
+
+        listView = new ListView<>();
+        listView.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Appointment> call(ListView<Appointment> param) {
+                ListCell<Appointment> cell = new ListCell<>() {
+                    @Override
+                    protected void updateItem(Appointment item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(item.toString());
+                        } else {
+                            setText("");
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
+
+        appointmentsList = FXCollections.observableArrayList();
+        appointmentsList.add(new CovidTestAppointment(new Nurse(), LocalDateTime.now(), new Clinic("c1")));
+        appointmentsList.add(new CovidTestAppointment(new Nurse(), LocalDateTime.now(), new Clinic("c2")));
+
+        listView.setItems(appointmentsList);
         listView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
@@ -144,11 +184,6 @@ public class AppointmentController {
 //        }
 //    }
 
-    @Subscribe
-    public <T extends Appointment> void updateAppointmentsList(GetFreeAppointmentsResponse<T> response) {
-        appointmentsList.addAll(response.getAppointments());
-    }
-
     @FXML
     public void onReserve(ActionEvent actionEvent) {
         Appointment selectedAppointment = listView.getSelectionModel().getSelectedItem();
@@ -170,8 +205,9 @@ public class AppointmentController {
     @Subscribe
     public <T extends Appointment> void freeAppointmentsResponse(GetFreeAppointmentsResponse<T> response) {
         if (response.isSuccessful()) {
-            alertUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
-            this.appointmentsList.addAll(response.getAppointments());
+            appointmentsList.clear();
+            appointmentsList.addAll(response.getAppointments());
+            listView.setItems(appointmentsList);
         } else {
             alertUser(response.getError());
         }

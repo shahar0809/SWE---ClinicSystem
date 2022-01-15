@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 
 // TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
@@ -36,15 +37,6 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     protected Clinic clinic;
 
     @Override
-    public String toString() {
-        return "Appointment{" +
-                "treatmentDateTime=" + treatmentDateTime +
-                ", member=" + member +
-                ", clinic=" + clinic +
-                '}';
-    }
-
-    @Override
     public int compareTo(Appointment o) {
         return this.treatmentDateTime.compareTo(o.treatmentDateTime);
     }
@@ -70,7 +62,7 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
         this.treatmentDateTime = treatmentDateTime;
         this.member = member;
         this.clinic = clinic;
-        this.isAvailable = true;
+        this.isAvailable = false;
         this.patientArrived = false;
     }
 
@@ -116,6 +108,17 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
 
     public void setPatient(Patient patient) {
         this.patient = patient;
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM hh:mm");
+        return "Appointment{" +
+                "patient=" + patient +
+                ", treatmentDateTime=" + treatmentDateTime.format(format) +
+                ", member=" + member +
+                ", clinic=" + clinic +
+                '}';
     }
 
     public LocalDateTime getTreatmentDateTime() {
