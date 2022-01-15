@@ -6,13 +6,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 
-// TODO: Decide if we need base class for doctor and nurse [instead of doctor in here]
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="appointmentType",
-        discriminatorType = DiscriminatorType.STRING)
 @Table(name = "Appointments")
 public abstract class Appointment implements Serializable, Comparable<Appointment> {
     @Id
@@ -36,6 +31,9 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     @JoinColumn(name = "clinic", nullable = false)
     protected Clinic clinic;
 
+    @Column(name = "appointmentType")
+    protected AppointmentType type;
+
     @Override
     public int compareTo(Appointment o) {
         return this.treatmentDateTime.compareTo(o.treatmentDateTime);
@@ -46,6 +44,7 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
 
     @Column(name = "patientArrived")
     protected boolean patientArrived;
+
 
     public Appointment() {
     }
@@ -65,6 +64,8 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
         this.isAvailable = false;
         this.patientArrived = false;
     }
+
+    public abstract String getType();
 
     public ClinicMember getMember() {
         return member;
@@ -119,6 +120,11 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
                 ", member=" + member +
                 ", clinic=" + clinic +
                 '}';
+    }
+
+    public String getTreatmentDateTimeString() {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM hh:mm");
+        return treatmentDateTime.format(format);
     }
 
     public LocalDateTime getTreatmentDateTime() {

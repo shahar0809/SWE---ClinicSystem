@@ -33,16 +33,10 @@
 -->
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-
 <VBox prefHeight="600.0" prefWidth="583.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.AppointmentController">
     <children>
         <SplitPane dividerPositions="0.5" focusTraversable="true" VBox.vgrow="ALWAYS">
@@ -64,16 +58,15 @@
                         <Button layoutX="14.0" layoutY="247.0" mnemonicParsing="false" onAction="#onGetGreenPass" prefHeight="36.0" prefWidth="187.0" text="Green Pass" />
                     </children>
                 </AnchorPane>
-                <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0" prefHeight="535.0" prefWidth="281.0">
+                <AnchorPane id="Content" prefHeight="535.0" prefWidth="281.0">
                     <children>
                         <VBox alignment="CENTER" prefHeight="598.0" prefWidth="338.0" spacing="10.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
                             <children>
                                 <Label fx:id="changingLabel" alignment="CENTER" text="Your Appointment" />
-                                <ListView fx:id="appointments" />
+                                <TableView fx:id="table" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"/>
                                 <HBox alignment="CENTER" spacing="5.0">
                                     <children>
-                                        <Button fx:id="reserveButton" onAction="#onReserve" text="Reserve 1"/>
-                                        <Button fx:id="cancelButton" onAction="#onCancel" text="Cancel 1"/>
+                                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#onRefresh" prefHeight="26.0" prefWidth="163.0" text="Refresh" />
                                         <Button fx:id="changingButton" mnemonicParsing="false" onAction="#onButton" prefHeight="26.0" prefWidth="163.0" text="Cancel" />
                                     </children>
                                 </HBox>

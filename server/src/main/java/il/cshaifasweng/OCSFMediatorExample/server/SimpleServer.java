@@ -71,9 +71,9 @@ public class SimpleServer extends AbstractServer {
             dataBase.insertEntity(new NurseAppointment(nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new NurseAppointment(patientList.get(3), nursesList.get(2), LocalDateTime.now(), clinics.get(0)));
 
-            dataBase.insertEntity(new ProfessionDoctorAppointment(professionDoctorList.get(1), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new ProfessionDoctorAppointment(professionDoctorList.get(3), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new ProfessionDoctorAppointment(patientList.get(1), professionDoctorList.get(2), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctorAppointment(AppointmentType.GYNECOLOGY, professionDoctorList.get(1), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctorAppointment(AppointmentType.CARDIO, professionDoctorList.get(3), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctorAppointment(AppointmentType.GASTROLOGY, patientList.get(1), professionDoctorList.get(2), LocalDateTime.now(), clinics.get(0)));
 
             dataBase.insertEntity(new FamilyDoctorAppointment(familyDoctorsList.get(1), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new FamilyDoctorAppointment(familyDoctorsList.get(3), LocalDateTime.now(), clinics.get(0)));
@@ -82,7 +82,13 @@ public class SimpleServer extends AbstractServer {
             dataBase.insertEntity(new CovidTestAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new CovidTestAppointment(patientList.get(0), nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
 
+            dataBase.insertEntity(new CovidVaccineAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new CovidVaccineAppointment(nursesList.get(2), LocalDateTime.now(), clinics.get(1)));
+
+            dataBase.insertEntity(new FluVaccineAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new FluVaccineAppointment(nursesList.get(2), LocalDateTime.now(), clinics.get(1)));
             dataBase.insertEntity(new FluVaccineAppointment(patientList.get(3), nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
+
             dataBase.insertEntity(new NurseAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
         }
     }

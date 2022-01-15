@@ -46,9 +46,7 @@ public class Clinic implements Serializable {
 
     @Override
     public String toString() {
-        return "Clinic{" +
-                "name='" + name + '\'' +
-                '}';
+        return name;
     }
 
     public int getId() {

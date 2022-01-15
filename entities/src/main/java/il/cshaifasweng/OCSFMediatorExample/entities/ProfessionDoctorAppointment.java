@@ -10,11 +10,28 @@ public class ProfessionDoctorAppointment extends Appointment {
         super();
     }
 
-    public ProfessionDoctorAppointment(Patient patient, ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime, Clinic clinic) {
-        super(patient, treatmentDateTime, professionDoctor, clinic);
+    @Override
+    public String getType() {
+        return type.toString();
     }
 
-    public ProfessionDoctorAppointment(ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime, Clinic clinic) {
+    private AppointmentType type;
+
+    public AppointmentType getAppointmentType() {
+        return type;
+    }
+
+    public void setType(AppointmentType type) {
+        this.type = type;
+    }
+
+    public ProfessionDoctorAppointment(AppointmentType type, Patient patient, ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime, Clinic clinic) {
+        super(patient, treatmentDateTime, professionDoctor, clinic);
+        this.type = type;
+    }
+
+    public ProfessionDoctorAppointment(AppointmentType type, ProfessionDoctor professionDoctor, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(treatmentDateTime, professionDoctor, clinic);
+        this.type = type;
     }
 }
