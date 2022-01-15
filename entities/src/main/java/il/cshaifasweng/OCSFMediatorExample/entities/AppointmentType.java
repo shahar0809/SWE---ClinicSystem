@@ -4,12 +4,17 @@ package il.cshaifasweng.OCSFMediatorExample.entities;
  * Enum for appointments type to fetch from database.
  */
 public enum AppointmentType {
-    CovidTest("CovidTestAppointment"),
-    FamilyDoctor("FamilyDoctorAppointment"),
-    Nurse("NurseAppointmentAppointment"),
-    ProfessionDoctor("ProfessionDoctorAppointment"),
-    FluVaccine("FluVaccineAppointment"),
-    CovidVaccine("CovidVaccineAppointment");
+    NURSE("Nurse"),
+    COVID_TEST("Covid Test"),
+    COVID_VACCINE("Covid Vaccine"),
+    FLU_VACCINE("Flu Vaccine"),
+    FAMILY("Family"),
+    CHILDREN("Children"),
+    CARDIO("Cardiology"),
+    ORTHOPEDICS("Orthopedics"),
+    GYNECOLOGY("Gynecology"),
+    OTOLARYNGOLOGY("Otolaryngology"),
+    GASTROLOGY("Gastrology");
 
     private final String type;
 

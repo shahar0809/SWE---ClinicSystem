@@ -15,6 +15,8 @@ public abstract class ClinicEmployee extends User {
     @Column(name = "firstName", nullable = false)
     protected String firstName;
 
+
+
     @Column(name = "lastName", nullable = false)
     protected String lastName;
 
@@ -23,6 +25,14 @@ public abstract class ClinicEmployee extends User {
 
     @Column(name = "role", nullable = false)
     protected String role;
+
+    @Override
+    public String toString() {
+        return "ClinicEmployee{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
 
     public ClinicEmployee() {
     }

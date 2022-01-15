@@ -17,6 +17,11 @@ public abstract class ClinicMember extends ClinicEmployee {
         super();
     }
 
+    @Override
+    public String toString() {
+        return firstName + " " + lastName;
+    }
+
     public void addAppointment(Appointment appointment) {
         appointments.add(appointment);
     }

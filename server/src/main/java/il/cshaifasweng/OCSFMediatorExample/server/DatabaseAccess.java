@@ -56,7 +56,7 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
         configuration.addAnnotatedClass(NurseAppointment.class);
         configuration.addAnnotatedClass(CovidTestAppointment.class);
-        configuration.addAnnotatedClass(CovidTestAppointment.class);
+        configuration.addAnnotatedClass(CovidVaccineAppointment.class);
         configuration.addAnnotatedClass(FluVaccineAppointment.class);
         configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
 

@@ -40,6 +40,15 @@ public class Clinic implements Serializable {
         this.closingHours = closingHours;
     }
 
+    public Clinic(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
     public int getId() {
         return id;
     }
