@@ -5,6 +5,7 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
 import javax.persistence.NoResultException;
@@ -101,82 +102,64 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - getALLClinicRequest");
             }
-            return;
         }
-
-        if (msg instanceof GetClinicRequest) {
+        else if (msg instanceof GetClinicRequest) {
             try {
                 client.sendToClient(getClinicRequest((GetClinicRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - getClinicRequest");
             }
-            return;
         }
-
-        if (msg instanceof UpdateActiveHoursRequest) {
+        else if (msg instanceof UpdateActiveHoursRequest) {
             try {
                 client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - updateActiveHoursRequest");
             }
-            return;
         }
-
-        if (msg instanceof LoginRequest) {
+        else if (msg instanceof LoginRequest) {
             try {
                 client.sendToClient(handleLoginRequest((LoginRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - LoginRequest");
             }
-            return;
         }
-
-        if (msg instanceof RegisterRequest) {
+        else if (msg instanceof RegisterRequest) {
             try {
                 client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - RegisterRequest");
             }
-            return;
         }
-
-        if (msg instanceof GetFreeAppointmentRequest) {
+        else if (msg instanceof GetFreeAppointmentRequest) {
             try {
                 client.sendToClient(getFreeAppointmentsRequest((GetFreeAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - getALLCovidVaccineRequest");
             }
-            return;
         }
-
-        if (msg instanceof GetPatientAppointmentRequest) {
+        else if (msg instanceof GetPatientAppointmentRequest) {
             try {
                 client.sendToClient(getPatientAppointmentsRequest((GetPatientAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetPatientAppointmentRequest");
             }
-            return;
         }
-
-        if (msg instanceof ReserveAppointmentRequest) {
+        else if (msg instanceof ReserveAppointmentRequest) {
             try {
                 client.sendToClient(addAppointmentsRequest((ReserveAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - AddAppointmentRequest");
             }
-            return;
         }
-
-        if (msg instanceof DeleteAppointmentRequest) {
+        else if (msg instanceof DeleteAppointmentRequest) {
             try {
                 client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - DeleteAppointmentRequest");
             }
-            return;
         }
-
-        if (msg instanceof GetGreenPassRequest) {
+        else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
@@ -188,8 +171,8 @@ public class SimpleServer extends AbstractServer {
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
         UpdateActiveHoursResponse response;
         try {
-            dataBase.setOpeningHours(dataBase.getClinic(request.clinicName), request.activeHours.openingHours);
-            dataBase.setClosingHours(dataBase.getClinic(request.clinicName), request.activeHours.closingHours);
+            dataBase.setOpeningHours(dataBase.getClinic(request.clinicName), request.activeHours.getOpeningHours());
+            dataBase.setClosingHours(dataBase.getClinic(request.clinicName), request.activeHours.getClosingHours());
             response = new UpdateActiveHoursResponse(true);
         }
         catch (Exception e) {
@@ -225,7 +208,7 @@ public class SimpleServer extends AbstractServer {
     protected Response handleRegisterRequest(RegisterRequest request) {
         try {
             dataBase.getUser(request.username);
-            return new RegisterResponse("Username is already taken!", true);
+            return new RegisterResponse(Messages.REGISTER_USERNAME_TAKEN, true);
         } catch (NoResultException ignored) {
         }
         return new RegisterResponse(dataBase.createPatient(request.username, request.password), true);
@@ -236,11 +219,11 @@ public class SimpleServer extends AbstractServer {
         try {
             user = dataBase.getUser(request.username);
         } catch (NoResultException e) {
-            return new LoginResponse("User not found!", true);
+            return new LoginResponse(Messages.LOGIN_USER_NOT_FOUND, true);
         }
         String securePassword = SecureUtils.getSecurePassword(request.password, user.getSALT());
         if (!Objects.equals(user.getHashPassword(), securePassword))
-            return new LoginResponse("Incorrect password!", true);
+            return new LoginResponse(Messages.LOGIN_WRONG_AUTH, true);
         return new LoginResponse(user, true);
     }
 
@@ -261,47 +244,12 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
-
-//    protected Response getFreeAppointmentsRequest(ReserveAppointmentRequest request) {
-//        Comparator<Appointment> appointmentComparator = new Comparator<Appointment>() {
-//            @Override
-//            public int compare(Appointment appointment1, Appointment appointment2) {
-//                return appointment1.getTreatmentDateTime().compareTo(appointment2.getTreatmentDateTime());
-//            }
-//        };
-//        List<Appointment> appointments = new ArrayList<Appointment>();
-//        ReserveAppointmentResponse response;
-//        try {
-//            if ("CovidVaccine".equals(request.appointmentType)) {
-//                for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-//                    appointments.addAll(dataBase.getFreeAppointments(clinic, AppointmentType.CovidVaccine));
-//                }
-//            }
-//            if ("FluVaccine".equals(request.appointmentType)) {
-//                for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-//                    appointments.addAll(dataBase.getFreeAppointments(clinic, AppointmentType.FluVaccine));
-//                }
-//            }
-//            if ("CovidCheck".equals(request.appointmentType)) {
-//                for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-//                    appointments.addAll(dataBase.getFreeAppointments(clinic, AppointmentType.CovidTest));
-//                }
-//            }
-//            appointments.sort(appointmentComparator);
-//            response = new ReserveAppointmentResponse(appointments, true);
-//        } catch (Exception e) {
-//            appointments.sort(appointmentComparator);
-//            response = new ReserveAppointmentResponse(appointments,false);
-//        }
-//        return response;
-//    }
-
     protected Response getPatientAppointmentsRequest(GetPatientAppointmentRequest request) {
         List<Appointment> appointments = new ArrayList<>();
         GetPatientAppointmentResponse allAppointments;
         try {
             appointments = ((Patient) request.getUser()).getAppointments();
-            allAppointments = new GetPatientAppointmentResponse(appointments, true, null);
+            allAppointments = new GetPatientAppointmentResponse(appointments, true);
         } catch (Exception e) {
             allAppointments = new GetPatientAppointmentResponse(appointments, false, e.getMessage());
         }
@@ -313,7 +261,12 @@ public class SimpleServer extends AbstractServer {
         ReserveAppointmentResponse response;
         try {
             ((Patient)request.getUser()).addAppointment(request.getAppointment());
-            response = new ReserveAppointmentResponse(true, null);
+
+            // Update availability
+            request.getAppointment().setAvailable(false);
+            dataBase.updateAppointment(request.getAppointment());
+
+            response = new ReserveAppointmentResponse(true);
         } catch (Exception e) {
             response = new ReserveAppointmentResponse(false, e.getMessage());
         }
@@ -324,8 +277,11 @@ public class SimpleServer extends AbstractServer {
         DeleteAppointmentResponse response;
         try {
             request.getAppointment().setAvailable(true);
+            request.getAppointment().setPatient(null);
             ((Patient)request.getUser()).deleteAppointment(request.getAppointment());
-            response = new DeleteAppointmentResponse(true, null);
+            dataBase.updateAppointment(request.getAppointment());
+
+            response = new DeleteAppointmentResponse(true);
         } catch (Exception e) {
             response = new DeleteAppointmentResponse(false, e.getMessage());
         }
@@ -337,12 +293,11 @@ public class SimpleServer extends AbstractServer {
         GetGreenPassResponse response;
         try {
             patient = ((Patient)request.getUser());
-            response = new GetGreenPassResponse(patient.gotCovidVaccine(), true, null);
+            response = new GetGreenPassResponse(patient.gotCovidVaccine(), true);
         } catch (Exception e) {
             assert patient != null;
             response = new GetGreenPassResponse(patient.gotCovidVaccine(), false, e.getMessage());
         }
         return response;
     }
-
 }

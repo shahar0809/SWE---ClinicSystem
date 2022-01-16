@@ -17,6 +17,10 @@ public class ReserveAppointmentRequest implements Request {
         return appointment;
     }
 
+    public void setAppointment(Appointment appointment) {
+        this.appointment = appointment;
+    }
+
     public User getUser() {
         return user;
     }

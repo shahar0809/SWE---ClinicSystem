@@ -9,4 +9,8 @@ public class DeleteAppointmentResponse extends Response {
     public String getType() {
         return "DeleteAppointmentResponse";
     }
+
+    public DeleteAppointmentResponse(boolean isSuccessful) {
+        super(isSuccessful);
+    }
 }

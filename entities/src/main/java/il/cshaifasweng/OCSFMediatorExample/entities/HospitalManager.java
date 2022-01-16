@@ -10,11 +10,10 @@ import java.util.List;
 @DiscriminatorValue("hospitalManager")
 public class HospitalManager extends ClinicManager {
     @OneToMany(mappedBy = "hospitalManager")
-    List<Clinic> clinics;
+    List<Clinic> clinics = new ArrayList<>();
 
     public HospitalManager() {
         super();
-        clinics = new ArrayList<>();
     }
 
     public List<Clinic> getClinics() {

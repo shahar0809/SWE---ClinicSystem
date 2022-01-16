@@ -13,7 +13,7 @@ public class Patient extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int patientId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "patient")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "patient")
     private List<Appointment> appointments;
 
     public Patient() {
@@ -22,6 +22,7 @@ public class Patient extends User {
 
     public Patient(String username, String password) {
         super(username, password);
+        appointments = new ArrayList<>();
     }
 
     public List<Appointment> getAppointments() {
@@ -44,6 +45,7 @@ public class Patient extends User {
     }
 
     public void addAppointment(Appointment appointment) {
+        appointment.setPatient(this);
         appointments.add(appointment);
     }
 

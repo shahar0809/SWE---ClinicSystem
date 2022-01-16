@@ -33,6 +33,10 @@ public final class DatabaseAccess {
         return instance;
     }
 
+    public <T> void flushSession(T obj) {
+        session.merge(obj);
+    }
+
     /**
      * Define entities in database
      *
@@ -143,6 +147,17 @@ public final class DatabaseAccess {
         session.beginTransaction();
         clinic.setClosingHours(closingHours);
         session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    /**
+     * Updates existing appointment in DB
+     * @param appointment Updated appointment
+     */
+    public void updateAppointment(Appointment appointment) {
+        session.beginTransaction();
+        session.merge(appointment);
         session.flush();
         session.getTransaction().commit();
     }

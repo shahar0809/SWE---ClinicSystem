@@ -54,9 +54,9 @@ public class AppointmentController {
     private Color x2;
 
     private AppointmentType selectedType;
+    private TableMode tableMode;
 
     @FXML
-    private ListView<Appointment> listView;
     private ObservableList<Appointment> appointments;
 
     @FXML
@@ -82,6 +82,7 @@ public class AppointmentController {
         changingLabel.setText("Your Appointment");
         changingButton.setText("Cancel");
 
+        tableMode = TableMode.MY_APPOINTMENTS;
         GetPatientAppointmentRequest requestFreeAppointment = new GetPatientAppointmentRequest(App.getActiveUser());
         App.getClient().sendRequest(requestFreeAppointment);
 
@@ -92,7 +93,7 @@ public class AppointmentController {
     void onCovidVaccine(ActionEvent event) {
         changingLabel.setText("Covid Vaccine Available Appointment");
         changingButton.setText("Reserve");
-
+        tableMode = TableMode.RESERVE_APPOINTMENTS;
         selectedType = AppointmentType.COVID_VACCINE;
 
         GetFreeAppointmentRequest<CovidVaccineAppointment> requestFreeAppointment = new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class);
@@ -104,7 +105,7 @@ public class AppointmentController {
         changingLabel.setText("Flu Vaccine Available Appointment");
         changingButton.setText("Reserve");
         selectedType = AppointmentType.FLU_VACCINE;
-
+        tableMode = TableMode.RESERVE_APPOINTMENTS;
         GetFreeAppointmentRequest<FluVaccineAppointment> requestFreeAppointment = new GetFreeAppointmentRequest<>(FluVaccineAppointment.class);
         App.getClient().sendRequest(requestFreeAppointment);
     }
@@ -114,7 +115,7 @@ public class AppointmentController {
         changingLabel.setText("Covid Test Available Appointment");
         changingButton.setText("Reserve");
         selectedType = AppointmentType.COVID_TEST;
-
+        tableMode = TableMode.RESERVE_APPOINTMENTS;
         GetFreeAppointmentRequest<CovidTestAppointment> requestFreeAppointment = new GetFreeAppointmentRequest<>(CovidTestAppointment.class);
         App.getClient().sendRequest(requestFreeAppointment);
     }
@@ -125,20 +126,20 @@ public class AppointmentController {
         changingLabel.setText("Answer The Following Question");
         changingButton.setText("Finish");
         selectedType =  null;
-
+        tableMode = TableMode.GREEN_PASS;
         GetGreenPassRequest requestGreenPass = new GetGreenPassRequest(App.getActiveUser());
         App.getClient().sendRequest(requestGreenPass);
     }
 
     @FXML
     void onButton(ActionEvent event) {
-        Appointment selectedAppointment = listView.getSelectionModel().getSelectedItem();
+        Appointment selectedAppointment = table.getSelectionModel().getSelectedItem();
         if (selectedAppointment == null)
             return;
-        if (changingButton.getText().equals("Cancel")) {
+        if (tableMode == TableMode.MY_APPOINTMENTS) {
             onCancel(event);
         }
-        if (changingButton.getText().equals("Reserve")) {
+        if (tableMode == TableMode.RESERVE_APPOINTMENTS) {
             onReserve(event);
         }
     }
@@ -169,7 +170,7 @@ public class AppointmentController {
 
     @FXML
     public void onReserve(ActionEvent actionEvent) {
-        Appointment selectedAppointment = listView.getSelectionModel().getSelectedItem();
+        Appointment selectedAppointment = table.getSelectionModel().getSelectedItem();
         if (selectedAppointment == null)
             return;
         ReserveAppointmentRequest request = new ReserveAppointmentRequest(selectedAppointment, App.getActiveUser());
@@ -178,7 +179,7 @@ public class AppointmentController {
 
     @FXML
     public void onCancel(ActionEvent actionEvent) {
-        Appointment selectedAppointment = listView.getSelectionModel().getSelectedItem();
+        Appointment selectedAppointment = table.getSelectionModel().getSelectedItem();
         if (selectedAppointment == null)
             return;
         DeleteAppointmentRequest request = new DeleteAppointmentRequest(selectedAppointment, App.getActiveUser());
@@ -203,6 +204,7 @@ public class AppointmentController {
         } else {
             alertUser(response.getError());
         }
+        onRefresh(null);
     }
 
     @Subscribe
@@ -212,6 +214,7 @@ public class AppointmentController {
         } else {
             alertUser(response.getError());
         }
+        onRefresh(null);
     }
 
     @Subscribe
@@ -229,32 +232,36 @@ public class AppointmentController {
     }
 
     public void onRefresh(ActionEvent actionEvent) {
-        switch (selectedType) {
-            case COVID_TEST:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class));
-                break;
-            case COVID_VACCINE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class));
-                break;
-            case NURSE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class));
-                break;
-            case FLU_VACCINE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class));
-                break;
-            case FAMILY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class));
-                break;
-            case CHILDREN:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class));
-                break;
-            case CARDIO:
-            case ORTHOPEDICS:
-            case GYNECOLOGY:
-            case OTOLARYNGOLOGY:
-            case GASTROLOGY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class));
-                break;
+        if (tableMode == TableMode.RESERVE_APPOINTMENTS) {
+            switch (selectedType) {
+                case COVID_TEST:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class));
+                    break;
+                case COVID_VACCINE:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class));
+                    break;
+                case NURSE:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class));
+                    break;
+                case FLU_VACCINE:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class));
+                    break;
+                case FAMILY:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class));
+                    break;
+                case CHILDREN:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class));
+                    break;
+                case CARDIO:
+                case ORTHOPEDICS:
+                case GYNECOLOGY:
+                case OTOLARYNGOLOGY:
+                case GASTROLOGY:
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class));
+                    break;
+            }
+        } else if (tableMode == TableMode.MY_APPOINTMENTS) {
+            App.getClient().sendRequest(new GetPatientAppointmentRequest(App.getActiveUser()));
         }
     }
 
