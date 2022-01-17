@@ -30,34 +30,13 @@ public class SimpleServer extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        if (msg instanceof GetAllClinicsRequest) {
-            try {
-                client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getALLClinicRequest");
-            }
+        if (!(msg instanceof Request)) {
+            System.out.println("Error - Received invalid request");
             return;
         }
+        Request request = (Request) msg;
 
-        if (msg instanceof GetClinicRequest) {
-            try {
-                client.sendToClient(getClinicRequest((GetClinicRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getClinicRequest");
-            }
-            return;
-        }
-
-        if (msg instanceof UpdateActiveHoursRequest) {
-            try {
-                client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - updateActiveHoursRequest");
-            }
-            return;
-        }
-
-        if (msg instanceof LoginRequest) {
+        if (request instanceof LoginRequest) {
             try {
                 client.sendToClient(handleLoginRequest((LoginRequest) msg));
             } catch (IOException e) {
@@ -66,11 +45,53 @@ public class SimpleServer extends AbstractServer {
             return;
         }
 
-        if (msg instanceof RegisterRequest) {
+        if (request instanceof RegisterRequest) {
             try {
                 client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - RegisterRequest");
+            }
+            return;
+        }
+
+        User user;
+        try {
+            user = dataBase.getUserByToken(request.getToken());
+        } catch (Exception e) {
+            System.out.println(request.getToken());
+            e.printStackTrace();
+            try {
+                client.sendToClient(new TokenExpiredResponse());
+            } catch (IOException e2) {
+                System.out.println("Error - TokenExpiredResponse");
+            }
+            return;
+        }
+        // ALL REQUESTS ASIDE FROM LOGIN AND REGISTER MUST BE BELOW THIS LINE!!!
+
+        if (request instanceof GetAllClinicsRequest) {
+            try {
+                client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getALLClinicRequest");
+            }
+            return;
+        }
+
+        if (request instanceof GetClinicRequest) {
+            try {
+                client.sendToClient(getClinicRequest((GetClinicRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getClinicRequest");
+            }
+            return;
+        }
+
+        if (request instanceof UpdateActiveHoursRequest) {
+            try {
+                client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - updateActiveHoursRequest");
             }
             return;
         }
@@ -103,6 +124,7 @@ public class SimpleServer extends AbstractServer {
         String securePassword = SecureUtils.getSecurePassword(request.password, user.getSALT());
         if (!Objects.equals(user.getHashPassword(), securePassword))
             return new LoginResponse("Incorrect password!");
+        dataBase.refreshUserToken(user);
         return new LoginResponse(user);
     }
 

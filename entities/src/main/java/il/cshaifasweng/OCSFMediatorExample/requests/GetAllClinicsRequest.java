@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.requests;
 
-public class GetAllClinicsRequest implements Request {
+public class GetAllClinicsRequest extends Request {
 
     public GetAllClinicsRequest() {
     }

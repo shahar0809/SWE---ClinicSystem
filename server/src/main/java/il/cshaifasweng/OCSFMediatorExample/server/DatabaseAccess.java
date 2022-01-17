@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 public final class DatabaseAccess {
     private static DatabaseAccess instance;
@@ -82,6 +83,15 @@ public final class DatabaseAccess {
         return query.getSingleResult();
     }
 
+    public User getUserByToken(UUID token) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
+        Root<User> rootEntry = criteriaQuery.from(User.class);
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("token"), token));
+        Query<User> query = session.createQuery(criteriaQuery);
+        return query.getSingleResult();
+    }
+
     /**
      * Inserts entity into the database.
      *
@@ -116,6 +126,7 @@ public final class DatabaseAccess {
     public Patient createPatient(String username, String password) {
         session.beginTransaction();
         Patient patient = new Patient(username, password);
+        patient.refreshToken();
         session.save(patient);
         session.getTransaction().commit();
         return patient;
@@ -148,6 +159,14 @@ public final class DatabaseAccess {
         session.beginTransaction();
         clinic.setClosingHours(closingHours);
         session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void refreshUserToken(User user) {
+        session.beginTransaction();
+        user.refreshToken();
+        session.save(user);
         session.flush();
         session.getTransaction().commit();
     }
