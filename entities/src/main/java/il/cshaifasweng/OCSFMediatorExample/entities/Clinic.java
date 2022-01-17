@@ -23,11 +23,11 @@ public class Clinic implements Serializable {
     @Column(name = "closingHours")
     protected LocalTime closingHours;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "clinicManager")
     ClinicManager clinicManager;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "hospitalManager")
     HospitalManager hospitalManager;
 

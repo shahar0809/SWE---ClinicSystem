@@ -13,7 +13,7 @@ public class Patient extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int patientId;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "patient")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER, mappedBy = "patient")
     private List<Appointment> appointments;
 
     public Patient() {

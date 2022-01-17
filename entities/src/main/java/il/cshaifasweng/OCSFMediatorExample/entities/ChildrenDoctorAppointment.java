@@ -1,7 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
+import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
+@Entity
 public class ChildrenDoctorAppointment extends Appointment {
     public ChildrenDoctorAppointment() {
         this.type = AppointmentType.CHILDREN;

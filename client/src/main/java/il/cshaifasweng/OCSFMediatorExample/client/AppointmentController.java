@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import antlr.collections.List;
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
@@ -15,6 +16,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AppointmentController {
     @FXML
@@ -47,7 +51,9 @@ public class AppointmentController {
         clinicColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getClinic().toString()));
 
         // Initialize combo box with appointment types
-        comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
+        ArrayList<AppointmentType> types = new ArrayList<>(Arrays.asList(AppointmentType.values()));
+        types.remove(AppointmentType.NURSE);
+        comboBox.setItems(FXCollections.observableArrayList(types));
     }
 
     @FXML

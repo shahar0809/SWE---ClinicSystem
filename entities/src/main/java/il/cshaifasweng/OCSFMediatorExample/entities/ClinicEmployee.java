@@ -15,8 +15,6 @@ public abstract class ClinicEmployee extends User {
     @Column(name = "firstName", nullable = false)
     protected String firstName;
 
-
-
     @Column(name = "lastName", nullable = false)
     protected String lastName;
 
