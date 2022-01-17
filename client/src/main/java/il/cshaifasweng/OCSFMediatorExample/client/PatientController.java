@@ -11,13 +11,17 @@ public class PatientController extends BaseController {
     Tab patientAppointmentsTab;
     @FXML
     Tab availableAppointmentsTab;
+    @FXML
+    Tab greenPassTab;
+    @FXML
+    Tab identifyTab;
 
     @FXML
     AppointmentController availableAppointmentsController;
     @FXML
     PatientAppointmentsController patientAppointmentsController;
-
     @FXML
-    public void initialize() {
-    }
+    GreenPassController greenPassController;
+    @FXML
+    PatientIdentifyController identifyController;
 }
