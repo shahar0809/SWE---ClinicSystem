@@ -1,7 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
-import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
 
 import java.util.Collections;
 import java.util.List;

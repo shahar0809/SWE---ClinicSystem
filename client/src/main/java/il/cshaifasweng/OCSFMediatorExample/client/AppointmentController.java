@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -26,32 +27,21 @@ import java.util.ResourceBundle;
 public class AppointmentController {
     @FXML
     TableView<Appointment> table = new TableView<>();
-
-    TableColumn<Appointment, String> typeColumn //
-            = new TableColumn<>("Type");
-
-    TableColumn<Appointment, String> memberColumn//
-            = new TableColumn<>("Member");
-
-    TableColumn<Appointment, String> dateColumn//
-            = new TableColumn<>("Date & Time");
-
-    TableColumn<Appointment, String> clinicColumn = new TableColumn<>("Clinic");
-
     @FXML
-    private ResourceBundle resources;
+    TableColumn<Appointment, String> typeColumn;
     @FXML
-    private URL location;
+    TableColumn<Appointment, String> memberColumn;
+    @FXML
+    TableColumn<Appointment, String> dateColumn;
+    @FXML
+    TableColumn<Appointment, String> clinicColumn;
+
     @FXML
     private Button changingButton;
     @FXML
     private Label changingLabel;
-
     @FXML
-    private Font x1;
-
-    @FXML
-    private Color x2;
+    private ComboBox<AppointmentType> comboBox;
 
     private AppointmentType selectedType;
     private TableMode tableMode;
@@ -65,16 +55,15 @@ public class AppointmentController {
         appointments = FXCollections.observableArrayList();
 
         table.setItems(appointments);
-        table.getColumns().addAll(typeColumn, memberColumn, dateColumn, clinicColumn);
+        //table.getColumns().addAll(typeColumn, memberColumn, dateColumn, clinicColumn);
 
         typeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getType()));
         memberColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMember().toString()));
         dateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTreatmentDateTimeString()));
         clinicColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getClinic().toString()));
 
-//        UpdateTableService service = new UpdateTableService();
-//        service.setPeriod(Duration.seconds(3));
-//        service.start();
+        // Initialize combo box with appointment types
+        comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
     }
 
     @FXML
@@ -191,6 +180,7 @@ public class AppointmentController {
         if (response.isSuccessful()) {
             appointments.clear();
             appointments.addAll(response.getAppointments());
+            table.setItems(appointments);
             table.refresh();
         } else {
             alertUser(response.getError());
@@ -263,6 +253,45 @@ public class AppointmentController {
         } else if (tableMode == TableMode.MY_APPOINTMENTS) {
             App.getClient().sendRequest(new GetPatientAppointmentRequest(App.getActiveUser()));
         }
+    }
+
+    @FXML
+    public void onAppointmentChoice(ActionEvent actionEvent) {
+        AppointmentType selected = comboBox.getValue();
+
+        if (selected == null)
+            return;
+
+        switch (selected) {
+            case COVID_TEST:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected));
+                break;
+            case COVID_VACCINE:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class, selected));
+                break;
+            case NURSE:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class, selected));
+                break;
+            case FLU_VACCINE:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected));
+                break;
+            case FAMILY:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected));
+                break;
+            case CHILDREN:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected));
+                break;
+            case CARDIO:
+            case ORTHOPEDICS:
+            case GYNECOLOGY:
+            case OTOLARYNGOLOGY:
+            case GASTROLOGY:
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected));
+                break;
+        }
+    }
+
+    public void goBack(ActionEvent actionEvent) {
     }
 
     public class UpdateTableService extends ScheduledService<Void> {

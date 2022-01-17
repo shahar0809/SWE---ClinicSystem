@@ -78,7 +78,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("appointment");
+        App.setRoot("ReserveAppointment");
     }
 
     @Subscribe
@@ -90,7 +90,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("appointment");
+        App.setRoot("ReserveAppointment");
     }
 
 }
