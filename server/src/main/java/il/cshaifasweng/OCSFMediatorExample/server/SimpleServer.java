@@ -67,6 +67,13 @@ public class SimpleServer extends AbstractServer {
         }
         List<FamilyDoctor> familyDoctorsList = dataBase.getAll(FamilyDoctor.class);
 
+        if (dataBase.getAll(Question.class).isEmpty()) {
+            dataBase.insertEntity(new Question("q1", "Do you suffer from any of the following symptoms: fever, cough, shortness of breath, sore throat?"));
+            dataBase.insertEntity(new Patient("q2", "Were you in contact with a verified patient?"));
+            dataBase.insertEntity(new Patient("q3", "Are you or someone in your house waiting for a Covid test answer?"));
+        }
+        List<Question> questionList = dataBase.getAll(Question.class);
+
         if (dataBase.getAll(Appointment.class).isEmpty()) {
             dataBase.insertEntity(new NurseAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new NurseAppointment(nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
@@ -164,6 +171,13 @@ public class SimpleServer extends AbstractServer {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetGreenPassRequest");
+            }
+        }
+        else if (msg instanceof SaveAnswerRequest) {
+            try {
+                client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - SaveAnswerRequest");
             }
         }
     }
@@ -297,6 +311,20 @@ public class SimpleServer extends AbstractServer {
         } catch (Exception e) {
             assert patient != null;
             response = new GetGreenPassResponse(patient.gotCovidVaccine(), false, e.getMessage());
+        }
+        return response;
+    }
+
+    protected Response saveAnswerRequest(SaveAnswerRequest request) {
+        Patient patient = null;
+        SaveAnswerResponse response;
+        try {
+            patient = ((Patient) request.getUser());
+            dataBase.insertEntity(request.answer);
+            response = new SaveAnswerResponse(true);
+        } catch (Exception e) {
+            assert patient != null;
+            response = new SaveAnswerResponse(false, e.getMessage());
         }
         return response;
     }

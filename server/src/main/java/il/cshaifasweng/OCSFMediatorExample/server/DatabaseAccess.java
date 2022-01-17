@@ -63,6 +63,8 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(CovidVaccineAppointment.class);
         configuration.addAnnotatedClass(FluVaccineAppointment.class);
         configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
+        configuration.addAnnotatedClass(Question.class);
+        configuration.addAnnotatedClass(Answer.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
