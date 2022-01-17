@@ -77,8 +77,10 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
+
+        // TODO: Add isinstanceof to redirect to matching controller
         App.setActiveUser(response.user);
-        App.setRoot("ReserveAppointment");
+        App.setRoot("PatientHome");
     }
 
     @Subscribe
@@ -89,8 +91,9 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
+        // TODO: Add isinstanceof to redirect to matching controller
         App.setActiveUser(response.user);
-        App.setRoot("ReserveAppointment");
+        App.setRoot("PatientHome");
     }
 
 }

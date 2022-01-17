@@ -16,7 +16,7 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class AppointmentController {
+public class AppointmentController extends BaseController {
     @FXML
     TableView<Appointment> table = new TableView<>();
     @FXML
