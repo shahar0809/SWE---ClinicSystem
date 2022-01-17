@@ -1,8 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import antlr.collections.List;
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
-import il.cshaifasweng.OCSFMediatorExample.requests.*;
+import il.cshaifasweng.OCSFMediatorExample.requests.GetFreeAppointmentRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetGreenPassResponse;
