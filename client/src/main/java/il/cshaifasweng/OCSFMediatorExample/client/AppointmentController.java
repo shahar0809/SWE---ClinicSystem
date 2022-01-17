@@ -67,16 +67,16 @@ public class AppointmentController extends BaseController {
             table.setItems(appointments);
             table.refresh();
         } else {
-            alertUser(response.getError());
+            alertUserError(response.getError());
         }
     }
 
     @Subscribe
     public void reserveResponse(ReserveAppointmentResponse response) {
         if (response.isSuccessful()) {
-            alertUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
+            informUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
-            alertUser(response.getError());
+            alertUserError(response.getError());
         }
         onRefresh(null);
     }
@@ -84,9 +84,9 @@ public class AppointmentController extends BaseController {
     @Subscribe
     public void cancelResponse(DeleteAppointmentResponse response) {
         if (response.isSuccessful()) {
-            alertUser(Messages.CANCEL_APPOINTMENT_SUCCESS);
+            informUser(Messages.CANCEL_APPOINTMENT_SUCCESS);
         } else {
-            alertUser(response.getError());
+            alertUserError(response.getError());
         }
         onRefresh(null);
     }
@@ -94,15 +94,10 @@ public class AppointmentController extends BaseController {
     @Subscribe
     public void greenPassResponse(GetGreenPassResponse response) {
         if (response.isSuccessful()) {
-            alertUser(Messages.GREEN_PASS_SUCCESS);
+            informUser(Messages.GREEN_PASS_SUCCESS);
         } else {
-            alertUser(response.getError());
+            alertUserError(response.getError());
         }
-    }
-
-    public void alertUser(String message) {
-        Alert alert  = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
-        alert.show();
     }
 
     @FXML
