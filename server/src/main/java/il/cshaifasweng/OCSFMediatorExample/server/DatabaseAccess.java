@@ -58,11 +58,11 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(ProfessionDoctor.class);
         configuration.addAnnotatedClass(ProfessionDoctorAppointment.class);
         configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
+        configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
         configuration.addAnnotatedClass(NurseAppointment.class);
         configuration.addAnnotatedClass(CovidTestAppointment.class);
         configuration.addAnnotatedClass(CovidVaccineAppointment.class);
         configuration.addAnnotatedClass(FluVaccineAppointment.class);
-        configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -103,8 +103,12 @@ public final class DatabaseAccess {
      */
     public <T> void insertEntity(T entity) {
         session.beginTransaction();
-        session.save(entity);
-        session.getTransaction().commit();
+        try {
+            session.save(entity);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     /**
@@ -114,10 +118,16 @@ public final class DatabaseAccess {
      * @param password Not encrypted password
      */
     public Patient createPatient(String username, String password) {
+        Patient patient = null;
         session.beginTransaction();
-        Patient patient = new Patient(username, password);
-        session.save(patient);
-        session.getTransaction().commit();
+        try {
+            patient = new Patient(username, password);
+            session.save(patient);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
+
         return patient;
     }
 
@@ -137,18 +147,26 @@ public final class DatabaseAccess {
 
     public void setOpeningHours(Clinic clinic, LocalTime openingHours) {
         session.beginTransaction();
-        clinic.setOpeningHours(openingHours);
-        session.save(clinic);
-        session.flush();
-        session.getTransaction().commit();
+        try {
+            clinic.setOpeningHours(openingHours);
+            session.save(clinic);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     public void setClosingHours(Clinic clinic, LocalTime closingHours) {
         session.beginTransaction();
-        clinic.setClosingHours(closingHours);
-        session.save(clinic);
-        session.flush();
-        session.getTransaction().commit();
+        try {
+            clinic.setClosingHours(closingHours);
+            session.save(clinic);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     /**
@@ -157,9 +175,13 @@ public final class DatabaseAccess {
      */
     public void updateAppointment(Appointment appointment) {
         session.beginTransaction();
-        session.merge(appointment);
-        session.flush();
-        session.getTransaction().commit();
+        try {
+            session.merge(appointment);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     /**
