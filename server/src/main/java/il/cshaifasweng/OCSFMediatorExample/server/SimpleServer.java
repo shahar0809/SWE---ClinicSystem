@@ -180,6 +180,13 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - SaveAnswerRequest");
             }
         }
+        else if (msg instanceof GetQuestionsRequest) {
+            try {
+                client.sendToClient(getQuestionsRequest((GetQuestionsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetQuestionsRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -325,6 +332,18 @@ public class SimpleServer extends AbstractServer {
         } catch (Exception e) {
             assert patient != null;
             response = new SaveAnswerResponse(false, e.getMessage());
+        }
+        return response;
+    }
+
+    protected Response getQuestionsRequest(GetQuestionsRequest request) {
+        List<Question> questions = new ArrayList<>();
+        GetQuestionsResponse response;
+        try {
+            questions = dataBase.getAll(Questions.class);
+            allClinics = new GetQuestionsResponse(questions, true);
+        } catch (Exception e) {
+            allClinics = new GetQuestionsResponse(questions, false);
         }
         return response;
     }

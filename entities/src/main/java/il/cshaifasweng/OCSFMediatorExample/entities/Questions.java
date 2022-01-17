@@ -8,4 +8,8 @@ public class Question implements Serializable {
 
     @Column(name = "question")
     protected String question;
+
+    public String getQuestion() {
+        return question;
+    }
 }
