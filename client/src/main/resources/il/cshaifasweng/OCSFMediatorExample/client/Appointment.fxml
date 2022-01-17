@@ -37,7 +37,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<VBox prefHeight="600.0" prefWidth="583.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.AppointmentController">
+<VBox prefHeight="600.0" prefWidth="583.0" xmlns="http://javafx.com/javafx/17">
     <children>
         <SplitPane dividerPositions="0.5" focusTraversable="true" VBox.vgrow="ALWAYS">
             <items>
@@ -51,11 +51,19 @@
                                 <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
                             </textFill>
                         </Label>
+
                         <Button layoutX="14.0" layoutY="49.0" mnemonicParsing="false" onAction="#onAppointment" prefHeight="36.0" prefWidth="187.0" text="Your Appointment" />
-                        <Button layoutX="14.0" layoutY="196.0" mnemonicParsing="false" onAction="#onCovidTest" prefHeight="36.0" prefWidth="187.0" text="Choose Covid Test" />
-                        <Button layoutX="14.0" layoutY="97.0" mnemonicParsing="false" onAction="#onCovidVaccine" prefHeight="36.0" prefWidth="187.0" text="Choose Covid Vaccine" />
-                        <Button layoutX="14.0" layoutY="145.0" mnemonicParsing="false" onAction="#onFluVaccine" prefHeight="36.0" prefWidth="187.0" text="Choose Flu Vaccine" />
-                        <Button layoutX="14.0" layoutY="247.0" mnemonicParsing="false" onAction="#onGetGreenPass" prefHeight="36.0" prefWidth="187.0" text="Green Pass" />
+
+                        <Button layoutX="14.0" layoutY="196.0" mnemonicParsing="false" onAction="#onCovidTest" prefHeight="36.0" prefWidth="187.0" text="Covid Test" />
+                        <Button layoutX="14.0" layoutY="97.0" mnemonicParsing="false" onAction="#onCovidVaccine" prefHeight="36.0" prefWidth="187.0" text="Covid Vaccine" />
+                        <Button layoutX="14.0" layoutY="145.0" mnemonicParsing="false" onAction="#onFluVaccine" prefHeight="36.0" prefWidth="187.0" text="Flu Vaccine" />
+                        <Button layoutX="14.0" layoutY="196.0" mnemonicParsing="false" onAction="#onCovidTest" prefHeight="36.0" prefWidth="187.0" text="Family Doctor" />
+                        <Button layoutX="14.0" layoutY="97.0" mnemonicParsing="false" onAction="#onCovidVaccine" prefHeight="36.0" prefWidth="187.0" text="Children Doctor" />
+                        <Button layoutX="14.0" layoutY="145.0" mnemonicParsing="false" onAction="#onFluVaccine" prefHeight="36.0" prefWidth="187.0" text="Profession Doctor" />
+
+                        <Button layoutX="14.0" layoutY="247.0" mnemonicParsing="false" onAction="#onGetGreenPass" prefHeight="36.0" prefWidth="187.0" text="Get Green Pass" />
+
+
                     </children>
                 </AnchorPane>
                 <AnchorPane id="Content" prefHeight="535.0" prefWidth="281.0">

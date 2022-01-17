@@ -233,7 +233,7 @@ public class SimpleServer extends AbstractServer {
 
         try {
             for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic));
+                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
             }
 
             response = new GetFreeAppointmentsResponse<>(appointments, true);

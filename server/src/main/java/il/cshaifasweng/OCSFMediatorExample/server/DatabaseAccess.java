@@ -167,13 +167,14 @@ public final class DatabaseAccess {
      * @param clinic The clinic to search within
      * @return A list of all available appointments
      */
-    public <T extends Appointment> List<T> getFreeAppointments(Class<T> object, Clinic clinic) {
+    public <T extends Appointment> List<T> getFreeAppointments(Class<T> object, Clinic clinic, AppointmentType type) {
         CriteriaQuery<T> criteriaQuery = builder.createQuery(object);
         Root<T> rootEntry = criteriaQuery.from(object);
 
         criteriaQuery.where(builder.and(
                 builder.equal(rootEntry.get("isAvailable"), true),
-                builder.equal(rootEntry.get("clinic"), clinic)));
+                builder.equal(rootEntry.get("clinic"), clinic)),
+                builder.equal(rootEntry.get("type"), type));
 
         Query<T> query = session.createQuery(criteriaQuery);
         return query.getResultList();
