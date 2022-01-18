@@ -22,6 +22,7 @@ public class SimpleServer extends AbstractServer {
 
     public SimpleServer(int port) {
         super(port);
+
         dataBase = DatabaseAccess.getInstance();
         initDatabase();
     }
@@ -116,7 +117,46 @@ public class SimpleServer extends AbstractServer {
 
     @Override
     protected void handleMessageFromClient(Object msg, ConnectionToClient client) {
-        if (msg instanceof GetAllClinicsRequest) {
+        if (!(msg instanceof Request)) {
+            System.out.println("Error - Received invalid request");
+            return;
+        }
+        Request request = (Request) msg;
+
+        if (request instanceof LoginRequest) {
+            try {
+                client.sendToClient(handleLoginRequest((LoginRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - LoginRequest");
+            }
+            return;
+        }
+
+        if (request instanceof RegisterRequest) {
+            try {
+                client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - RegisterRequest");
+            }
+            return;
+        }
+
+        User user;
+        try {
+            user = dataBase.getUserByToken(request.getToken());
+        } catch (Exception e) {
+            System.out.println(request.getToken());
+            e.printStackTrace();
+            try {
+                client.sendToClient(new TokenExpiredResponse());
+            } catch (IOException e2) {
+                System.out.println("Error - TokenExpiredResponse");
+            }
+            return;
+        }
+        // ALL REQUESTS ASIDE FROM LOGIN AND REGISTER MUST BE BELOW THIS LINE!!!
+
+        if (request instanceof GetAllClinicsRequest) {
             try {
                 client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
             } catch (IOException e) {
@@ -137,110 +177,6 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - updateActiveHoursRequest");
             }
             return;
-        }
-
-        if (msg instanceof LoginRequest) {
-            try {
-                client.sendToClient(handleLoginRequest((LoginRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - LoginRequest");
-            }
-            return;
-        }
-
-        if (msg instanceof RegisterRequest) {
-            try {
-                client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - RegisterRequest");
-            }
-            return;
-        }
-
-        if (msg instanceof UpdateCovidTestHoursRequest) {
-            try {
-                client.sendToClient(updateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - UpdateCovidTestHoursRequest");
-            }
-        }
-
-        if (msg instanceof GetCovidTestHoursRequest) {
-            try {
-                client.sendToClient(getCovidTestHoursRequest((GetCovidTestHoursRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getClinicRequest");
-            }
-        }
-
-        if (msg instanceof UpdateCovidVaccineHoursRequest) {
-            try {
-                client.sendToClient(updateCovidVaccineHoursRequest((UpdateCovidVaccineHoursRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - UpdateCovidVaccineHoursRequest");
-            }
-        }
-
-        if (msg instanceof GetCovidVaccineHoursRequest) {
-            try {
-                client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getClinicRequest");
-            }
-        } else if (msg instanceof LoginRequest) {
-            try {
-                client.sendToClient(handleLoginRequest((LoginRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - LoginRequest");
-            }
-        } else if (msg instanceof RegisterRequest) {
-            try {
-                client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - RegisterRequest");
-            }
-        } else if (msg instanceof GetFreeAppointmentRequest) {
-            try {
-                client.sendToClient(getFreeAppointmentsRequest((GetFreeAppointmentRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getALLCovidVaccineRequest");
-            }
-        } else if (msg instanceof GetPatientAppointmentRequest) {
-            try {
-                client.sendToClient(getPatientAppointmentsRequest((GetPatientAppointmentRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - GetPatientAppointmentRequest");
-            }
-        } else if (msg instanceof ReserveAppointmentRequest) {
-            try {
-                client.sendToClient(addAppointmentsRequest((ReserveAppointmentRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - AddAppointmentRequest");
-            }
-        } else if (msg instanceof DeleteAppointmentRequest) {
-            try {
-                client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - DeleteAppointmentRequest");
-            }
-        } else if (msg instanceof GetGreenPassRequest) {
-            try {
-                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - GetGreenPassRequest");
-            }
-        } else if (msg instanceof SaveAnswerRequest) {
-            try {
-                client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - SaveAnswerRequest");
-            }
-        } else if (msg instanceof GetQuestionRequest) {
-            try {
-                client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - GetQuestionsRequest");
-            }
         }
     }
 
@@ -299,7 +235,8 @@ public class SimpleServer extends AbstractServer {
         String securePassword = SecureUtils.getSecurePassword(request.password, user.getSALT());
         if (!Objects.equals(user.getHashPassword(), securePassword))
             return new LoginResponse(Messages.LOGIN_WRONG_AUTH, true);
-        return new LoginResponse(user, true);
+        dataBase.refreshUserToken(user);
+        return new LoginResponse(user);
     }
 
     protected <T extends Appointment> Response getFreeAppointmentsRequest(GetFreeAppointmentRequest<T> request) {
@@ -536,11 +473,10 @@ public class SimpleServer extends AbstractServer {
         List<Question> questions = new ArrayList<>();
         GetQuestionsResponse response;
         try {
-            questions = dataBase.getAll(Question.class);
-            response = new GetQuestionsResponse(questions, true);
-        } catch (Exception e) {
-            response = new GetQuestionsResponse(questions, false, e.getMessage());
+            dataBase.getUser(request.username);
+            return new RegisterResponse("Username is already taken!");
+        } catch (NoResultException ignored) {
         }
-        return response;
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password));
     }
 }

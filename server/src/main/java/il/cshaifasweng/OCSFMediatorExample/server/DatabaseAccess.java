@@ -15,6 +15,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 public final class DatabaseAccess {
     private static DatabaseAccess instance;
@@ -47,6 +48,7 @@ public final class DatabaseAccess {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Patient.class);
         configuration.addAnnotatedClass(User.class);
+        configuration.addAnnotatedClass(Doctor.class);
         configuration.addAnnotatedClass(Nurse.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(ClinicManager.class);
@@ -93,6 +95,15 @@ public final class DatabaseAccess {
         CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
         Root<User> rootEntry = criteriaQuery.from(User.class);
         criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("username"), username));
+        Query<User> query = session.createQuery(criteriaQuery);
+        return query.getSingleResult();
+    }
+
+    public User getUserByToken(UUID token) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
+        Root<User> rootEntry = criteriaQuery.from(User.class);
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("token"), token));
         Query<User> query = session.createQuery(criteriaQuery);
         return query.getSingleResult();
     }
@@ -258,4 +269,12 @@ public final class DatabaseAccess {
         return clinic.getCovidVaccineEndHour();
     }
 
+
+    public void refreshUserToken(User user) {
+        session.beginTransaction();
+        user.refreshToken();
+        session.save(user);
+        session.flush();
+        session.getTransaction().commit();
+    }
 }

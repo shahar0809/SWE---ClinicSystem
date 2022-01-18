@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
+import il.cshaifasweng.OCSFMediatorExample.response.TokenExpiredResponse;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -52,6 +54,7 @@ public class App extends Application {
     public static void setManager(ClinicManager user) { manager = user; }
     @Override
     public void start(Stage stage) throws IOException {
+        EventBus.getDefault().register(this);
         App.stage = stage;
         client = SimpleClient.getClient();
         client.openConnection();
@@ -62,6 +65,15 @@ public class App extends Application {
 
     @Override
     public void stop() throws Exception {
+        EventBus.getDefault().unregister(this);
         super.stop();
+    }
+
+    @Subscribe
+    public void onTokenExpired(TokenExpiredResponse response) {
+        Alert alert = new Alert(AlertType.WARNING, "User was logged in from another location!", ButtonType.CLOSE);
+        alert.setHeaderText("Token Expired");
+        alert.show();
+        alert.setOnHidden(e -> Platform.exit());
     }
 }

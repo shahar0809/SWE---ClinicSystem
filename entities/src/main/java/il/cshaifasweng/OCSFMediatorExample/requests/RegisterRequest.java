@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.requests;
 
-public class RegisterRequest implements Request {
+public class RegisterRequest extends Request {
     public String username;
     public String password;
 

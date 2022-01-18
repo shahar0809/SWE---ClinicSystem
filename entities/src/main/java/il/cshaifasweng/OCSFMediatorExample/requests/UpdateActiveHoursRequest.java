@@ -3,7 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.requests;
 
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 
-public class UpdateActiveHoursRequest implements Request {
+public class UpdateActiveHoursRequest extends Request {
     public Hours activeHours;
     public String clinicName;
 
