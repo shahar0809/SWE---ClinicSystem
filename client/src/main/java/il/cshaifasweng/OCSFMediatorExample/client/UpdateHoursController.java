@@ -2,7 +2,6 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
-import il.cshaifasweng.OCSFMediatorExample.utils.Mail;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -61,8 +60,6 @@ public class UpdateHoursController {
         Platform.runLater(()->{
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Covid Test Hours Updated!", ButtonType.OK);
             alert.setHeaderText("Success");
-            Mail mail = new Mail();
-            mail.sendMessage("SWE.SystemMail5@gmail.com","1","11");
             alert.show();
         });
     }
