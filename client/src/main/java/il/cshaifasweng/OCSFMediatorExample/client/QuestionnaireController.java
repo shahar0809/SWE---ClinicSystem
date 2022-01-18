@@ -41,6 +41,30 @@ public class QuestionnaireController {
     private AnchorPane Covid;
 
     @FXML
+    private Text q1;
+    @FXML
+    private Text q2;
+    @FXML
+    private Text q3;
+
+    @FXML
+    private ComboBox<PossibleAnswers> question1;
+    @FXML
+    private ComboBox<PossibleAnswers> question2;
+    @FXML
+    private ComboBox<PossibleAnswers> question3;
+
+    @FXML
+    void initialize() {
+        EventBus.getDefault().register(this);
+        App.getClient().sendRequest(new GetQuestionRequest());
+
+        question1.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
+        question2.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
+        question3.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
+    }
+
+    @FXML
     void Continue(ActionEvent event) throws IOException {
         if (question1.getValue() == null || question2.getValue() == null || question3.getValue() == null) {
             //alertUser()
@@ -66,30 +90,18 @@ public class QuestionnaireController {
 
         if (selected == null)
             return;
-        else if(selected == "Yes"){
-            SavaAnswerRequest request = new SavaAnswerRequest(App.getActiveUser() ,new Question(2, q2.text()) , "Yes");
-            App.getClient().sendRequest(request);
-        }
-        else{
-            SavaAnswerRequest request = new SavaAnswerRequest(App.getActiveUser() ,new Question(2, q2.text()) , "No");
-            App.getClient().sendRequest(request);
-        }
+        SaveAnswerRequest request = new SaveAnswerRequest(App.getActiveUser(), questions.get(1), selected.toString());
+        App.getClient().sendRequest(request);
     }
 
     @FXML
     void Question3(ActionEvent event) {
-        String selected = question1.getValue();
+        PossibleAnswers selected = question2.getValue();
 
         if (selected == null)
             return;
-        else if(selected == "Yes"){
-            SavaAnswerRequest request = new SavaAnswerRequest(App.getActiveUser() ,new Question(3, q3.text()) , "Yes");
-            App.getClient().sendRequest(request);
-        }
-        else{
-            SavaAnswerRequest request = new SavaAnswerRequest(App.getActiveUser() ,new Question(3, q3.text()) , "No");
-            App.getClient().sendRequest(request);
-        }
+        SaveAnswerRequest request = new SaveAnswerRequest(App.getActiveUser(), questions.get(2), selected.toString());
+        App.getClient().sendRequest(request);
     }
 
     @Subscribe

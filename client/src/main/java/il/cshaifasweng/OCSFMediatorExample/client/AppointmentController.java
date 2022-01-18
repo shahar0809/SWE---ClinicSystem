@@ -37,6 +37,9 @@ public class AppointmentController {
     private ObservableList<Appointment> appointments;
 
     @FXML
+    private Button questionnaireButton;
+
+    @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
         appointments = FXCollections.observableArrayList();
@@ -50,6 +53,8 @@ public class AppointmentController {
 
         // Initialize combo box with appointment types
         comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
+
+        questionnaireButton.setVisible(false);
     }
 
     @FXML
@@ -123,6 +128,8 @@ public class AppointmentController {
         if (selected == null)
             return;
 
+
+        questionnaireButton.setVisible(false);
         switch (selected) {
             case COVID_TEST:
                 questionnaireButton.setVisible(true);
@@ -139,7 +146,6 @@ public class AppointmentController {
                 break;
             case FAMILY:
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected));
-                break;
             case CHILDREN:
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected));
                 break;

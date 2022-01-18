@@ -68,9 +68,9 @@ public class SimpleServer extends AbstractServer {
         List<FamilyDoctor> familyDoctorsList = dataBase.getAll(FamilyDoctor.class);
 
         if (dataBase.getAll(Question.class).isEmpty()) {
-            dataBase.insertEntity(new Question("q1", "Do you suffer from any of the following symptoms: fever, cough, shortness of breath, sore throat?"));
-            dataBase.insertEntity(new Patient("q2", "Were you in contact with a verified patient?"));
-            dataBase.insertEntity(new Patient("q3", "Are you or someone in your house waiting for a Covid test answer?"));
+            dataBase.insertEntity(new Question("Do you suffer from any of the following symptoms: fever, cough, shortness of breath, sore throat?"));
+            dataBase.insertEntity(new Question("Were you in contact with a verified patient?"));
+            dataBase.insertEntity(new Question("Are you or someone in your house waiting for a Covid test answer?"));
         }
         List<Question> questionList = dataBase.getAll(Question.class);
 
@@ -346,10 +346,10 @@ public class SimpleServer extends AbstractServer {
         List<Question> questions = new ArrayList<>();
         GetQuestionsResponse response;
         try {
-            questions = dataBase.getAll(Questions.class);
-            allClinics = new GetQuestionsResponse(questions, true);
+            questions = dataBase.getAll(Question.class);
+            response = new GetQuestionsResponse(questions, true);
         } catch (Exception e) {
-            allClinics = new GetQuestionsResponse(questions, false);
+            response = new GetQuestionsResponse(questions, false, e.getMessage());
         }
         return response;
     }
