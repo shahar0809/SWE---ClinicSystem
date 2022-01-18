@@ -15,8 +15,13 @@ public class ClinicManager extends ClinicEmployee {
     public ClinicManager(Clinic clinic) {
         this.clinic = clinic;
     }
+    public ClinicManager(String username, String password, int employeeNum, String firstName, String lastName, String email,Clinic clinic) {
+        super(username, password,employeeNum,firstName,lastName,email,"manager");
+        this.clinic = clinic;
+    }
 
-    public Clinic getClinic() {
+
+        public Clinic getClinic() {
         return clinic;
     }
 

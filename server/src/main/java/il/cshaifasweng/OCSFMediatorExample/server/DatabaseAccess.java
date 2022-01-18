@@ -21,7 +21,7 @@ public final class DatabaseAccess {
     private Session session;
     private CriteriaBuilder builder;
 
-    DatabaseAccess() {
+    private DatabaseAccess() {
         session = getSessionFactory().openSession();
         builder = session.getCriteriaBuilder();
     }
@@ -47,6 +47,7 @@ public final class DatabaseAccess {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(Patient.class);
         configuration.addAnnotatedClass(User.class);
+        configuration.addAnnotatedClass(Doctor.class);
         configuration.addAnnotatedClass(Nurse.class);
         configuration.addAnnotatedClass(Clinic.class);
         configuration.addAnnotatedClass(ClinicManager.class);
@@ -211,4 +212,51 @@ public final class DatabaseAccess {
         Query<T> query = session.createQuery(criteriaQuery);
         return query.getResultList();
     }
+
+    public void setCovidTestStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setCovidTestStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setCovidTestEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setCovidTestEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public LocalTime getCovidTestStartHour(Clinic clinic) { return clinic.getCovidTestStartHour();}
+
+    public LocalTime getCovidTestEndHour(Clinic clinic) {
+        return clinic.getCovidTestEndHour();
+    }
+
+    public void setCovidVaccineStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setCovidVaccineStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setCovidVaccineEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setCovidVaccineEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public LocalTime getCovidVaccineStartHour(Clinic clinic) {
+        return clinic.getCovidVaccineStartHour();
+    }
+
+    public LocalTime getCovidVaccineEndHour(Clinic clinic) {
+        return clinic.getCovidVaccineEndHour();
+    }
+
 }

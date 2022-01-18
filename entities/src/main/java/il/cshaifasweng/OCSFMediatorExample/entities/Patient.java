@@ -17,6 +17,9 @@ public class Patient extends User {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER, mappedBy = "patient")
     private List<Appointment> appointments;
 
+    private String email;
+    private String lastName;
+
     public Patient() {
         appointments = new ArrayList<>();
     }
@@ -48,6 +51,22 @@ public class Patient extends User {
     public void addAppointment(Appointment appointment) {
         appointment.setPatient(this);
         appointments.add(appointment);
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void deleteAppointment(Appointment appointment) {
