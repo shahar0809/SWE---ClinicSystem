@@ -7,9 +7,10 @@ import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
 public class SaveAnswerRequest implements Request {
     public Answer answer;
+    public User user;
 
     public SaveAnswerRequest(User user, Question question, String answer) {
-        this.answer = new Answer(this.user = user, this.question = question, this.answer = answer)
+        this.answer = new Answer(user, question, answer);
         this.user = user;
     }
 

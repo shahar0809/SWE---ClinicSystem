@@ -27,4 +27,7 @@ public class Answer implements Serializable {
         this.answer = answer;
     }
 
+    public Answer() {
+
+    }
 }
