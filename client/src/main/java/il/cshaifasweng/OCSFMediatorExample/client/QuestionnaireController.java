@@ -70,38 +70,13 @@ public class QuestionnaireController {
             //alertUser()
             return;
         }
+
+        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(0), question1.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(1), question2.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(2), question3.getValue().toString()));
+
         hasAnsweredQuestionnaire = true;
         App.setRoot("ReserveAppointment");
-    }
-
-    @FXML
-    void Question1(ActionEvent event) {
-        PossibleAnswers selected = question1.getValue();
-
-        if (selected == null)
-            return;
-        SaveAnswerRequest request = new SaveAnswerRequest(App.getActiveUser(), questions.get(0), selected.toString());
-        App.getClient().sendRequest(request);
-    }
-
-    @FXML
-    void Question2(ActionEvent event) {
-        PossibleAnswers selected = question2.getValue();
-
-        if (selected == null)
-            return;
-        SaveAnswerRequest request = new SaveAnswerRequest(App.getActiveUser(), questions.get(1), selected.toString());
-        App.getClient().sendRequest(request);
-    }
-
-    @FXML
-    void Question3(ActionEvent event) {
-        PossibleAnswers selected = question2.getValue();
-
-        if (selected == null)
-            return;
-        SaveAnswerRequest request = new SaveAnswerRequest(App.getActiveUser(), questions.get(2), selected.toString());
-        App.getClient().sendRequest(request);
     }
 
     @Subscribe

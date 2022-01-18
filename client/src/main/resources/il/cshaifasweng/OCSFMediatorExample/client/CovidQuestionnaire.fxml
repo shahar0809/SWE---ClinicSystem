@@ -17,8 +17,8 @@
       <Text fx:id="q2" layoutX="14.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Were you in contact with a verified patient?" wrappingWidth="374.1366271972656" />
       <Text fx:id="q3" layoutX="14.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Are you or someone in your house waiting for a Covid test answer?" wrappingWidth="336.5366516113281" />
       <Button layoutX="234.0" layoutY="204.0" mnemonicParsing="false" onAction="#Continue" text="Continue" />
-      <ComboBox fx:id="question1" layoutX="386.0" layoutY="44.0" prefHeight="25.0" prefWidth="127.0" onAction="#Question1"/>
-      <ComboBox fx:id="question2" layoutX="386.0" layoutY="98.0" prefHeight="25.0" prefWidth="127.0" onAction="#Question2"/>
-      <ComboBox fx:id="question3" layoutX="386.0" layoutY="147.0" prefHeight="25.0" prefWidth="127.0" onAction="#Question3"/>
+      <ComboBox fx:id="question1" layoutX="386.0" layoutY="44.0" prefHeight="25.0" prefWidth="127.0"/>
+      <ComboBox fx:id="question2" layoutX="386.0" layoutY="98.0" prefHeight="25.0" prefWidth="127.0"/>
+      <ComboBox fx:id="question3" layoutX="386.0" layoutY="147.0" prefHeight="25.0" prefWidth="127.0"/>
    </children>
 </AnchorPane>

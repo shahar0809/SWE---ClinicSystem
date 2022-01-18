@@ -134,7 +134,6 @@ public class AppointmentController {
         if (selected == null)
             return;
 
-
         questionnaireButton.setVisible(false);
         switch (selected) {
             case COVID_TEST:

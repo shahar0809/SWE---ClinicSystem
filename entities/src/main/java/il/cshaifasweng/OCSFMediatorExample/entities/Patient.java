@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class Patient extends User {
     public List<Appointment> getAppointments() {
         List<Appointment> reserveAppointments = new ArrayList<>();
         for(Appointment appointment : appointments) {
-            if(!appointment.hasPatientArrived()) {
+            if(!appointment.hasPatientArrived() && LocalDateTime.now().compareTo(appointment.getTreatmentDateTime()) > 0) {
                 reserveAppointments.add(appointment);
             }
         }
