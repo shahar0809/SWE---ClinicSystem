@@ -55,12 +55,12 @@ public class SimpleServer extends AbstractServer {
         if (dataBase.getAll(ClinicManager.class).isEmpty()) {
             dataBase.insertEntity(new ClinicManager("cliinc1un", "clinicpass1", 2, "clinicfn1m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(0)));
             dataBase.insertEntity(new ClinicManager("cliinc2un", "clinicpass1", 2, "clinicfn2m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(1)));
-            dataBase.insertEntity(new ClinicManager("cliinc1un", "clinicpass1", 2, "clinicfn3m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(2)));
+            dataBase.insertEntity(new ClinicManager("cliinc3un", "clinicpass1", 2, "clinicfn3m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(2)));
         }
         List<ClinicManager> clinicManagersList = dataBase.getAll(ClinicManager.class);
 
         if (dataBase.getAll(HospitalManager.class).isEmpty()) {
-            dataBase.insertEntity(new HospitalManager("cliinc1un", "clinicpass1", 2, "clinicfn1m", "clinic_last_manager1", "clinicemail@a.com", clinics));
+            dataBase.insertEntity(new HospitalManager("cliinc4un", "clinicpass1", 2, "clinicfn1m", "clinic_last_manager1", "clinicemail@a.com", clinics));
         }
         List<HospitalManager> hospitalManagersList = dataBase.getAll(HospitalManager.class);
 

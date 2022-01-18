@@ -80,9 +80,10 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        if(App.getActiveUser() instanceof ClinicManager){
+        if (App.getActiveUser() instanceof ClinicManager) {
+            App.setManager((ClinicManager)response.user);
             App.setRoot("PrimaryManager");
-        }else{
+        } else {
             App.setRoot("ReserveAppointment");
         }
     }
