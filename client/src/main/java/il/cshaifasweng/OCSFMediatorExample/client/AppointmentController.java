@@ -16,6 +16,8 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
+
 public class AppointmentController {
     @FXML
     TableView<Appointment> table = new TableView<>();
@@ -76,7 +78,11 @@ public class AppointmentController {
         if (response.isSuccessful()) {
             alertUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
-            alertUser(response.getError());
+            if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
+                alertUser("You have to fill the questionnaire!");
+            } else {
+                alertUser(response.getError());
+            }
         }
         onRefresh(null);
     }
@@ -119,6 +125,7 @@ public class AppointmentController {
 
         switch (selected) {
             case COVID_TEST:
+                questionnaireButton.setVisible(true);
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected));
                 break;
             case COVID_VACCINE:
@@ -146,8 +153,8 @@ public class AppointmentController {
         }
     }
 
-    // TODO: Go back to main screen
-    public void goBack(ActionEvent actionEvent) {
+    public void onQuestionnaire(ActionEvent actionEvent) throws IOException {
+        App.setRoot("CovidQuestionnaire");
     }
 }
 

@@ -1,5 +1,9 @@
+package il.cshaifasweng.OCSFMediatorExample.requests;
 
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Answer;
+import il.cshaifasweng.OCSFMediatorExample.entities.Question;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
 public class SaveAnswerRequest implements Request {
     public Answer answer;

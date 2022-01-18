@@ -1,12 +1,16 @@
+package il.cshaifasweng.OCSFMediatorExample.entities;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@Table(name = "Patient Answers")
+@Table(name = "patientAnswers")
 public class Answer implements Serializable {
-    @id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "patient")
     protected User patient;
 
@@ -16,5 +20,11 @@ public class Answer implements Serializable {
 
     @Column(name = "answer")
     protected String answer;
+
+    public Answer(User patient, Question question, String answer) {
+        this.patient = patient;
+        this.question = question;
+        this.answer = answer;
+    }
 
 }

@@ -180,9 +180,9 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - SaveAnswerRequest");
             }
         }
-        else if (msg instanceof GetQuestionsRequest) {
+        else if (msg instanceof GetQuestionRequest) {
             try {
-                client.sendToClient(getQuestionsRequest((GetQuestionsRequest) msg));
+                client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetQuestionsRequest");
             }
@@ -281,6 +281,12 @@ public class SimpleServer extends AbstractServer {
     protected Response addAppointmentsRequest(ReserveAppointmentRequest request) {
         ReserveAppointmentResponse response;
         try {
+            if (request.getAppointment() instanceof CovidVaccineAppointment) {
+                if (!dataBase.hasAnsweredCovidQuestionnaire(request.getUser())) {
+                    return new ReserveAppointmentResponse(false, Messages.COVID_TEST_NO_QUESTIONNAIRE);
+                }
+            }
+
             ((Patient)request.getUser()).addAppointment(request.getAppointment());
 
             // Update availability
@@ -326,7 +332,7 @@ public class SimpleServer extends AbstractServer {
         Patient patient = null;
         SaveAnswerResponse response;
         try {
-            patient = ((Patient) request.getUser());
+            patient = ((Patient) request.user);
             dataBase.insertEntity(request.answer);
             response = new SaveAnswerResponse(true);
         } catch (Exception e) {
@@ -336,7 +342,7 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
-    protected Response getQuestionsRequest(GetQuestionsRequest request) {
+    protected Response getQuestionsRequest(GetQuestionRequest request) {
         List<Question> questions = new ArrayList<>();
         GetQuestionsResponse response;
         try {

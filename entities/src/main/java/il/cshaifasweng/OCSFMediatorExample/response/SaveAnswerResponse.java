@@ -1,15 +1,16 @@
-
+package il.cshaifasweng.OCSFMediatorExample.response;
 
 public class SaveAnswerResponse extends Response {
-    public GetPatientAppointmentResponse(boolean isSuccessful, String error) {
+    public SaveAnswerResponse(boolean isSuccessful, String error) {
         super(isSuccessful, error);
+    }
+
+    public SaveAnswerResponse(boolean isSuccessful) {
+        super(isSuccessful);
     }
 
     @Override
     public String getType() {
         return "SaveAnswerResponse";
     }
-
-    public GetPatientAppointmentResponse(Lboolean isSuccessful) {
-        super(isSuccessful);
-    }
+}

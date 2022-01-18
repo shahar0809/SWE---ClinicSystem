@@ -123,6 +123,14 @@ public final class DatabaseAccess {
         return patient;
     }
 
+    public boolean hasAnsweredCovidQuestionnaire(User user) {
+        CriteriaQuery<Answer> criteriaQuery = builder.createQuery(Answer.class);
+        Root<Answer> rootEntry = criteriaQuery.from(Answer.class);
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("patient"), user));
+        Query<Answer> query = session.createQuery(criteriaQuery);
+        return query.getResultList().size() == 3;
+    }
+
     /**
      * Fetches a clinic from database.
      *
