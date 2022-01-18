@@ -58,7 +58,9 @@ public class App extends Application {
 //        scene = new Scene(loadFXML("RegisterLogin"));
        // scene = new Scene(loadFXML("UpdateHours"));
 
-        scene = new Scene(loadFXML("PrimaryManager"));
+//        scene = new Scene(loadFXML("PrimaryManager"));
+        scene = new Scene(loadFXML("ChooseComputer"));
+
         stage.setScene(scene);
         stage.show();
     }

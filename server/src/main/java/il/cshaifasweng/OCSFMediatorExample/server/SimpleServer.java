@@ -8,6 +8,7 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.Mail;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 
@@ -186,10 +187,10 @@ public class SimpleServer extends AbstractServer {
 
         //**************Cancel/order Appointment & send message/mail ******************
 //        if(oldStartH.isBefore(newStartH)){
-//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, getFreeAppointments(...)));
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidTestAppointment.class, AppointmentType.COVID_TEST)));
 //        }
 //        if(newEndH.isBefore(oldEndH)){
-//            //Canceled.addAll(CanceledAppointments(newEndH, oldEndH, getFreeAppointments(...)));
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidTestAppointment.class, AppointmentType.COVID_TEST)));
 //        }
         // Update test hours
         dataBase.setCovidTestStartHour(clinic, newStartH);
@@ -219,6 +220,7 @@ public class SimpleServer extends AbstractServer {
             newEndH = temp;
         }
 
+
         //**************OPENING/CLOSING CLINIC HOURS ******************
 //        if(newStartH.isBefore(openingHour(...))){
 //            newStartH = openingHour(...);
@@ -229,10 +231,10 @@ public class SimpleServer extends AbstractServer {
 
         //**************Cancel/order Appointment & send message/mail ******************
 //        if(oldStartH.isBefore(newStartH)){
-//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, getFreeAppointments(...)));
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidVaccineAppointment.class, AppointmentType.COVID_VACCINE)));
 //        }
 //        if(newEndH.isBefore(oldEndH)){
-//            //Canceled.addAll(CanceledAppointments(newEndH, oldEndH, getFreeAppointments(...)));
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidVaccineAppointment.class, AppointmentType.COVID_VACCINE)));
 //        }
         // Update test hours
         dataBase.setCovidVaccineStartHour(clinic, newStartH);
@@ -241,7 +243,7 @@ public class SimpleServer extends AbstractServer {
 //        // go through the list and ask to get appointment if one of them didn't succeeded to get one
 //        // send to the rest that there is no available
 //        for(Appointment test : Canceled ){
-//            //if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
+//            //?????//if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
 //            //{**send message**}
 //        }
 
@@ -272,7 +274,7 @@ public class SimpleServer extends AbstractServer {
             testH = test.getTreatmentDateTime().toLocalTime();
             if (testH.isBefore(to) && testH.isAfter(from)){
                 Canceled.add(test);
-                // CancelAppointmentRequest(...);
+                // DeleteAppointmentRequest(test, App.getActiveUser());
             }
         }
         return Canceled;

@@ -45,8 +45,8 @@ public class UpdateHoursController {
             return;
         Hours hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3)));
         if(selectedService.equals("Covid Test Hours")){
-            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
-//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
+//            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
+            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
             App.getClient().sendRequest(requestUpdateActiveHours);
         }else if (selectedService.equals("Covid Vaccine Hours")){
 //            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, App.getManager().getClinic().getName());
@@ -94,8 +94,8 @@ public class UpdateHoursController {
         String selectedService = SevicesHoursList.getSelectionModel().getSelectedItem();
         if (selectedService == null)
             return;
-        GetClinicRequest requestClinic = new GetClinicRequest(App.getManager().getClinic().getName());
-//        GetClinicRequest requestClinic = new GetClinicRequest("clinic1");
+//        GetClinicRequest requestClinic = new GetClinicRequest(App.getManager().getClinic().getName());
+        GetClinicRequest requestClinic = new GetClinicRequest("clinic1");
         App.getClient().sendRequest(requestClinic);
     }
 
