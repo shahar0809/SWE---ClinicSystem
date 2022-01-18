@@ -5,18 +5,24 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
+import javax.persistence.NoResultException;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
 
     public SimpleServer(int port) {
         super(port);
-        dataBase = new DatabaseAccess();
+        dataBase = DatabaseAccess.getInstance();
         initDatabase();
     }
 
@@ -45,6 +51,18 @@ public class SimpleServer extends AbstractServer {
             dataBase.insertEntity(new Nurse("n3", "passnurse3", 2, "Nurse3", "LastNurse3", "n3@g.com", "Nurse"));
         }
         List<Nurse> nursesList = dataBase.getAll(Nurse.class);
+
+        if (dataBase.getAll(ClinicManager.class).isEmpty()) {
+            dataBase.insertEntity(new ClinicManager("cliinc1un", "clinicpass1", 2, "clinicfn1m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(0)));
+            dataBase.insertEntity(new ClinicManager("cliinc2un", "clinicpass1", 2, "clinicfn2m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(1)));
+            dataBase.insertEntity(new ClinicManager("cliinc1un", "clinicpass1", 2, "clinicfn3m", "clinic_last_manager1", "clinicemail@a.com", clinics.get(2)));
+        }
+        List<ClinicManager> clinicManagersList = dataBase.getAll(ClinicManager.class);
+
+        if (dataBase.getAll(HospitalManager.class).isEmpty()) {
+            dataBase.insertEntity(new HospitalManager("cliinc1un", "clinicpass1", 2, "clinicfn1m", "clinic_last_manager1", "clinicemail@a.com", clinics));
+        }
+        List<HospitalManager> hospitalManagersList = dataBase.getAll(HospitalManager.class);
 
         if (dataBase.getAll(ProfessionDoctor.class).isEmpty()) {
             dataBase.insertEntity(new ProfessionDoctor("d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
@@ -105,16 +123,14 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - getALLClinicRequest");
             }
             return;
-        }
-        else if (msg instanceof GetClinicRequest) {
+        } else if (msg instanceof GetClinicRequest) {
             try {
                 client.sendToClient(getClinicRequest((GetClinicRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - getClinicRequest");
             }
             return;
-        }
-        else if (msg instanceof UpdateActiveHoursRequest) {
+        } else if (msg instanceof UpdateActiveHoursRequest) {
             try {
                 client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
             } catch (IOException e) {
@@ -143,7 +159,7 @@ public class SimpleServer extends AbstractServer {
 
         if (msg instanceof UpdateCovidTestHoursRequest) {
             try {
-                client.sendToClient(UpdateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
+                client.sendToClient(updateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - UpdateCovidTestHoursRequest");
             }
@@ -171,64 +187,55 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - getClinicRequest");
             }
-        }
-        else if (msg instanceof LoginRequest) {
+        } else if (msg instanceof LoginRequest) {
             try {
                 client.sendToClient(handleLoginRequest((LoginRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - LoginRequest");
             }
-        }
-        else if (msg instanceof RegisterRequest) {
+        } else if (msg instanceof RegisterRequest) {
             try {
                 client.sendToClient(handleRegisterRequest((RegisterRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - RegisterRequest");
             }
-        }
-        else if (msg instanceof GetFreeAppointmentRequest) {
+        } else if (msg instanceof GetFreeAppointmentRequest) {
             try {
                 client.sendToClient(getFreeAppointmentsRequest((GetFreeAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - getALLCovidVaccineRequest");
             }
-        }
-        else if (msg instanceof GetPatientAppointmentRequest) {
+        } else if (msg instanceof GetPatientAppointmentRequest) {
             try {
                 client.sendToClient(getPatientAppointmentsRequest((GetPatientAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetPatientAppointmentRequest");
             }
-        }
-        else if (msg instanceof ReserveAppointmentRequest) {
+        } else if (msg instanceof ReserveAppointmentRequest) {
             try {
                 client.sendToClient(addAppointmentsRequest((ReserveAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - AddAppointmentRequest");
             }
-        }
-        else if (msg instanceof DeleteAppointmentRequest) {
+        } else if (msg instanceof DeleteAppointmentRequest) {
             try {
                 client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - DeleteAppointmentRequest");
             }
-        }
-        else if (msg instanceof GetGreenPassRequest) {
+        } else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetGreenPassRequest");
             }
-        }
-        else if (msg instanceof SaveAnswerRequest) {
+        } else if (msg instanceof SaveAnswerRequest) {
             try {
                 client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - SaveAnswerRequest");
             }
-        }
-        else if (msg instanceof GetQuestionRequest) {
+        } else if (msg instanceof GetQuestionRequest) {
             try {
                 client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
             } catch (IOException e) {
@@ -243,8 +250,7 @@ public class SimpleServer extends AbstractServer {
             dataBase.setOpeningHours(dataBase.getClinic(request.clinicName), request.activeHours.getOpeningHours());
             dataBase.setClosingHours(dataBase.getClinic(request.clinicName), request.activeHours.getClosingHours());
             response = new UpdateActiveHoursResponse(true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             response = new UpdateActiveHoursResponse(false);
         }
         return response;
@@ -335,7 +341,7 @@ public class SimpleServer extends AbstractServer {
                 }
             }
 
-            ((Patient)request.getUser()).addAppointment(request.getAppointment());
+            ((Patient) request.getUser()).addAppointment(request.getAppointment());
 
             // Update availability
             request.getAppointment().setAvailable(false);
@@ -353,7 +359,7 @@ public class SimpleServer extends AbstractServer {
         try {
             request.getAppointment().setAvailable(true);
             request.getAppointment().setPatient(null);
-            ((Patient)request.getUser()).deleteAppointment(request.getAppointment());
+            ((Patient) request.getUser()).deleteAppointment(request.getAppointment());
             dataBase.updateAppointment(request.getAppointment());
 
             response = new DeleteAppointmentResponse(true);
@@ -363,21 +369,22 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
-    protected Response updateCovidVaccineHoursRequest(UpdateCovidVaccineHoursRequest request) {
-        Clinic clinic = dataBase.getClinic(request.clinicName);
-        LocalTime oldStartH = dataBase.getCovidVaccineStartHour(clinic);
-        LocalTime oldEndH = dataBase.getCovidVaccineEndHour(clinic);
-        LocalTime newStartH = request.activeHours.openingHours, newEndH = request.activeHours.closingHours;
-        List<Appointment> Canceled=new ArrayList<Appointment>();
+    protected Response updateCovidTestHoursRequest(UpdateCovidTestHoursRequest request) {
+        UpdateCovidTestHoursResponse response;
+        try {
+            Clinic clinic = dataBase.getClinic(request.clinicName);
+            LocalTime oldStartH = dataBase.getCovidTestStartHour(clinic);
+            LocalTime oldEndH = dataBase.getCovidTestEndHour(clinic);
+            LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
+            List<Appointment> Canceled = new ArrayList<Appointment>();
 
-        if(newEndH.isBefore(newStartH)){
-            LocalTime temp = newStartH;
-            newStartH = newEndH;
-            newEndH = temp;
-        }
+            if (newEndH.isBefore(newStartH)) {
+                LocalTime temp = newStartH;
+                newStartH = newEndH;
+                newEndH = temp;
+            }
 
-
-        //**************OPENING/CLOSING CLINIC HOURS ******************
+            //**************OPENING/CLOSING CLINIC HOURS ******************
 //        if(newStartH.isBefore(openingHour(...))){
 //            newStartH = openingHour(...);
 //        }
@@ -385,49 +392,112 @@ public class SimpleServer extends AbstractServer {
 //            newEndH=closingHour(..,);
 //        }
 
-        //**************Cancel/order Appointment & send message/mail ******************
+            //**************Cancel/order Appointment & send message/mail ******************
+//        if(oldStartH.isBefore(newStartH)){
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidTestAppointment.class, AppointmentType.COVID_TEST)));
+//        }
+//        if(newEndH.isBefore(oldEndH)){
+//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidTestAppointment.class, AppointmentType.COVID_TEST)));
+//        }
+
+            // Update test hours
+            dataBase.setCovidTestStartHour(clinic, newStartH);
+            dataBase.setCovidTestEndHour(clinic, newEndH);
+//        // go through the list and ask to get appointment if one of them didn't succeeded to get one
+//        // send to the rest that there is no available
+//        for(Appointment test : Canceled ){
+//            //if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
+//            //{**send message**}
+//        }
+            response = new UpdateCovidTestHoursResponse(true);
+        } catch (Exception e) {
+            response = new UpdateCovidTestHoursResponse(false, e.getMessage());
+        }
+
+        return response;
+    }
+
+    protected Response updateCovidVaccineHoursRequest(UpdateCovidVaccineHoursRequest request) {
+        UpdateCovidVaccineHoursResponse response;
+        try {
+            Clinic clinic = dataBase.getClinic(request.clinicName);
+            LocalTime oldStartH = dataBase.getCovidVaccineStartHour(clinic);
+            LocalTime oldEndH = dataBase.getCovidVaccineEndHour(clinic);
+            LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
+            List<Appointment> Canceled = new ArrayList<Appointment>();
+
+            if (newEndH.isBefore(newStartH)) {
+                LocalTime temp = newStartH;
+                newStartH = newEndH;
+                newEndH = temp;
+            }
+
+            //**************OPENING/CLOSING CLINIC HOURS ******************
+//        if(newStartH.isBefore(openingHour(...))){
+//            newStartH = openingHour(...);
+//        }
+//        if(newEndH.isAfter(closingHour(..,))){
+//            newEndH=closingHour(..,);
+//        }
+
+            //**************Cancel/order Appointment & send message/mail ******************
 //        if(oldStartH.isBefore(newStartH)){
 //            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidVaccineAppointment.class, AppointmentType.COVID_VACCINE)));
 //        }
 //        if(newEndH.isBefore(oldEndH)){
 //            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidVaccineAppointment.class, AppointmentType.COVID_VACCINE)));
 //        }
-        // Update test hours
-        dataBase.setCovidVaccineStartHour(clinic, newStartH);
-        dataBase.setCovidVaccineEndHour(clinic, newEndH);
-
+            // Update test hours
+            dataBase.setCovidVaccineStartHour(clinic, newStartH);
+            dataBase.setCovidVaccineEndHour(clinic, newEndH);
+            response = new UpdateCovidVaccineHoursResponse(true);
+        } catch (Exception e) {
+            response = new UpdateCovidVaccineHoursResponse(false, e.getMessage());
+        }
 //        // go through the list and ask to get appointment if one of them didn't succeeded to get one
 //        // send to the rest that there is no available
 //        for(Appointment test : Canceled ){
 //            //?????//if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
 //            //{**send message**}
 //        }
-
-        UpdateCovidVaccineHoursResponse response = new UpdateCovidVaccineHoursResponse();
         return response;
     }
 
     protected Response getCovidTestHoursRequest(GetCovidTestHoursRequest request) {
-        GetCovidTestHoursResponse response = new GetCovidTestHoursResponse(new Hours(dataBase.getCovidTestStartHour(dataBase.getClinic(request.clinicName))
-                ,dataBase.getCovidTestEndHour(dataBase.getClinic(request.clinicName))));
+        GetCovidTestHoursResponse response;
+        try {
+            response = new GetCovidTestHoursResponse(new Hours(dataBase.getCovidTestStartHour(dataBase.getClinic(request.clinicName))
+                    , dataBase.getCovidTestEndHour(dataBase.getClinic(request.clinicName))), true);
+        } catch (Exception e) {
+            response = new GetCovidTestHoursResponse(new Hours(dataBase.getCovidTestStartHour(dataBase.getClinic(request.clinicName))
+                    , dataBase.getCovidTestEndHour(dataBase.getClinic(request.clinicName))), false, e.getMessage());
+        }
+
         return response;
     }
 
     protected Response getCovidVaccineHoursRequest(GetCovidVaccineHoursRequest request) {
-        GetCovidVaccineHoursResponse response = new GetCovidVaccineHoursResponse(new Hours(dataBase.getCovidVaccineStartHour(dataBase.getClinic(request.clinicName))
-                ,dataBase.getCovidVaccineEndHour(dataBase.getClinic(request.clinicName))));
+        GetCovidVaccineHoursResponse response;
+        try {
+            response = new GetCovidVaccineHoursResponse(new Hours(dataBase.getCovidVaccineStartHour(dataBase.getClinic(request.clinicName))
+                    , dataBase.getCovidVaccineEndHour(dataBase.getClinic(request.clinicName))), true);
+        } catch (Exception e) {
+            response = new GetCovidVaccineHoursResponse(new Hours(dataBase.getCovidVaccineStartHour(dataBase.getClinic(request.clinicName))
+                    , dataBase.getCovidVaccineEndHour(dataBase.getClinic(request.clinicName))), false, e.getMessage());
+        }
+
         return response;
     }
 
     /*
     -> help function: which return a list of all the appointments that is between (from, to)
      */
-    private List<Appointment> CanceledAppointments (LocalTime from, LocalTime to, List<Appointment> appointmentsList){
-        List<Appointment> Canceled=new ArrayList<Appointment>();
+    private List<Appointment> CanceledAppointments(LocalTime from, LocalTime to, List<Appointment> appointmentsList) {
+        List<Appointment> Canceled = new ArrayList<Appointment>();
         LocalTime testH;
-        for(Appointment test : appointmentsList ){
+        for (Appointment test : appointmentsList) {
             testH = test.getTreatmentDateTime().toLocalTime();
-            if (testH.isBefore(to) && testH.isAfter(from)){
+            if (testH.isBefore(to) && testH.isAfter(from)) {
                 Canceled.add(test);
                 // DeleteAppointmentRequest(test, App.getActiveUser());
             }
@@ -439,7 +509,7 @@ public class SimpleServer extends AbstractServer {
         Patient patient = null;
         GetGreenPassResponse response;
         try {
-            patient = ((Patient)request.getUser());
+            patient = ((Patient) request.getUser());
             response = new GetGreenPassResponse(patient.gotCovidVaccine(), true);
         } catch (Exception e) {
             assert patient != null;

@@ -80,7 +80,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        if(App.getActiveUser().getClass() == ClinicManager.class){
+        if(App.getActiveUser() instanceof ClinicManager){
             App.setRoot("PrimaryManager");
         }else{
             App.setRoot("ReserveAppointment");
@@ -96,11 +96,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        if(App.getActiveUser().getClass() == ClinicManager.class){
-            App.setRoot("PrimaryManager");
-        }else{
-            App.setRoot("ReserveAppointment");
-        }
+        App.setRoot("ReserveAppointment");
     }
 
     public void stop() throws Exception {

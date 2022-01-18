@@ -1,11 +1,14 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
 
-public class UpdateCovidTestHoursResponse implements Response {
-    public boolean succeed;
+public class UpdateCovidTestHoursResponse extends Response {
 
-    public UpdateCovidTestHoursResponse() {
-        succeed = true;
+    public UpdateCovidTestHoursResponse(boolean isSuccessful) {
+        super(isSuccessful);
+    }
+
+    public UpdateCovidTestHoursResponse(boolean isSuccessful, String error) {
+        super(isSuccessful, error);
     }
 
     @Override
