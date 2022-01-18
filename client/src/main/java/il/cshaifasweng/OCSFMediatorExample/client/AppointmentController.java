@@ -1,8 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
-import il.cshaifasweng.OCSFMediatorExample.requests.GetFreeAppointmentRequest;
-import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetGreenPassResponse;
@@ -19,6 +18,8 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import java.io.IOException;
 
 public class AppointmentController {
     @FXML
@@ -39,6 +40,9 @@ public class AppointmentController {
     private ObservableList<Appointment> appointments;
 
     @FXML
+    private Button questionnaireButton;
+
+    @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
         appointments = FXCollections.observableArrayList();
@@ -54,6 +58,9 @@ public class AppointmentController {
         ArrayList<AppointmentType> types = new ArrayList<>(Arrays.asList(AppointmentType.values()));
         types.remove(AppointmentType.NURSE);
         comboBox.setItems(FXCollections.observableArrayList(types));
+        comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
+
+        questionnaireButton.setVisible(false);
     }
 
     @FXML
@@ -82,7 +89,11 @@ public class AppointmentController {
         if (response.isSuccessful()) {
             alertUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
-            alertUser(response.getError());
+            if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
+                alertUser("You have to fill the questionnaire!");
+            } else {
+                alertUser(response.getError());
+            }
         }
         onRefresh(null);
     }
@@ -123,8 +134,11 @@ public class AppointmentController {
         if (selected == null)
             return;
 
+
+        questionnaireButton.setVisible(false);
         switch (selected) {
             case COVID_TEST:
+                questionnaireButton.setVisible(true);
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected));
                 break;
             case COVID_VACCINE:
@@ -152,8 +166,8 @@ public class AppointmentController {
         }
     }
 
-    // TODO: Go back to main screen
-    public void goBack(ActionEvent actionEvent) {
+    public void onQuestionnaire(ActionEvent actionEvent) throws IOException {
+        App.setRoot("CovidQuestionnaire");
     }
 }
 

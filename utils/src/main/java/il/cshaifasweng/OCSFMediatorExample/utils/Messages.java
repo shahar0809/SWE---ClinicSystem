@@ -21,4 +21,6 @@ public class Messages {
 
     public static String GREEN_PASS_SUCCESS = "Green pass - Success!";
     public static String GREEN_PASS_NOT_VACCINATED = "You're not eligible for green pass!";
+
+    public static String COVID_TEST_NO_QUESTIONNAIRE = "You haven't filled the Covid Questionnaire!";
 }

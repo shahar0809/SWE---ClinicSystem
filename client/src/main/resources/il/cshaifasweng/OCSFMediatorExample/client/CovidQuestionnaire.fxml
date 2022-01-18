@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="Covid" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="253.0" prefWidth="536.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.QuestionnaireController">
+   <children>
+      <Text layoutX="124.0" layoutY="22.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Answer The Following Questions" underline="true" wrappingWidth="287.7366638183594">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Text>
+      <Text fx:id="q1" layoutX="14.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Do you suffer from any of the following symptoms: fever, cough, shortness of breath, sore throat?" wrappingWidth="374.1366271972656" />
+      <Text fx:id="q2" layoutX="14.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Were you in contact with a verified patient?" wrappingWidth="374.1366271972656" />
+      <Text fx:id="q3" layoutX="14.0" layoutY="155.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Are you or someone in your house waiting for a Covid test answer?" wrappingWidth="336.5366516113281" />
+      <Button layoutX="234.0" layoutY="204.0" mnemonicParsing="false" onAction="#Continue" text="Continue" />
+      <ComboBox fx:id="question1" layoutX="386.0" layoutY="44.0" prefHeight="25.0" prefWidth="127.0" onAction="#Question1"/>
+      <ComboBox fx:id="question2" layoutX="386.0" layoutY="98.0" prefHeight="25.0" prefWidth="127.0" onAction="#Question2"/>
+      <ComboBox fx:id="question3" layoutX="386.0" layoutY="147.0" prefHeight="25.0" prefWidth="127.0" onAction="#Question3"/>
+   </children>
+</AnchorPane>

@@ -67,6 +67,13 @@ public class SimpleServer extends AbstractServer {
         }
         List<FamilyDoctor> familyDoctorsList = dataBase.getAll(FamilyDoctor.class);
 
+        if (dataBase.getAll(Question.class).isEmpty()) {
+            dataBase.insertEntity(new Question("Do you suffer from any of the following symptoms: fever, cough, shortness of breath, sore throat?"));
+            dataBase.insertEntity(new Question("Were you in contact with a verified patient?"));
+            dataBase.insertEntity(new Question("Are you or someone in your house waiting for a Covid test answer?"));
+        }
+        List<Question> questionList = dataBase.getAll(Question.class);
+
         if (dataBase.getAll(Appointment.class).isEmpty()) {
             dataBase.insertEntity(new NurseAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new NurseAppointment(nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
@@ -166,6 +173,20 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - GetGreenPassRequest");
             }
         }
+        else if (msg instanceof SaveAnswerRequest) {
+            try {
+                client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - SaveAnswerRequest");
+            }
+        }
+        else if (msg instanceof GetQuestionRequest) {
+            try {
+                client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetQuestionsRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -260,6 +281,12 @@ public class SimpleServer extends AbstractServer {
     protected Response addAppointmentsRequest(ReserveAppointmentRequest request) {
         ReserveAppointmentResponse response;
         try {
+            if (request.getAppointment() instanceof CovidVaccineAppointment) {
+                if (!dataBase.hasAnsweredCovidQuestionnaire(request.getUser())) {
+                    return new ReserveAppointmentResponse(false, Messages.COVID_TEST_NO_QUESTIONNAIRE);
+                }
+            }
+
             ((Patient)request.getUser()).addAppointment(request.getAppointment());
 
             // Update availability
@@ -297,6 +324,32 @@ public class SimpleServer extends AbstractServer {
         } catch (Exception e) {
             assert patient != null;
             response = new GetGreenPassResponse(patient.gotCovidVaccine(), false, e.getMessage());
+        }
+        return response;
+    }
+
+    protected Response saveAnswerRequest(SaveAnswerRequest request) {
+        Patient patient = null;
+        SaveAnswerResponse response;
+        try {
+            patient = ((Patient) request.user);
+            dataBase.insertEntity(request.answer);
+            response = new SaveAnswerResponse(true);
+        } catch (Exception e) {
+            assert patient != null;
+            response = new SaveAnswerResponse(false, e.getMessage());
+        }
+        return response;
+    }
+
+    protected Response getQuestionsRequest(GetQuestionRequest request) {
+        List<Question> questions = new ArrayList<>();
+        GetQuestionsResponse response;
+        try {
+            questions = dataBase.getAll(Question.class);
+            response = new GetQuestionsResponse(questions, true);
+        } catch (Exception e) {
+            response = new GetQuestionsResponse(questions, false, e.getMessage());
         }
         return response;
     }
