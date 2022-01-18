@@ -1,10 +1,13 @@
 package il.cshaifasweng.OCSFMediatorExample.response;
 
-public class UpdateActiveHoursResponse implements Response {
-    public boolean succeed;
+public class UpdateActiveHoursResponse extends Response {
 
-    public UpdateActiveHoursResponse() {
-        succeed = true;
+    public UpdateActiveHoursResponse(boolean isSuccessful, String error) {
+        super(isSuccessful, error);
+    }
+
+    public UpdateActiveHoursResponse(boolean isSuccessful) {
+        super(isSuccessful);
     }
 
     @Override

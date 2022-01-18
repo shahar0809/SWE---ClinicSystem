@@ -1,11 +1,10 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
-// TODO: Decide if we need table of all clinic members
 @Entity
-public class ClinicEmployee extends User {
+@Table(name = "clinicEmployees")
+public abstract class ClinicEmployee extends User {
     @Column(name = "employeeNum", nullable = false)
     protected int employeeNum;
 
@@ -20,6 +19,14 @@ public class ClinicEmployee extends User {
 
     @Column(name = "role", nullable = false)
     protected String role;
+
+    @Override
+    public String toString() {
+        return "ClinicEmployee{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
 
     public ClinicEmployee() {
     }

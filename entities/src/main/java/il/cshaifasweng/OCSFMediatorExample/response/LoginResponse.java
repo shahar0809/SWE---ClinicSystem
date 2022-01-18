@@ -2,18 +2,17 @@ package il.cshaifasweng.OCSFMediatorExample.response;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
-public class LoginResponse implements Response {
+public class LoginResponse extends Response {
     public User user;
-    public String error;
 
-    public LoginResponse(User user) {
+    public LoginResponse(User user, boolean isSuccessful) {
+        super(isSuccessful, null);
         this.user = user;
-        this.error = null;
     }
 
-    public LoginResponse(String error) {
+    public LoginResponse(String error, boolean isSuccessful) {
+        super(isSuccessful, error);
         this.user = null;
-        this.error = error;
     }
 
     @Override

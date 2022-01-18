@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -8,7 +10,8 @@ import java.time.LocalTime;
 @Table(name = "Clinics")
 public class Clinic implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "increment")
+    @GenericGenerator(name = "increment", strategy = "increment")
     @Column(name = "id", nullable = false)
     protected int id;
 
@@ -20,11 +23,21 @@ public class Clinic implements Serializable {
     @Column(name = "closingHours")
     protected LocalTime closingHours;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Column(name = "CovidTestsStartHour")
+    protected LocalTime CTstartHour;
+    @Column(name = "CovidTestsEndHour")
+    protected LocalTime CTendHour;
+
+    @Column(name = "CovidVaccinesStartHour")
+    protected LocalTime CVstartHour;
+    @Column(name = "CovidVaccinesEndHour")
+    protected LocalTime CVendHour;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "clinicManager")
     ClinicManager clinicManager;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "hospitalManager")
     HospitalManager hospitalManager;
 
@@ -35,6 +48,20 @@ public class Clinic implements Serializable {
         this.name = name;
         this.openingHours = openingHours;
         this.closingHours = closingHours;
+        // As a default value
+        this.CTstartHour = openingHours;
+        this.CTendHour = closingHours;
+        this.CVstartHour = openingHours;
+        this.CVendHour = closingHours;
+    }
+
+    public Clinic(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 
     public int getId() {
@@ -79,5 +106,37 @@ public class Clinic implements Serializable {
 
     public void setHospitalManager(HospitalManager hospitalManager) {
         this.hospitalManager = hospitalManager;
+    }
+
+    public LocalTime getCovidTestStartHour() {
+        return CTstartHour;
+    }
+
+    public void setCovidTestStartHour(LocalTime startHour) {
+        this.CTstartHour = startHour;
+    }
+
+    public LocalTime getCovidTestEndHour() {
+        return CTendHour;
+    }
+
+    public void setCovidTestEndHour(LocalTime endHour) {
+        this.CTendHour = endHour;
+    }
+
+    public LocalTime getCovidVaccineStartHour() {
+        return CVstartHour;
+    }
+
+    public void setCovidVaccineStartHour(LocalTime startHour) {
+        this.CVstartHour = startHour;
+    }
+
+    public LocalTime getCovidVaccineEndHour() {
+        return CVendHour;
+    }
+
+    public void setCovidVaccineEndHour(LocalTime endHour) {
+        this.CVendHour = endHour;
     }
 }
