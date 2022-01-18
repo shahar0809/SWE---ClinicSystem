@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.requests;
 
-public class GetCovidTestHoursRequest implements Request {
+public class GetCovidTestHoursRequest extends Request {
     public String clinicName;
     public GetCovidTestHoursRequest(String activeClinic) {
         clinicName = activeClinic;

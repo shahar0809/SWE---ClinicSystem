@@ -5,7 +5,7 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Answer;
 import il.cshaifasweng.OCSFMediatorExample.entities.Question;
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
-public class SaveAnswerRequest implements Request {
+public class SaveAnswerRequest extends Request {
     public Answer answer;
     public User user;
 

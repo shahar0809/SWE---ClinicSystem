@@ -148,7 +148,7 @@ public class SimpleServer extends AbstractServer {
             System.out.println(request.getToken());
             e.printStackTrace();
             try {
-                client.sendToClient(new TokenExpiredResponse());
+                client.sendToClient(new TokenExpiredResponse(true));
             } catch (IOException e2) {
                 System.out.println("Error - TokenExpiredResponse");
             }
@@ -236,7 +236,7 @@ public class SimpleServer extends AbstractServer {
         if (!Objects.equals(user.getHashPassword(), securePassword))
             return new LoginResponse(Messages.LOGIN_WRONG_AUTH, true);
         dataBase.refreshUserToken(user);
-        return new LoginResponse(user);
+        return new LoginResponse(user, true);
     }
 
     protected <T extends Appointment> Response getFreeAppointmentsRequest(GetFreeAppointmentRequest<T> request) {
@@ -473,10 +473,11 @@ public class SimpleServer extends AbstractServer {
         List<Question> questions = new ArrayList<>();
         GetQuestionsResponse response;
         try {
-            dataBase.getUser(request.username);
-            return new RegisterResponse("Username is already taken!");
-        } catch (NoResultException ignored) {
+            questions = dataBase.getAll(Question.class);
+            response = new GetQuestionsResponse(questions, true);
+        } catch (Exception e) {
+            response = new GetQuestionsResponse(questions, false, e.getMessage());
         }
-        return new RegisterResponse(dataBase.createPatient(request.username, request.password));
+        return response;
     }
 }

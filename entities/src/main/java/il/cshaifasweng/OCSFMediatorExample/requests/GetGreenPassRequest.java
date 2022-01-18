@@ -2,7 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.requests;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.User;
 
-public class GetGreenPassRequest implements Request {
+public class GetGreenPassRequest extends Request {
     public User user;
 
     public GetGreenPassRequest(User user) {

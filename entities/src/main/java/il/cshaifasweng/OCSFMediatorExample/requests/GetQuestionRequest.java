@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.requests;
 
-public class GetQuestionRequest implements Request {
+public class GetQuestionRequest extends Request {
 
     public GetQuestionRequest() {
 
