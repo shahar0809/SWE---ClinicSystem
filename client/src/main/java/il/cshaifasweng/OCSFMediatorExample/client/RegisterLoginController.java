@@ -27,6 +27,9 @@ public class RegisterLoginController {
     private TextField usernameField;
 
     @FXML
+    private TextField ageField;
+
+    @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
     }
@@ -66,7 +69,29 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
-        App.getClient().sendRequest(new RegisterRequest(username, password));
+        String rawAge = ageField.getText();
+        if (rawAge.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Age is required!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+        int age;
+        try {
+            age = Integer.parseInt(rawAge);
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Age must be a number!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+        if (age <= 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Age must be positive!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+        App.getClient().sendRequest(new RegisterRequest(username, password, age));
     }
 
     @Subscribe

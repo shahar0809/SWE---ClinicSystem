@@ -123,9 +123,9 @@ public final class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    public Patient createPatient(String username, String password) {
+    public Patient createPatient(String username, String password, int age) {
         session.beginTransaction();
-        Patient patient = new Patient(username, password);
+        Patient patient = new Patient(username, password, age);
         patient.refreshToken();
         session.save(patient);
         session.getTransaction().commit();

@@ -134,6 +134,6 @@ public class SimpleServer extends AbstractServer {
             return new RegisterResponse("Username is already taken!");
         } catch (NoResultException ignored) {
         }
-        return new RegisterResponse(dataBase.createPatient(request.username, request.password));
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age));
     }
 }
