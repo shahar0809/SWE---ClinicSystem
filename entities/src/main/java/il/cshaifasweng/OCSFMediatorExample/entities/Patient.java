@@ -55,6 +55,12 @@ public class Patient extends User {
         return false;
     }
 
+    @Override
+    public String toString() {
+        // TODO: Replace to name when supported
+        return username;
+    }
+
     public void addAppointment(Appointment appointment) {
         appointment.setPatient(this);
         appointments.add(appointment);

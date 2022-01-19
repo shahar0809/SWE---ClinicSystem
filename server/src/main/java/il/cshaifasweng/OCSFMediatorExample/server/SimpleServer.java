@@ -193,7 +193,8 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - UpdateCovidVaccineHoursRequest");
             }
-        } else if (msg instanceof GetCovidVaccineHoursRequest) {
+        }
+        else if (msg instanceof GetCovidVaccineHoursRequest) {
             try {
                 client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
             } catch (IOException e) {
@@ -223,12 +224,6 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - DeleteAppointmentRequest");
             }
-        } else if (msg instanceof ArriveAppointmentRequest) {
-            try {
-                client.sendToClient(arriveAppointmentsRequest((ArriveAppointmentRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - DeleteAppointmentRequest");
-            }
         } else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
@@ -247,6 +242,13 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - GetQuestionsRequest");
             }
+        } else if (msg instanceof GetMemberAppointmentsRequest) {
+            try {
+                client.sendToClient(handleGetMemberAppointments((GetMemberAppointmentsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetMemberAppointmentsRequest");
+            }
+            return;
         } else if (msg instanceof UpdateCovidTestHoursRequest) {
             try {
                 client.sendToClient(updateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
@@ -427,7 +429,10 @@ public class SimpleServer extends AbstractServer {
         UpdateCovidTestHoursResponse response;
         try {
             Clinic clinic = dataBase.getClinic(request.clinicName);
+            LocalTime oldStartH = dataBase.getCovidTestStartHour(clinic);
+            LocalTime oldEndH = dataBase.getCovidTestEndHour(clinic);
             LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
+            List<Appointment> Canceled = new ArrayList<Appointment>();
 
             if (newEndH.isBefore(newStartH)) {
                 LocalTime temp = newStartH;
