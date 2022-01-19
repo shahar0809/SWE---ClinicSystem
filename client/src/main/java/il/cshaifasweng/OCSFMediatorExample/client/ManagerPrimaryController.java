@@ -7,6 +7,8 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
@@ -66,6 +68,16 @@ public class ManagerPrimaryController {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+        toChnageShours.setDisable(App.getActiveUser() instanceof HospitalManager);
+
+        try {
+            parent = App.loadFXML("ReportsView");
+            ReportsWindow.getChildren().clear();
+            ReportsWindow.getChildren().add(parent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

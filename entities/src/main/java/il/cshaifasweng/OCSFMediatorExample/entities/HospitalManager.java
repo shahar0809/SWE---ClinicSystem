@@ -15,7 +15,7 @@ public class HospitalManager extends ClinicManager {
     }
 
     public HospitalManager(String username, String password, int employeeNum, String firstName, String lastName, String email, List<Clinic> clinics) {
-        super(username, password, employeeNum, firstName, lastName, email);
+        super(username, password, employeeNum, firstName, lastName, email, "Boss");
         this.clinics = clinics;
     }
 

@@ -48,11 +48,13 @@ public class Clinic implements Serializable {
         this.name = name;
         this.openingHours = openingHours;
         this.closingHours = closingHours;
-        // As a default value
-        this.CTstartHour = openingHours;
-        this.CTendHour = closingHours;
-        this.CVstartHour = openingHours;
-        this.CVendHour = closingHours;
+
+        // 00:00-00:00 as a default value...
+        // if the service is available in the clinic, the manager should update the hours
+        this.CTstartHour =  LocalTime.of(00, 00);
+        this.CTendHour = LocalTime.of(00, 00);
+        this.CVstartHour = LocalTime.of(00, 00);
+        this.CVendHour = LocalTime.of(00, 00);
     }
 
     public Clinic(String name) {
