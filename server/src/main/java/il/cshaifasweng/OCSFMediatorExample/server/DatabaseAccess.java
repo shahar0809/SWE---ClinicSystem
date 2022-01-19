@@ -287,4 +287,14 @@ public final class DatabaseAccess {
         Query<Appointment> query = session.createQuery(criteriaQuery);
         return query.getResultList();
     }
+
+    public List<Appointment> getMemberAppointments(ClinicMember member) {
+        CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+        Root<Appointment> rootEntry = criteriaQuery.from(Appointment.class);
+
+        criteriaQuery.where(builder.equal(rootEntry.get("member"), member));
+
+        Query<Appointment> query = session.createQuery(criteriaQuery);
+        return query.getResultList();
+    }
 }
