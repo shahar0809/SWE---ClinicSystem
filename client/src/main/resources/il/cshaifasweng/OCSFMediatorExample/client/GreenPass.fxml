@@ -6,7 +6,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.GreenPassController">
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.Image?>
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.GreenPassController">
    <children>
       <Button id="greenPassButton" layoutX="228.0" layoutY="36.0" mnemonicParsing="false" onAction="#getGreenPass" text="Get Green Pass">
          <font>
@@ -15,9 +17,13 @@
       </Button>
       <AnchorPane fx:id="greenPassBoard" layoutX="159.0" layoutY="105.0" prefHeight="266.0" prefWidth="283.0">
          <children>
-            <ImageView fx:id="barcode" fitHeight="118.0" fitWidth="127.0" layoutX="79.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="barcode" fitHeight="118.0" fitWidth="127.0" layoutX="79.0" layoutY="28.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="barcode.jpg" backgroundLoading="true" />
+               </image>
+            </ImageView>
             <Label fx:id="date" layoutX="129.0" layoutY="172.0" text="Label" />
          </children>
       </AnchorPane>
    </children>
-</AnchorPane>
+</HBox>

@@ -1,7 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
-import il.cshaifasweng.OCSFMediatorExample.requests.*;
+import il.cshaifasweng.OCSFMediatorExample.requests.GetFreeAppointmentRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetGreenPassResponse;
@@ -12,16 +13,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import java.io.IOException;
-
-public class AppointmentController {
+public class AppointmentController extends BaseController {
     @FXML
     TableView<Appointment> table = new TableView<>();
     @FXML
@@ -91,9 +93,9 @@ public class AppointmentController {
         } else {
             alertUserError(response.getError());
             if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
-                alertUser("You have to fill the questionnaire!");
+                informUser("You have to fill the questionnaire!");
             } else {
-                alertUser(response.getError());
+                alertUserError(response.getError());
             }
         }
         onRefresh(null);
