@@ -30,18 +30,12 @@ public abstract class ClinicMember extends ClinicEmployee {
         return firstName + " " + lastName;
     }
 
-    protected void addAppointment(Appointment appointment) {
-        appointments.add(appointment);
-    }
-    protected void removeAppointment(Appointment appointment) { appointments.remove(appointment); }
+    public AppointmentType getType() {return type;}
 
-    public abstract void addReceptionHours(Clinic clinic, LocalDate day, LocalTime t1, LocalTime t2);
-    public void freeReceptionHours(LocalDate day, LocalTime t1, LocalTime t2) {
-        for (Appointment a : this.appointments) {
-            LocalTime aTime = LocalTime.from(a.getTreatmentDateTime());
-            if (!aTime.isAfter(t2) && !aTime.plusMinutes(this.appointmentDuration).isBefore(t1))
-                this.removeAppointment(a);
-        }
+    public int getAppointmentDuration() {return appointmentDuration;}
+
+    public void addAppointment(Appointment appointment) {
+        appointments.add(appointment);
     }
 
     public List<Appointment> getAppointments() {

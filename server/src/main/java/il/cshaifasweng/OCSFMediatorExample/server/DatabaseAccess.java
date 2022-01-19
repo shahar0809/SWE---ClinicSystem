@@ -13,6 +13,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -220,6 +222,58 @@ public final class DatabaseAccess {
 
         Query<T> query = session.createQuery(criteriaQuery);
         return query.getResultList();
+    }
+
+    public void addProfessionDoctorReceptionHours(Clinic clinic, ProfessionDoctor doctor, LocalDate day, LocalTime t1, LocalTime t2) {
+        LocalDateTime curTime = LocalDateTime.of(day, t1);
+        while (t2.isAfter(LocalTime.from(curTime))) {
+            AppointmentType a = doctor.getType();
+            ProfessionDoctorAppointment newApp = new ProfessionDoctorAppointment(a, doctor, curTime, clinic);
+            if (doctor.checkIfFree(newApp.getTreatmentDateTime())) {
+                insertEntity(newApp);
+                doctor.addAppointment(newApp);
+            }
+            curTime = curTime.plusMinutes(doctor.getAppointmentDuration());
+        }
+    }
+
+    public void addFamilyDoctorReceptionHours(Clinic clinic, FamilyDoctor doctor, LocalDate day, LocalTime t1, LocalTime t2) {
+        LocalDateTime curTime = LocalDateTime.of(day, t1);
+        while (t2.isAfter(LocalTime.from(curTime))) {
+            AppointmentType a = doctor.getType();
+            FamilyDoctorAppointment newApp = new FamilyDoctorAppointment(doctor, curTime, clinic);
+            if (doctor.checkIfFree(newApp.getTreatmentDateTime())) {
+                insertEntity(newApp);
+                doctor.addAppointment(newApp);
+            }
+            curTime = curTime.plusMinutes(doctor.getAppointmentDuration());
+        }
+    }
+
+    public void addChildrenDoctorReceptionHours(Clinic clinic, ChildrenDoctor doctor, LocalDate day, LocalTime t1, LocalTime t2) {
+        LocalDateTime curTime = LocalDateTime.of(day, t1);
+        while (t2.isAfter(LocalTime.from(curTime))) {
+            AppointmentType a = doctor.getType();
+            ChildrenDoctorAppointment newApp = new ChildrenDoctorAppointment(doctor, curTime, clinic);
+            if (doctor.checkIfFree(newApp.getTreatmentDateTime())) {
+                insertEntity(newApp);
+                doctor.addAppointment(newApp);
+            }
+            curTime = curTime.plusMinutes(doctor.getAppointmentDuration());
+        }
+    }
+
+    public void addNurseReceptionHours(Clinic clinic, Nurse nurse, LocalDate day, LocalTime t1, LocalTime t2) {
+        LocalDateTime curTime = LocalDateTime.of(day, t1);
+        while (t2.isAfter(LocalTime.from(curTime))) {
+            AppointmentType a = nurse.getType();
+            NurseAppointment newApp = new NurseAppointment(nurse, curTime, clinic);
+            if (nurse.checkIfFree(newApp.getTreatmentDateTime())) {
+                insertEntity(newApp);
+                nurse.addAppointment(newApp);
+            }
+            curTime = curTime.plusMinutes(nurse.getAppointmentDuration());
+        }
     }
 
     public void setCovidTestStartHour(Clinic clinic, LocalTime startHour) {

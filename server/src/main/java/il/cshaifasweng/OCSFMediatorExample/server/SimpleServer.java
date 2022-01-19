@@ -170,6 +170,12 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - getClinicRequest");
             }
             return;
+        } else if (msg instanceof UpdateDoctorHoursRequest) {
+            try {
+                client.sendToClient(updateDoctorHoursRequest((UpdateDoctorHoursRequest)msg));
+            } catch(IOException e) {
+                System.out.println("Error - UpdateDoctorHoursRequest");
+            }
         } else if (msg instanceof UpdateActiveHoursRequest) {
             try {
                 client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
@@ -184,6 +190,25 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - getAllDoctorsRequest");
             }
         }
+    }
+
+    protected Response updateDoctorHoursRequest(UpdateDoctorHoursRequest request) {
+        UpdateDoctorHoursResponse response;
+        try {
+            if (request.doctor instanceof FamilyDoctor) {
+                dataBase.addFamilyDoctorReceptionHours(request.clinic, (FamilyDoctor) request.doctor, request.day, request.t1, request.t2);
+            } else if (request.doctor instanceof ChildrenDoctor) {
+                dataBase.addChildrenDoctorReceptionHours(request.clinic, (ChildrenDoctor) request.doctor, request.day, request.t1, request.t2);
+            } else if (request.doctor instanceof Nurse) {
+                dataBase.addNurseReceptionHours(request.clinic, (Nurse) request.doctor, request.day, request.t1, request.t2);
+            } else if (request.doctor instanceof ProfessionDoctor) {
+                dataBase.addProfessionDoctorReceptionHours(request.clinic, (ProfessionDoctor) request.doctor, request.day, request.t1, request.t2);
+            }
+            response = new UpdateDoctorHoursResponse(true);
+        } catch(Exception e) {
+            response = new UpdateDoctorHoursResponse(false);
+        }
+        return response;
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {

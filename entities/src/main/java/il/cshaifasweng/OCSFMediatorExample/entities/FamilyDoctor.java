@@ -16,14 +16,4 @@ public class FamilyDoctor extends ClinicMember {
         super();
         super.appointmentDuration = 15;
     }
-
-    public void addReceptionHours(Clinic clinic, LocalDate day, LocalTime t1, LocalTime t2) {
-        LocalDateTime curTime = LocalDateTime.of(day, t1);
-        while (t2.isAfter(LocalTime.from(curTime))) {
-            FamilyDoctorAppointment newApp = new FamilyDoctorAppointment(this, curTime, clinic);
-            if (this.checkIfFree(newApp.treatmentDateTime))
-                this.addAppointment(newApp);
-            curTime = curTime.plusMinutes(this.appointmentDuration);
-        }
-    }
 }

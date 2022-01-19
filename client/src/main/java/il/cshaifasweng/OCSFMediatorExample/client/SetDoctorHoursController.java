@@ -1,11 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
-import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
-import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
-import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllDoctorsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.UpdateDoctorHoursRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.GetAllDoctorsResponse;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import javafx.application.Platform;
@@ -85,7 +83,7 @@ public class SetDoctorHoursController {
         if (selectedName == null) {
             return;
         }
-        int selectedNum = Integer.parseInt(selectedName.substring(0, selectedName.indexOf(',')));;
+        int selectedNum = Integer.parseInt(selectedName.substring(0, selectedName.indexOf(',')));
         for (ClinicMember doctor : doctorList) {
             if (selectedNum == doctor.getId()) {
                 doctorToSelect = doctor;
@@ -111,23 +109,6 @@ public class SetDoctorHoursController {
     }
 
     @FXML
-    void onFreeHours(ActionEvent event) {
-        if (day == null || doctorToSelect==null)
-            return;
-        LocalTime t1, t2;
-        try {
-            t1 = LocalTime.parse(DoctorStartingHour1.getText());
-            t2 = LocalTime.parse(DoctorEndingHour1.getText());
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "invalid hour", ButtonType.OK);
-            alert.setHeaderText("Error");
-            alert.show();
-            return;
-        }
-        doctorToSelect.freeReceptionHours(day, t1, t2);
-    }
-
-    @FXML
     void onReserveHours(ActionEvent event) {
         if (day == null || doctorToSelect==null)
             return;
@@ -141,7 +122,8 @@ public class SetDoctorHoursController {
             alert.show();
             return;
         }
-        doctorToSelect.addReceptionHours(null, day, t1, t2);
+        UpdateDoctorHoursRequest requestToSend = new UpdateDoctorHoursRequest(null, doctorToSelect, day, t1, t2);
+        App.getClient().sendRequest(requestToSend);
     }
 
     public void stop() throws Exception {
