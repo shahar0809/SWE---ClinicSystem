@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 public abstract class ClinicMember extends ClinicEmployee {
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER)
     private List<Appointment> appointments = new ArrayList<>();
 
     public ClinicMember(String username, String password, int employeeNum, String firstName, String lastName, String email, String role) {

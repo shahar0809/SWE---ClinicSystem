@@ -1,6 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.client.ocsf.AbstractClient;
+import il.cshaifasweng.OCSFMediatorExample.entities.User;
+import il.cshaifasweng.OCSFMediatorExample.requests.Request;
 import javafx.application.Platform;
 import org.greenrobot.eventbus.EventBus;
 
@@ -26,7 +28,10 @@ public class SimpleClient extends AbstractClient {
         Platform.runLater(() -> EventBus.getDefault().post(msg));
     }
 
-    public void sendRequest(Object msg) {
+    public void sendRequest(Request msg) {
+        User activeUser = App.getActiveUser();
+        if (activeUser != null)
+            msg.setToken(activeUser.getToken());
         try {
             client.sendToServer(msg);
         } catch (IOException e) {

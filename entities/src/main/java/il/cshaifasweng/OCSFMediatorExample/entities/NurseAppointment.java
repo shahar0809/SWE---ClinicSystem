@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
-@DiscriminatorValue("NurseAppointment")
 public class NurseAppointment extends Appointment {
     public NurseAppointment() {
     }

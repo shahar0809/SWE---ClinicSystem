@@ -15,13 +15,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 public final class DatabaseAccess {
     private static DatabaseAccess instance;
     private Session session;
     private CriteriaBuilder builder;
 
-    DatabaseAccess() {
+    private DatabaseAccess() {
         session = getSessionFactory().openSession();
         builder = session.getCriteriaBuilder();
     }
@@ -58,11 +59,13 @@ public final class DatabaseAccess {
         configuration.addAnnotatedClass(ProfessionDoctor.class);
         configuration.addAnnotatedClass(ProfessionDoctorAppointment.class);
         configuration.addAnnotatedClass(FamilyDoctorAppointment.class);
+        configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
         configuration.addAnnotatedClass(NurseAppointment.class);
         configuration.addAnnotatedClass(CovidTestAppointment.class);
         configuration.addAnnotatedClass(CovidVaccineAppointment.class);
         configuration.addAnnotatedClass(FluVaccineAppointment.class);
-        configuration.addAnnotatedClass(ChildrenDoctorAppointment.class);
+        configuration.addAnnotatedClass(Question.class);
+        configuration.addAnnotatedClass(Answer.class);
 
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .applySettings(configuration.getProperties())
@@ -95,6 +98,15 @@ public final class DatabaseAccess {
         return query.getSingleResult();
     }
 
+    public User getUserByToken(UUID token) {
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = builder.createQuery(User.class);
+        Root<User> rootEntry = criteriaQuery.from(User.class);
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("token"), token));
+        Query<User> query = session.createQuery(criteriaQuery);
+        return query.getSingleResult();
+    }
+
     /**
      * Inserts entity into the database.
      *
@@ -103,8 +115,12 @@ public final class DatabaseAccess {
      */
     public <T> void insertEntity(T entity) {
         session.beginTransaction();
-        session.save(entity);
-        session.getTransaction().commit();
+        try {
+            session.save(entity);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     /**
@@ -113,12 +129,26 @@ public final class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    public Patient createPatient(String username, String password) {
+    public Patient createPatient(String username, String password, int age) {
+        Patient patient = null;
         session.beginTransaction();
-        Patient patient = new Patient(username, password);
-        session.save(patient);
-        session.getTransaction().commit();
+        try {
+            patient = new Patient(username, password, age);
+            patient.refreshToken();
+            session.save(patient);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
         return patient;
+    }
+
+    public boolean hasAnsweredCovidQuestionnaire(User user) {
+        CriteriaQuery<Answer> criteriaQuery = builder.createQuery(Answer.class);
+        Root<Answer> rootEntry = criteriaQuery.from(Answer.class);
+        criteriaQuery.select(rootEntry).where(builder.equal(rootEntry.get("patient"), user));
+        Query<Answer> query = session.createQuery(criteriaQuery);
+        return query.getResultList().size() == 3;
     }
 
     /**
@@ -137,18 +167,26 @@ public final class DatabaseAccess {
 
     public void setOpeningHours(Clinic clinic, LocalTime openingHours) {
         session.beginTransaction();
-        clinic.setOpeningHours(openingHours);
-        session.save(clinic);
-        session.flush();
-        session.getTransaction().commit();
+        try {
+            clinic.setOpeningHours(openingHours);
+            session.save(clinic);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     public void setClosingHours(Clinic clinic, LocalTime closingHours) {
         session.beginTransaction();
-        clinic.setClosingHours(closingHours);
-        session.save(clinic);
-        session.flush();
-        session.getTransaction().commit();
+        try {
+            clinic.setClosingHours(closingHours);
+            session.save(clinic);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     /**
@@ -157,9 +195,13 @@ public final class DatabaseAccess {
      */
     public void updateAppointment(Appointment appointment) {
         session.beginTransaction();
-        session.merge(appointment);
-        session.flush();
-        session.getTransaction().commit();
+        try {
+            session.merge(appointment);
+            session.flush();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        }
     }
 
     /**
@@ -178,5 +220,60 @@ public final class DatabaseAccess {
 
         Query<T> query = session.createQuery(criteriaQuery);
         return query.getResultList();
+    }
+
+    public void setCovidTestStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setCovidTestStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setCovidTestEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setCovidTestEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public LocalTime getCovidTestStartHour(Clinic clinic) { return clinic.getCovidTestStartHour();}
+
+    public LocalTime getCovidTestEndHour(Clinic clinic) {
+        return clinic.getCovidTestEndHour();
+    }
+
+    public void setCovidVaccineStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setCovidVaccineStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setCovidVaccineEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setCovidVaccineEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public LocalTime getCovidVaccineStartHour(Clinic clinic) {
+        return clinic.getCovidVaccineStartHour();
+    }
+
+    public LocalTime getCovidVaccineEndHour(Clinic clinic) {
+        return clinic.getCovidVaccineEndHour();
+    }
+
+
+    public void refreshUserToken(User user) {
+        session.beginTransaction();
+        user.refreshToken();
+        session.save(user);
+        session.flush();
+        session.getTransaction().commit();
     }
 }

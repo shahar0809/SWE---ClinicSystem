@@ -1,6 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.requests;
 
-public class LoginRequest implements Request {
+public class LoginRequest extends Request {
     public String username;
     public String password;
 

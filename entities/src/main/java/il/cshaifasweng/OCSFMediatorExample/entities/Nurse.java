@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@DiscriminatorValue("Nurse")
 public class Nurse extends ClinicMember {
     public Nurse() {
     }

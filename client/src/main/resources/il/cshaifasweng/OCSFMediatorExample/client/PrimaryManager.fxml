@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.Pane?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="282.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.ManagerPrimaryController">
+    <tabs>
+        <Tab fx:id="toMainWindow" text="General">
+            <content>
+                <Pane fx:id="mainWindow" prefHeight="200.0" prefWidth="200.0" />
+            </content></Tab>
+        <Tab fx:id="toChnageShours" text="Services Hours ">
+            <content>
+                <Pane fx:id="updateHoursServicesWindow" prefHeight="200.0" prefWidth="200.0" />
+            </content></Tab>
+      <Tab text="Reports">
+         <content>
+            <Pane fx:id="ReportsWindow" prefHeight="200.0" prefWidth="200.0" />
+         </content>
+      </Tab>
+    </tabs>
+</TabPane>

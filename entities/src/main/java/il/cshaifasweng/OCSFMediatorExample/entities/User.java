@@ -4,6 +4,7 @@ import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
 @Table(name = "Users")
@@ -20,6 +21,9 @@ public class User implements Serializable {
     protected byte[] salt;
     @Column(name = "passwordHash", nullable = false)
     String hashPassword;
+
+    @Column(name = "activeToken", columnDefinition = "BINARY(16)")
+    protected UUID token;
 
     public User() {
         try {
@@ -71,4 +75,8 @@ public class User implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public void refreshToken() { token = UUID.randomUUID(); }
+
+    public UUID getToken() { return token; }
 }

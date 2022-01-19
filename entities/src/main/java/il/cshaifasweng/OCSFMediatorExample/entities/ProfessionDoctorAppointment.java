@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@DiscriminatorValue("ProfessionDoctorAppointment")
 public class ProfessionDoctorAppointment extends Appointment {
     public ProfessionDoctorAppointment() {
         super();

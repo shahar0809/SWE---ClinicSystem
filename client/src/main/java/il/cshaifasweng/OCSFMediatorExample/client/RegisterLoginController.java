@@ -1,5 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
+
 import il.cshaifasweng.OCSFMediatorExample.requests.LoginRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.RegisterRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.LoginResponse;
@@ -25,6 +27,9 @@ public class RegisterLoginController {
 
     @FXML
     private TextField usernameField;
+
+    @FXML
+    private TextField ageField;
 
     @FXML
     public void initialize() {
@@ -66,7 +71,29 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
-        App.getClient().sendRequest(new RegisterRequest(username, password));
+        String rawAge = ageField.getText();
+        if (rawAge.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Age is required!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+        int age;
+        try {
+            age = Integer.parseInt(rawAge);
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Age must be a number!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+        if (age <= 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Age must be positive!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+        App.getClient().sendRequest(new RegisterRequest(username, password, age));
     }
 
     @Subscribe
@@ -77,10 +104,12 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
-
-        // TODO: Add isinstanceof to redirect to matching controller
         App.setActiveUser(response.user);
-        App.setRoot("PatientHome");
+        if (App.getActiveUser() instanceof ClinicManager) {
+            App.setRoot("PrimaryManager");
+        } else {
+            App.setRoot("ReserveAppointment");
+        }
     }
 
     @Subscribe
@@ -91,9 +120,12 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
-        // TODO: Add isinstanceof to redirect to matching controller
         App.setActiveUser(response.user);
-        App.setRoot("PatientHome");
+        App.setRoot("ReserveAppointment");
+    }
+
+    public void stop() throws Exception {
+        EventBus.getDefault().unregister(this);
     }
 
 }
