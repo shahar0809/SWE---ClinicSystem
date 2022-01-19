@@ -5,6 +5,7 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.Constants;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
@@ -39,10 +40,10 @@ public class SimpleServer extends AbstractServer {
         List<Clinic> clinics = dataBase.getAll(Clinic.class);
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
-            dataBase.insertEntity(new Patient("p1", "pass1", 16));
-            dataBase.insertEntity(new Patient("p1", "pass1", 17));
-            dataBase.insertEntity(new Patient("p1", "pass1", 18));
-            dataBase.insertEntity(new Patient("p1", "pass1", 19));
+            dataBase.insertEntity(new Patient("p1", "pass1", 16, clinics.get(0)));
+            dataBase.insertEntity(new Patient("p1", "pass1", 17, clinics.get(0)));
+            dataBase.insertEntity(new Patient("p1", "pass1", 18, clinics.get(1)));
+            dataBase.insertEntity(new Patient("p1", "pass1", 19, clinics.get(2)));
         }
         List<Patient> patientList = dataBase.getAll(Patient.class);
 
@@ -141,6 +142,15 @@ public class SimpleServer extends AbstractServer {
             return;
         }
 
+        if (request instanceof GetAllClinicsRequest) {
+            try {
+                client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getALLClinicRequest");
+            }
+            return;
+        }
+
         User user;
         try {
             user = dataBase.getUserByToken(request.getToken());
@@ -156,14 +166,8 @@ public class SimpleServer extends AbstractServer {
         }
         // ALL REQUESTS ASIDE FROM LOGIN AND REGISTER MUST BE BELOW THIS LINE!!!
 
-        if (request instanceof GetAllClinicsRequest) {
-            try {
-                client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getALLClinicRequest");
-            }
-            return;
-        } else if (msg instanceof GetClinicRequest) {
+
+        if (msg instanceof GetClinicRequest) {
             try {
                 client.sendToClient(getClinicRequest((GetClinicRequest) msg));
             } catch (IOException e) {
@@ -222,7 +226,7 @@ public class SimpleServer extends AbstractServer {
             return new RegisterResponse(Messages.REGISTER_USERNAME_TAKEN, true);
         } catch (NoResultException ignored) {
         }
-        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age), true);
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age, dataBase.getClinic(request.clinic)), true);
     }
 
     protected Response handleLoginRequest(LoginRequest request) {
@@ -244,13 +248,15 @@ public class SimpleServer extends AbstractServer {
         GetFreeAppointmentsResponse<T> response;
 
         try {
-            if (request.getAppointmentType() == FAMILY_OR_CHILDREN) {
-                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), response.getPatient().getClinic(), request.getEnumType()));
-                for (Appointment appointment : appointments) {
-                    if ((LocalDateTime.now().plusDays(28)).compareTo(appointment.getTreatmentDateTime()) > 0) {
-                        appointments.remove(appointment);
+            if (request.getEnumType() == AppointmentType.FAMILY_OR_CHILDREN) {
+                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), request.getPatient().getClinic(), request.getEnumType()));
+                List<T> limited_appointments = new ArrayList<>();
+                for (T appointment : appointments) {
+                    if ((LocalDateTime.now().plusWeeks(Constants.FOUR_WEEKS)).compareTo(appointment.getTreatmentDateTime()) < 0) {
+                        limited_appointments.add(appointment);
                     }
                 }
+                appointments = limited_appointments;
             } else {
                 for (Clinic clinic : dataBase.getAll(Clinic.class)) {
                     appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));

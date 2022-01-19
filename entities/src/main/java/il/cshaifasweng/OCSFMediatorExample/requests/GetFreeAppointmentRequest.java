@@ -1,6 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.requests;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.AppointmentType;
+import il.cshaifasweng.OCSFMediatorExample.entities.Patient;
 
 public class GetFreeAppointmentRequest<T> extends Request {
     Class<T> appointmentType;

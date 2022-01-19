@@ -6,6 +6,7 @@ import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetGreenPassResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.ReserveAppointmentResponse;
+import il.cshaifasweng.OCSFMediatorExample.utils.Constants;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -57,8 +58,9 @@ public class AppointmentController {
         // Initialize combo box with appointment types
         ArrayList<AppointmentType> types = new ArrayList<>(Arrays.asList(AppointmentType.values()));
         types.remove(AppointmentType.NURSE);
+        types.remove(AppointmentType.FAMILY);
+        types.remove(AppointmentType.CHILDREN);
         comboBox.setItems(FXCollections.observableArrayList(types));
-        comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
 
         questionnaireButton.setVisible(false);
     }
@@ -118,7 +120,7 @@ public class AppointmentController {
     }
 
     public void alertUser(String message) {
-        Alert alert  = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
         alert.show();
     }
 
@@ -130,7 +132,7 @@ public class AppointmentController {
     @FXML
     public void onAppointmentChoice(ActionEvent actionEvent) {
         AppointmentType selected = comboBox.getValue();
-        Patient patient = ((Patient) App.getActiveUser);
+        Patient patient = ((Patient) App.getActiveUser());
 
         if (selected == null)
             return;
@@ -151,8 +153,8 @@ public class AppointmentController {
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected, patient));
                 break;
             case FAMILY_OR_CHILDREN:
-                if(patient.getAge() >= AGE) {
-                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected , patient));
+                if (patient.getAge() >= Constants.AGE) {
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected, patient));
                 } else {
                     App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected, patient));
                 }

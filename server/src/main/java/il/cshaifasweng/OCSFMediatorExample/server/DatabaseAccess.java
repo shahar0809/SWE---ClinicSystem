@@ -129,11 +129,11 @@ public final class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    public Patient createPatient(String username, String password, int age) {
+    public Patient createPatient(String username, String password, int age, Clinic clinic) {
         Patient patient = null;
         session.beginTransaction();
         try {
-            patient = new Patient(username, password, age);
+            patient = new Patient(username, password, age, clinic);
             patient.refreshToken();
             session.save(patient);
             session.getTransaction().commit();

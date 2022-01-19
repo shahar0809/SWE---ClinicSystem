@@ -15,7 +15,7 @@ public class Patient extends User {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER, mappedBy = "patient")
     private List<Appointment> appointments;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER, mappedBy = "patient")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "patientClinic")
     protected Clinic patientClinic;
 
@@ -29,7 +29,7 @@ public class Patient extends User {
         appointments = new ArrayList<>();
     }
 
-    public Patient(String username, String password, int age, int clinic) {
+    public Patient(String username, String password, int age, Clinic clinic) {
         super(username, password);
         appointments = new ArrayList<>();
         this.age = age;
@@ -81,11 +81,11 @@ public class Patient extends User {
     }
 
     public Clinic getClinic() {
-        return clinic;
+        return patientClinic;
     }
 
     public void setClinic(Clinic clinic) {
-        this.clinic = clinic;
+        this.patientClinic = clinic;
     }
 
     public void deleteAppointment(Appointment appointment) {
