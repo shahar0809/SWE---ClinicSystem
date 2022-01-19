@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.time.LocalTime;
 
-public class UpdateHoursController extends BaseController {
+public class UpdateHoursController {
 
     @FXML
     private ListView<String> SevicesHoursList;
@@ -29,6 +29,7 @@ public class UpdateHoursController extends BaseController {
         SevicesHoursList.getItems().add("Clinic Hours");
         SevicesHoursList.getItems().add("Covid Test Hours");
         SevicesHoursList.getItems().add("Covid Vaccine Hours");
+        SevicesHoursList.getItems().add("Flu Vaccine Hours");
 
         SevicesHoursList.getSelectionModel().selectedItemProperty().addListener((observableValue, newValue, oldValue) -> operatingServicesHours.clear());
     }
@@ -42,7 +43,12 @@ public class UpdateHoursController extends BaseController {
         String newWorkingHours = operatingServicesHours.getText();
         if (newWorkingHours.isEmpty())
             return;
-        Hours hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3)));
+        Hours hours;
+        try {
+            hours = new Hours(LocalTime.parse(newWorkingHours.substring(0, newWorkingHours.indexOf(" "))), LocalTime.parse(newWorkingHours.substring(newWorkingHours.indexOf(" ") + 3)));
+        } catch (Exception e) {
+            return;
+        }
         if(selectedService.equals("Covid Test Hours")){
             UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, ((ClinicManager)App.getActiveUser()).getClinic().getName());
 //            UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(hours, "clinic1");
@@ -53,6 +59,9 @@ public class UpdateHoursController extends BaseController {
             App.getClient().sendRequest(requestUpdateActiveHours);
         }else if (selectedService.equals("Clinic Hours")){
             UpdateClinicHoursRequest requestUpdateActiveHours = new UpdateClinicHoursRequest(hours, ((ClinicManager)App.getActiveUser()).getClinic().getName());
+            App.getClient().sendRequest(requestUpdateActiveHours);
+        }else if (selectedService.equals("Flu Vaccine Hours")){
+            UpdateFluVaccineHoursRequest requestUpdateActiveHours = new UpdateFluVaccineHoursRequest(hours, ((ClinicManager)App.getActiveUser()).getClinic().getName());
             App.getClient().sendRequest(requestUpdateActiveHours);
         }
 
@@ -71,6 +80,16 @@ public class UpdateHoursController extends BaseController {
     public void updateVaccineHours(UpdateCovidVaccineHoursResponse response) {
         Platform.runLater(()->{
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Covid Vaccine Hours Updated!", ButtonType.OK);
+            alert.setHeaderText("Success");
+            alert.show();
+        });
+
+    }
+
+    @Subscribe
+    public void updateFVaccineHours(UpdateFluVaccineHoursResponse response) {
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Flu Vaccine Hours Updated!", ButtonType.OK);
             alert.setHeaderText("Success");
             alert.show();
         });
@@ -102,6 +121,9 @@ public class UpdateHoursController extends BaseController {
                 operatingServicesHours.setText(workingHours);
             }else if (Service.equals("Clinic Hours")){
                 String workingHours = response.clinic.getOpeningHours().toString() + " - " + response.clinic.getClosingHours().toString();
+                operatingServicesHours.setText(workingHours);
+            }else if (Service.equals("Flu Vaccine Hours")){
+                String workingHours = response.clinic.getFluVaccineStartHour().toString() + " - " + response.clinic.getFluVaccineEndHour().toString();
                 operatingServicesHours.setText(workingHours);
             }
         });

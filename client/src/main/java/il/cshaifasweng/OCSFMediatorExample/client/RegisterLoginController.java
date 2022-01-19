@@ -6,6 +6,8 @@ import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
 import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
+import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
+import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
 import il.cshaifasweng.OCSFMediatorExample.requests.LoginRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.RegisterRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;

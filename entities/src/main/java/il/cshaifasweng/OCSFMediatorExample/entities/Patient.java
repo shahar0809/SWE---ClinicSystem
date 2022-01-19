@@ -36,6 +36,14 @@ public class Patient extends User {
         this.patientClinic = clinic;
     }
 
+    public Patient(String username, String password, int age, String email) {
+        super(username, password);
+        appointments = new ArrayList<>();
+        this.age = age;
+        this.email = email;
+    }
+
+
     public List<Appointment> getAppointments() {
         List<Appointment> reserveAppointments = new ArrayList<>();
         for (Appointment appointment : appointments) {

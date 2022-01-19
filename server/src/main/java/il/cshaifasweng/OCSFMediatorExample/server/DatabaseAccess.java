@@ -13,6 +13,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -280,6 +282,34 @@ public final class DatabaseAccess {
         return clinic.getCovidVaccineEndHour();
     }
 
+    public void setFluVaccineStartHour(Clinic clinic, LocalTime startHour) {
+        session.beginTransaction();
+        clinic.setFluVaccineStartHour(startHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public void setFluVaccineEndHour(Clinic clinic, LocalTime endHour) {
+        session.beginTransaction();
+        clinic.setFluVaccineEndHour(endHour);
+        session.save(clinic);
+        session.flush();
+        session.getTransaction().commit();
+    }
+
+    public LocalTime getFluVaccineStartHour(Clinic clinic) {
+        return clinic.getFluVaccineStartHour();
+    }
+
+    public LocalTime getFlueVaccineEndHour(Clinic clinic) {
+        return clinic.getFluVaccineEndHour();
+    }
+
+
+    public LocalTime getClinicOpeningHour(Clinic clinic) { return clinic.getOpeningHours();}
+
+    public LocalTime getClinicClosingHour(Clinic clinic) { return clinic.getClosingHours();}
     public LocalTime getClinicOpeningHour(Clinic clinic) { return clinic.getOpeningHours();}
 
     public LocalTime getClinicClosingHour(Clinic clinic) { return clinic.getClosingHours();}
