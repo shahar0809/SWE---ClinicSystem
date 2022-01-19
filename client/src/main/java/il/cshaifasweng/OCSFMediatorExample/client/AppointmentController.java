@@ -16,7 +16,12 @@ import javafx.scene.control.*;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class AppointmentController extends BaseController {
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import java.io.IOException;
+
+public class AppointmentController {
     @FXML
     TableView<Appointment> table = new TableView<>();
     @FXML
@@ -35,6 +40,9 @@ public class AppointmentController extends BaseController {
     private ObservableList<Appointment> appointments;
 
     @FXML
+    private Button questionnaireButton;
+
+    @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
         appointments = FXCollections.observableArrayList();
@@ -47,7 +55,12 @@ public class AppointmentController extends BaseController {
         clinicColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getClinic().toString()));
 
         // Initialize combo box with appointment types
+        ArrayList<AppointmentType> types = new ArrayList<>(Arrays.asList(AppointmentType.values()));
+        types.remove(AppointmentType.NURSE);
+        comboBox.setItems(FXCollections.observableArrayList(types));
         comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
+
+        questionnaireButton.setVisible(false);
     }
 
     @FXML
@@ -77,6 +90,11 @@ public class AppointmentController extends BaseController {
             informUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
             alertUserError(response.getError());
+            if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
+                alertUser("You have to fill the questionnaire!");
+            } else {
+                alertUser(response.getError());
+            }
         }
         onRefresh(null);
     }
@@ -112,8 +130,10 @@ public class AppointmentController extends BaseController {
         if (selected == null)
             return;
 
+        questionnaireButton.setVisible(false);
         switch (selected) {
             case COVID_TEST:
+                questionnaireButton.setVisible(true);
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected));
                 break;
             case COVID_VACCINE:
@@ -139,10 +159,6 @@ public class AppointmentController extends BaseController {
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected));
                 break;
         }
-    }
-
-    // TODO: Go back to main screen
-    public void goBack(ActionEvent actionEvent) {
     }
 }
 

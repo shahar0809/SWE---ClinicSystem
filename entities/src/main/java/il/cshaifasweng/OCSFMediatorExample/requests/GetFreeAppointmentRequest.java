@@ -2,7 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.requests;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.AppointmentType;
 
-public class GetFreeAppointmentRequest<T> implements Request {
+public class GetFreeAppointmentRequest<T> extends Request {
     Class<T> appointmentType;
     AppointmentType enumType;
 

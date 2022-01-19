@@ -1,11 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.entities;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
 
 @Entity
-@DiscriminatorValue("CovidVaccineAppointment")
 public class CovidVaccineAppointment extends Appointment {
     public CovidVaccineAppointment() {
         super();

@@ -16,14 +16,14 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     @Column(name = "id")
     protected Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "patient")
     protected Patient patient;
 
     @Column(name = "appointment_time", nullable = false)
     protected LocalDateTime treatmentDateTime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "member", nullable = false)
     protected ClinicMember member;
 
