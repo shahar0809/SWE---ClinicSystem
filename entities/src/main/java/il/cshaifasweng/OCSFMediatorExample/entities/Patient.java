@@ -33,8 +33,8 @@ public class Patient extends User {
 
     public List<Appointment> getAppointments() {
         List<Appointment> reserveAppointments = new ArrayList<>();
-        for(Appointment appointment : appointments) {
-            if(!appointment.hasPatientArrived() && LocalDateTime.now().compareTo(appointment.getTreatmentDateTime()) > 0) {
+        for (Appointment appointment : appointments) {
+            if (!appointment.hasPatientArrived() && LocalDateTime.now().compareTo(appointment.getTreatmentDateTime()) > 0) {
                 reserveAppointments.add(appointment);
             }
         }
@@ -42,8 +42,8 @@ public class Patient extends User {
     }
 
     public boolean gotCovidVaccine() {
-        for(Appointment appointment : appointments) {
-            if(appointment.hasPatientArrived() && appointment instanceof CovidVaccineAppointment) {
+        for (Appointment appointment : appointments) {
+            if (appointment.hasPatientArrived() && appointment instanceof CovidVaccineAppointment) {
                 return true;
             }
         }
