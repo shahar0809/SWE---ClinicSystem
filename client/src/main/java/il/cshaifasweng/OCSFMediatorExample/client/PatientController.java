@@ -5,7 +5,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -31,17 +30,8 @@ public class PatientController extends BaseController {
     Tab identifyTab;
 
     @FXML
-    AppointmentController availableAppointmentsController;
-    @FXML
-    PatientAppointmentsController patientAppointmentsController;
-    @FXML
-    GreenPassController greenPassController;
-    @FXML
-    PatientIdentifyController identifyController;
-
-    @FXML
     void initialize() {
-        Parent parent = null;
+        Parent parent;
 
         try {
             parent = App.loadFXML("PatientAppointments");
