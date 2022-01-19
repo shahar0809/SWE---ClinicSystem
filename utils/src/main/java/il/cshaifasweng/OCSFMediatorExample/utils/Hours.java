@@ -1,8 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.utils;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 
-public class Hours {
+public class Hours implements Serializable {
     private LocalTime openingHours;
     private LocalTime closingHours;
 

@@ -13,9 +13,8 @@ import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
@@ -40,9 +39,9 @@ public class SimpleServer extends AbstractServer {
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
             dataBase.insertEntity(new Patient("p1", "pass1", 16));
-            dataBase.insertEntity(new Patient("p1", "pass1", 17));
-            dataBase.insertEntity(new Patient("p1", "pass1", 18));
-            dataBase.insertEntity(new Patient("p1", "pass1", 19));
+            dataBase.insertEntity(new Patient("p2", "pass1", 17));
+            dataBase.insertEntity(new Patient("p3", "pass1", 18));
+            dataBase.insertEntity(new Patient("p4", "pass1", 19));
         }
         List<Patient> patientList = dataBase.getAll(Patient.class);
 
@@ -170,6 +169,13 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - getClinicRequest");
             }
             return;
+        } else if (msg instanceof GetClinicReportsRequest) {
+            try {
+                client.sendToClient(getClinicReports((GetClinicReportsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetClinicReportsRequest");
+            }
+            return;
         } else if (msg instanceof UpdateActiveHoursRequest) {
             try {
                 client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
@@ -178,6 +184,47 @@ public class SimpleServer extends AbstractServer {
             }
             return;
         }
+
+        if (msg instanceof UpdateCovidTestHoursRequest) {
+            try {
+                client.sendToClient(updateCovidTestHoursRequest((UpdateCovidTestHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidTestHoursRequest");
+            }
+        }
+
+        if (msg instanceof GetCovidTestHoursRequest) {
+            try {
+                client.sendToClient(getCovidTestHoursRequest((GetCovidTestHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetCovidTestHoursRequest");
+            }
+        }
+
+        if (msg instanceof UpdateCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(updateCovidVaccineHoursRequest((UpdateCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidVaccineHoursRequest");
+            }
+        }
+
+        if (msg instanceof GetCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getCovidVaccineHoursRequest");
+            }
+        }
+
+        if (msg instanceof UpdateClinicHoursRequest) {
+            try {
+                client.sendToClient(updateClinicHoursRequest((UpdateClinicHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateClinicHoursRequest");
+            }
+        }
+
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -310,10 +357,7 @@ public class SimpleServer extends AbstractServer {
         UpdateCovidTestHoursResponse response;
         try {
             Clinic clinic = dataBase.getClinic(request.clinicName);
-            LocalTime oldStartH = dataBase.getCovidTestStartHour(clinic);
-            LocalTime oldEndH = dataBase.getCovidTestEndHour(clinic);
             LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
-            List<Appointment> Canceled = new ArrayList<Appointment>();
 
             if (newEndH.isBefore(newStartH)) {
                 LocalTime temp = newStartH;
@@ -321,31 +365,43 @@ public class SimpleServer extends AbstractServer {
                 newEndH = temp;
             }
 
-            //**************OPENING/CLOSING CLINIC HOURS ******************
-//        if(newStartH.isBefore(openingHour(...))){
-//            newStartH = openingHour(...);
-//        }
-//        if(newEndH.isAfter(closingHour(..,))){
-//            newEndH=closingHour(..,);
-//        }
+            if(newStartH.isBefore(clinic.getOpeningHours())){
+                newStartH = clinic.getOpeningHours();
+            }
+            if(newEndH.isAfter(clinic.getClosingHours())){
+                newEndH = clinic.getClosingHours();
+            }
 
-            //**************Cancel/order Appointment & send message/mail ******************
-//        if(oldStartH.isBefore(newStartH)){
-//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidTestAppointment.class, AppointmentType.COVID_TEST)));
-//        }
-//        if(newEndH.isBefore(oldEndH)){
-//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidTestAppointment.class, AppointmentType.COVID_TEST)));
-//        }
+            List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
+
+            if(!allAppointments.isEmpty()){
+                for(Appointment app:allAppointments){
+                    if(app instanceof CovidTestAppointment){
+                        if(!app.isAvailable() && app.getPatient()==null){//wasn't available because of hours
+                            app.setAvailable(true);
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isBefore(newStartH)){
+                            if(!app.isAvailable()){
+                                newStartH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isAfter(newEndH)){
+                            if(!app.isAvailable()){
+                                newEndH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                    }
+                }
+            }
 
             // Update test hours
             dataBase.setCovidTestStartHour(clinic, newStartH);
             dataBase.setCovidTestEndHour(clinic, newEndH);
-//        // go through the list and ask to get appointment if one of them didn't succeeded to get one
-//        // send to the rest that there is no available
-//        for(Appointment test : Canceled ){
-//            //if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
-//            //{**send message**}
-//        }
+
             response = new UpdateCovidTestHoursResponse(true);
         } catch (Exception e) {
             response = new UpdateCovidTestHoursResponse(false, e.getMessage());
@@ -358,10 +414,7 @@ public class SimpleServer extends AbstractServer {
         UpdateCovidVaccineHoursResponse response;
         try {
             Clinic clinic = dataBase.getClinic(request.clinicName);
-            LocalTime oldStartH = dataBase.getCovidVaccineStartHour(clinic);
-            LocalTime oldEndH = dataBase.getCovidVaccineEndHour(clinic);
             LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
-            List<Appointment> Canceled = new ArrayList<Appointment>();
 
             if (newEndH.isBefore(newStartH)) {
                 LocalTime temp = newStartH;
@@ -369,34 +422,46 @@ public class SimpleServer extends AbstractServer {
                 newEndH = temp;
             }
 
-            //**************OPENING/CLOSING CLINIC HOURS ******************
-//        if(newStartH.isBefore(openingHour(...))){
-//            newStartH = openingHour(...);
-//        }
-//        if(newEndH.isAfter(closingHour(..,))){
-//            newEndH=closingHour(..,);
-//        }
+            if(newStartH.isBefore(clinic.getOpeningHours())){
+                newStartH = clinic.getOpeningHours();
+            }
+            if(newEndH.isAfter(clinic.getClosingHours())){
+                newEndH = clinic.getClosingHours();
+            }
 
-            //**************Cancel/order Appointment & send message/mail ******************
-//        if(oldStartH.isBefore(newStartH)){
-//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidVaccineAppointment.class, AppointmentType.COVID_VACCINE)));
-//        }
-//        if(newEndH.isBefore(oldEndH)){
-//            //Canceled.addAll(CanceledAppointments(oldStartH, newStartH, GetFreeAppointmentRequest(CovidVaccineAppointment.class, AppointmentType.COVID_VACCINE)));
-//        }
-            // Update test hours
+            List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
+
+            if(!allAppointments.isEmpty()){
+                for(Appointment app:allAppointments){
+                    if(app instanceof CovidVaccineAppointment){
+                        if(!app.isAvailable() && app.getPatient()==null){//wasn't available because of hours
+                            app.setAvailable(true);
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isBefore(newStartH)){
+                            if(!app.isAvailable()){
+                                newStartH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isAfter(newEndH)){
+                            if(!app.isAvailable()){
+                                newEndH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                    }
+                }
+            }
+
             dataBase.setCovidVaccineStartHour(clinic, newStartH);
             dataBase.setCovidVaccineEndHour(clinic, newEndH);
             response = new UpdateCovidVaccineHoursResponse(true);
         } catch (Exception e) {
             response = new UpdateCovidVaccineHoursResponse(false, e.getMessage());
         }
-//        // go through the list and ask to get appointment if one of them didn't succeeded to get one
-//        // send to the rest that there is no available
-//        for(Appointment test : Canceled ){
-//            //?????//if(GetCovidTestAppointment(...)== "...")//there is no available Appointments
-//            //{**send message**}
-//        }
+
         return response;
     }
 
@@ -426,20 +491,66 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
-    /*
-    -> help function: which return a list of all the appointments that is between (from, to)
-     */
-    private List<Appointment> CanceledAppointments(LocalTime from, LocalTime to, List<Appointment> appointmentsList) {
-        List<Appointment> Canceled = new ArrayList<Appointment>();
-        LocalTime testH;
-        for (Appointment test : appointmentsList) {
-            testH = test.getTreatmentDateTime().toLocalTime();
-            if (testH.isBefore(to) && testH.isAfter(from)) {
-                Canceled.add(test);
-                // DeleteAppointmentRequest(test, App.getActiveUser());
+    protected Response updateClinicHoursRequest(UpdateClinicHoursRequest request) {
+        UpdateClinicHoursResponse response;
+        try {
+            Clinic clinic = dataBase.getClinic(request.clinicName);
+            LocalTime oldStartH = dataBase.getClinicOpeningHour(clinic);
+            LocalTime oldEndH = dataBase.getClinicClosingHour(clinic);
+            LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
+            List<Appointment> Canceled = new ArrayList<Appointment>();
+
+            if (newEndH.isBefore(newStartH)) {
+                LocalTime temp = newStartH;
+                newStartH = newEndH;
+                newEndH = temp;
             }
+
+            List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
+            // ********** PRIORITY to Patient ***************
+            if(!allAppointments.isEmpty()){
+                for(Appointment app:allAppointments){
+                        if(!app.isAvailable() && app.getPatient()==null){//wasn't available because of hours
+                            app.setAvailable(true);
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isBefore(newStartH)){
+                            if(!app.isAvailable()){
+                                newStartH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isAfter(newEndH)){
+                            if(!app.isAvailable()){
+                                newEndH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                }
+            }
+
+
+            // the case that other services start before the clinic opening hour
+            if(newStartH.isAfter(dataBase.getCovidTestStartHour(clinic)) || newEndH.isBefore(dataBase.getCovidTestEndHour(clinic))){
+                UpdateCovidTestHoursRequest requestUpdateActiveHours = new UpdateCovidTestHoursRequest(new Hours(newStartH, newEndH), clinic.getName());
+                updateCovidTestHoursRequest(requestUpdateActiveHours);
+            }
+            if(newStartH.isAfter(dataBase.getCovidVaccineStartHour(clinic)) || newEndH.isBefore(dataBase.getCovidVaccineEndHour(clinic))){
+                UpdateCovidVaccineHoursRequest requestUpdateActiveHours = new UpdateCovidVaccineHoursRequest(new Hours(newStartH, newEndH), clinic.getName());
+                updateCovidVaccineHoursRequest(requestUpdateActiveHours);
+            }
+
+            // Update test hours
+            dataBase.setOpeningHours(clinic, newStartH);
+            dataBase.setClosingHours(clinic, newEndH);
+
+            response = new UpdateClinicHoursResponse(true);
+        } catch (Exception e) {
+            response = new UpdateClinicHoursResponse(false, e.getMessage());
         }
-        return Canceled;
+
+        return response;
     }
 
     protected Response getGreenPassRequest(GetGreenPassRequest request) {
@@ -479,5 +590,53 @@ public class SimpleServer extends AbstractServer {
             response = new GetQuestionsResponse(questions, false, e.getMessage());
         }
         return response;
+    }
+
+    protected Response getClinicReports(GetClinicReportsRequest request) {
+        Clinic clinic;
+        try {
+            clinic = dataBase.getClinic(request.clinicName);
+        } catch (Exception e) {
+            return new GetClinicReportsResponse(new ArrayList<>(), false);
+        }
+        List<Appointment> appointments = dataBase.getAll(Appointment.class);
+        Map<String, Integer> visits = new HashMap<>();
+        Map<String, Integer> missedVisits = new HashMap<>();
+        double waitingTime = 0;
+        int dayVisits = 0;
+        for (Appointment appointment : appointments) {
+            if (appointment.getClinic() != clinic)
+                continue;
+            if (appointment.getTreatmentDateTime().isAfter(LocalDateTime.now()) || appointment.getTreatmentDateTime().isBefore(LocalDateTime.now().minusWeeks(1)))
+                continue;
+            if (visits.containsKey(appointment.getType()))
+                visits.put(appointment.getType(), visits.get(appointment.getType()) + 1);
+            else
+                visits.put(appointment.getType(), 1);
+            if (appointment.getTreatmentDateTime().isBefore(LocalDateTime.now()) && !appointment.hasPatientArrived()) {
+                if (missedVisits.containsKey(appointment.getType()))
+                    missedVisits.put(appointment.getType(), missedVisits.get(appointment.getType()) + 1);
+                else
+                    missedVisits.put(appointment.getType(), 1);
+            }
+            if (appointment.getTreatmentDateTime().isBefore(LocalDateTime.now().minusDays(1)) || !appointment.hasPatientArrived())
+                continue;
+            dayVisits++;
+            waitingTime += ChronoUnit.MINUTES.between(appointment.getArrivalDateTime(), appointment.getTreatmentDateTime());
+        }
+
+        List<Report> reports = new ArrayList<>();
+        for (Map.Entry<String, Integer> visit : visits.entrySet()) {
+            reports.add(new Report(visit.getKey() + " Appointments", String.valueOf(visit.getValue())));
+        }
+        for (Map.Entry<String, Integer> missedVisit : missedVisits.entrySet()) {
+            reports.add(new Report(missedVisit.getKey() + " Missed", String.valueOf(missedVisit.getValue())));
+        }
+        if (dayVisits > 0) {
+            reports.add(new Report("Average Waiting Time", String.valueOf(waitingTime / dayVisits)));
+        } else {
+            reports.add(new Report("Average Waiting Time", "0"));
+        }
+        return new GetClinicReportsResponse(reports, true);
     }
 }

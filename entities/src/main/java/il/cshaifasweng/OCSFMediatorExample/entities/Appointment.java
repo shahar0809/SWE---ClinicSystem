@@ -23,6 +23,9 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     @Column(name = "appointment_time", nullable = false)
     protected LocalDateTime treatmentDateTime;
 
+    @Column(name = "arrival_time")
+    protected LocalDateTime arrivalDateTime;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "member", nullable = false)
     protected ClinicMember member;
@@ -100,6 +103,8 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
     }
 
     public void setPatientArrived(boolean patientArrived) {
+        if (patientArrived)
+            this.arrivalDateTime = LocalDateTime.now();
         this.patientArrived = patientArrived;
     }
 
@@ -129,6 +134,10 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
 
     public LocalDateTime getTreatmentDateTime() {
         return treatmentDateTime;
+    }
+
+    public LocalDateTime getArrivalDateTime() {
+        return arrivalDateTime;
     }
 
     public void setTreatmentDateTime(LocalDateTime treatmentDateTime) {
