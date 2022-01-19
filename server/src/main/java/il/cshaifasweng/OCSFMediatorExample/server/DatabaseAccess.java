@@ -310,9 +310,6 @@ public final class DatabaseAccess {
     public LocalTime getClinicOpeningHour(Clinic clinic) { return clinic.getOpeningHours();}
 
     public LocalTime getClinicClosingHour(Clinic clinic) { return clinic.getClosingHours();}
-    public LocalTime getClinicOpeningHour(Clinic clinic) { return clinic.getOpeningHours();}
-
-    public LocalTime getClinicClosingHour(Clinic clinic) { return clinic.getClosingHours();}
 
     public void refreshUserToken(User user) {
         session.beginTransaction();
