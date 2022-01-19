@@ -177,6 +177,12 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - updateActiveHoursRequest");
             }
             return;
+        } else if (msg instanceof GetGreenPassRequest) {
+            try {
+                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetGreenPassRequest");
+            }
         }
     }
 

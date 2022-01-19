@@ -121,7 +121,7 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("ReserveAppointment");
+        App.setRoot("PatientHome");
     }
 
     public void stop() throws Exception {
