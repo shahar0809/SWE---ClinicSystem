@@ -44,11 +44,15 @@ public class QuestionnaireController extends BaseController {
     @FXML
     void initialize() {
         EventBus.getDefault().register(this);
-        App.getClient().sendRequest(new GetQuestionRequest());
 
         question1.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
         question2.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
         question3.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
+    }
+
+    @Override
+    public void start() {
+        App.getClient().sendRequest(new GetQuestionRequest());
     }
 
     @FXML

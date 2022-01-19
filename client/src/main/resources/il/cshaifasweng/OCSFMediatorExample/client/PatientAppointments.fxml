@@ -21,6 +21,7 @@
             <Region prefHeight="38.0" prefWidth="28.0" />
             <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancel" text="Cancel" />
             <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
+            <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#onArrive" text="Arrive" />
         </children>
     </HBox>
     <TableView fx:id="table" prefHeight="234.0" prefWidth="546.0">

@@ -2,9 +2,11 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Appointment;
 import il.cshaifasweng.OCSFMediatorExample.entities.AppointmentType;
+import il.cshaifasweng.OCSFMediatorExample.requests.ArriveAppointmentRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.DeleteAppointmentRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetPatientAppointmentRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.ReserveAppointmentRequest;
+import il.cshaifasweng.OCSFMediatorExample.response.ArriveAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetPatientAppointmentResponse;
@@ -45,7 +47,10 @@ public class PatientAppointmentsController extends BaseController {
         memberColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getMember().toString()));
         dateColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTreatmentDateTimeString()));
         clinicColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getClinic().toString()));
+    }
 
+    @Override
+    public void start() {
         onRefresh(null);
     }
 
@@ -80,6 +85,29 @@ public class PatientAppointmentsController extends BaseController {
             appointments.addAll(response.appointments);
             table.setItems(appointments);
             table.refresh();
+        } else {
+            alertUserError(response.getError());
+        }
+    }
+
+    @FXML
+    public void onArrive(ActionEvent actionEvent) {
+        Appointment selectedAppointment = table.getSelectionModel().getSelectedItem();
+        if (selectedAppointment == null)
+            return;
+        if (selectedAppointment.hasPatientArrived()) {
+            alertUserError(Messages.ARRIVE_APPOINTMENT_TWICE);
+            return;
+        }
+        ArriveAppointmentRequest request = new ArriveAppointmentRequest(selectedAppointment, App.getActiveUser());
+        App.getClient().sendRequest(request);
+    }
+
+    @Subscribe
+    public void arriveResponse(ArriveAppointmentResponse response) {
+        if (response.isSuccessful()) {
+            informUser(Messages.ARRIVE_APPOINTMENT_SUCCESS);
+            onRefresh(null);
         } else {
             alertUserError(response.getError());
         }

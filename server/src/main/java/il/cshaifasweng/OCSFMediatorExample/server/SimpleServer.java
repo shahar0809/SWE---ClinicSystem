@@ -41,9 +41,9 @@ public class SimpleServer extends AbstractServer {
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
             dataBase.insertEntity(new Patient("p1", "pass1", 16, clinics.get(0)));
-            dataBase.insertEntity(new Patient("p1", "pass1", 17, clinics.get(0)));
-            dataBase.insertEntity(new Patient("p1", "pass1", 18, clinics.get(1)));
-            dataBase.insertEntity(new Patient("p1", "pass1", 19, clinics.get(2)));
+            dataBase.insertEntity(new Patient("p2", "pass1", 17, clinics.get(0)));
+            dataBase.insertEntity(new Patient("p3", "pass1", 18, clinics.get(1)));
+            dataBase.insertEntity(new Patient("p4", "pass1", 19, clinics.get(2)));
         }
         List<Patient> patientList = dataBase.getAll(Patient.class);
 
@@ -219,6 +219,12 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - DeleteAppointmentRequest");
             }
+        } else if (msg instanceof ArriveAppointmentRequest) {
+            try {
+                client.sendToClient(arriveAppointmentsRequest((ArriveAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - DeleteAppointmentRequest");
+            }
         } else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
@@ -373,6 +379,18 @@ public class SimpleServer extends AbstractServer {
             response = new DeleteAppointmentResponse(true);
         } catch (Exception e) {
             response = new DeleteAppointmentResponse(false, e.getMessage());
+        }
+        return response;
+    }
+
+    protected Response arriveAppointmentsRequest(ArriveAppointmentRequest request) {
+        ArriveAppointmentResponse response;
+        try {
+            request.getAppointment().setPatientArrived(true);
+            dataBase.updateAppointment(request.getAppointment());
+            response = new ArriveAppointmentResponse(true);
+        } catch (Exception e) {
+            response = new ArriveAppointmentResponse(false, e.getMessage());
         }
         return response;
     }

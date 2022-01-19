@@ -16,6 +16,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JavaFX App
@@ -27,16 +29,28 @@ public class App extends Application {
     private static SimpleClient client;
     private static User activeUser;
     private static ClinicManager manager;
-
+    private static Map<String, Parent> parents = new HashMap<>();
+    private static Map<String, BaseController> controllers = new HashMap<>();
 
     static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+        scene.setRoot(loadAndStartFXML(fxml));
         stage.sizeToScene();
+    }
+
+    public static Parent loadAndStartFXML(String fxml) throws IOException {
+        if (!parents.containsKey(fxml)) {
+            Parent parent = loadFXML(fxml);
+            parents.put(fxml, parent);
+        }
+        controllers.get(fxml).start();
+        return parents.get(fxml);
     }
 
     public static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        Parent parent = fxmlLoader.load();
+        controllers.put(fxml, fxmlLoader.getController());
+        return parent;
     }
 
     public static void main(String[] args) {
@@ -56,7 +70,7 @@ public class App extends Application {
         App.stage = stage;
         client = SimpleClient.getClient();
         client.openConnection();
-        scene = new Scene(loadFXML("RegisterLogin"));
+        scene = new Scene(loadAndStartFXML("RegisterLogin"));
         stage.setScene(scene);
         stage.show();
     }

@@ -1,4 +1,4 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-public class PatientIdentifyController {
+public class PatientIdentifyController  extends BaseController {
 }

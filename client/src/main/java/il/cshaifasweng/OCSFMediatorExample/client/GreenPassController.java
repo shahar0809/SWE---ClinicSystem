@@ -27,6 +27,10 @@ public class GreenPassController extends BaseController {
     @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void start() {
         greenPassBoard.setVisible(false);
     }
 

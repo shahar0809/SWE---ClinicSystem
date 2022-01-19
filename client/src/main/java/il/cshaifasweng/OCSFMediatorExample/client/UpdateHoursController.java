@@ -13,7 +13,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.time.LocalTime;
 
-public class UpdateHoursController {
+public class UpdateHoursController extends BaseController {
 
     @FXML
     private ListView<String> SevicesHoursList;

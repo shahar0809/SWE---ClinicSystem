@@ -3,6 +3,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -11,6 +12,8 @@ public class BaseController {
         App.setActiveUser(null);
         App.setRoot("RegisterLogin");
     }
+
+    public void start() {};
 
     public void informUser(String message) {
         Alert alert  = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);

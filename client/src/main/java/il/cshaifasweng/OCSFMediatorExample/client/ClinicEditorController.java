@@ -17,7 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.time.LocalTime;
 
-public class ClinicEditorController {
+public class ClinicEditorController extends BaseController {
     @FXML
     private ListView<String> clinicList;
 
@@ -28,9 +28,13 @@ public class ClinicEditorController {
     public void initialize() {
         EventBus.getDefault().register(this);
         clinicList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        clinicList.getSelectionModel().selectedItemProperty().addListener((observableValue, newValue, oldValue) -> operatingHours.clear());
+    }
+
+    @Override
+    public void start() {
         GetAllClinicsRequest requestAllClinic = new GetAllClinicsRequest();
         App.getClient().sendRequest(requestAllClinic);
-        clinicList.getSelectionModel().selectedItemProperty().addListener((observableValue, newValue, oldValue) -> operatingHours.clear());
     }
     
     @FXML

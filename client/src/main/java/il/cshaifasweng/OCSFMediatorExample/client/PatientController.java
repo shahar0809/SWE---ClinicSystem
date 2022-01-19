@@ -29,12 +29,12 @@ public class PatientController extends BaseController {
     @FXML
     Tab identifyTab;
 
-    @FXML
-    void initialize() {
+    @Override
+    public void start() {
         Parent parent;
 
         try {
-            parent = App.loadFXML("PatientAppointments");
+            parent = App.loadAndStartFXML("PatientAppointments");
             patientAppointments.getChildren().clear();
             patientAppointments.getChildren().add(parent);
         } catch (IOException e) {
@@ -42,7 +42,7 @@ public class PatientController extends BaseController {
         }
 
         try {
-            parent = App.loadFXML("ReserveAppointment");
+            parent = App.loadAndStartFXML("ReserveAppointment");
             availableAppointments.getChildren().clear();
             availableAppointments.getChildren().add(parent);
         } catch (IOException e) {
@@ -50,7 +50,7 @@ public class PatientController extends BaseController {
         }
 
         try {
-            parent = App.loadFXML("GreenPass");
+            parent = App.loadAndStartFXML("GreenPass");
             greenPass.getChildren().clear();
             greenPass.getChildren().add(parent);
         } catch (IOException e) {
@@ -58,7 +58,7 @@ public class PatientController extends BaseController {
         }
 
         try {
-            parent = App.loadFXML("PatientIdentify");
+            parent = App.loadAndStartFXML("PatientIdentify");
             identify.getChildren().clear();
             identify.getChildren().add(parent);
         } catch (IOException e) {

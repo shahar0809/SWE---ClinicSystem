@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class RegisterLoginController {
+public class RegisterLoginController extends BaseController {
 
     @FXML
     private Button loginButton;
@@ -51,6 +51,10 @@ public class RegisterLoginController {
     public void initialize() {
         EventBus.getDefault().register(this);
         clinicList = new ArrayList<>();
+    }
+
+    @Override
+    public void start() {
         App.getClient().sendRequest(new GetAllClinicsRequest());
     }
 
@@ -112,8 +116,12 @@ public class RegisterLoginController {
             return;
         }
         String selectedClinic = comboBox.getValue();
-        if (selectedClinic == null)
+        if (selectedClinic == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Clinic must be selected!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
             return;
+        }
 
         App.getClient().sendRequest(new RegisterRequest(username, password, age, selectedClinic));
     }
