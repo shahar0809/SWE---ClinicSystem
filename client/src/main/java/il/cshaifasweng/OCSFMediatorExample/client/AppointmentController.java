@@ -6,6 +6,7 @@ import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetGreenPassResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.ReserveAppointmentResponse;
+import il.cshaifasweng.OCSFMediatorExample.utils.Constants;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -21,7 +22,7 @@ import java.util.Arrays;
 
 import java.io.IOException;
 
-public class AppointmentController {
+public class AppointmentController extends BaseController {
     @FXML
     TableView<Appointment> table = new TableView<>();
     @FXML
@@ -57,10 +58,11 @@ public class AppointmentController {
         // Initialize combo box with appointment types
         ArrayList<AppointmentType> types = new ArrayList<>(Arrays.asList(AppointmentType.values()));
         types.remove(AppointmentType.NURSE);
+        types.remove(AppointmentType.FAMILY);
+        types.remove(AppointmentType.CHILDREN);
         comboBox.setItems(FXCollections.observableArrayList(types));
-        comboBox.setItems(FXCollections.observableArrayList(AppointmentType.values()));
-
-        questionnaireButton.setVisible(false);
+        comboBox.setValue(AppointmentType.COVID_TEST);
+        onAppointmentChoice(null);
     }
 
     @FXML
@@ -80,46 +82,22 @@ public class AppointmentController {
             table.setItems(appointments);
             table.refresh();
         } else {
-            alertUser(response.getError());
+            alertUserError(response.getError());
         }
     }
 
     @Subscribe
     public void reserveResponse(ReserveAppointmentResponse response) {
         if (response.isSuccessful()) {
-            alertUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
+            informUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
             if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
-                alertUser("You have to fill the questionnaire!");
+                informUser("You have to fill the questionnaire!");
             } else {
-                alertUser(response.getError());
+                alertUserError(response.getError());
             }
         }
         onRefresh(null);
-    }
-
-    @Subscribe
-    public void cancelResponse(DeleteAppointmentResponse response) {
-        if (response.isSuccessful()) {
-            alertUser(Messages.CANCEL_APPOINTMENT_SUCCESS);
-        } else {
-            alertUser(response.getError());
-        }
-        onRefresh(null);
-    }
-
-    @Subscribe
-    public void greenPassResponse(GetGreenPassResponse response) {
-        if (response.isSuccessful()) {
-            alertUser(Messages.GREEN_PASS_SUCCESS);
-        } else {
-            alertUser(response.getError());
-        }
-    }
-
-    public void alertUser(String message) {
-        Alert alert  = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
-        alert.show();
     }
 
     @FXML
@@ -130,6 +108,7 @@ public class AppointmentController {
     @FXML
     public void onAppointmentChoice(ActionEvent actionEvent) {
         AppointmentType selected = comboBox.getValue();
+        Patient patient = ((Patient) App.getActiveUser());
 
         if (selected == null)
             return;
@@ -138,29 +117,30 @@ public class AppointmentController {
         switch (selected) {
             case COVID_TEST:
                 questionnaireButton.setVisible(true);
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected, patient));
                 break;
             case COVID_VACCINE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class, selected, patient));
                 break;
             case NURSE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class, selected, patient));
                 break;
             case FLU_VACCINE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected, patient));
                 break;
-            case FAMILY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected));
-                break;
-            case CHILDREN:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected));
+            case FAMILY_OR_CHILDREN:
+                if (patient.getAge() >= Constants.AGE) {
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, AppointmentType.FAMILY, patient));
+                } else {
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, AppointmentType.CHILDREN, patient));
+                }
                 break;
             case CARDIO:
             case ORTHOPEDICS:
             case GYNECOLOGY:
             case OTOLARYNGOLOGY:
             case GASTROLOGY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected, patient));
                 break;
         }
     }

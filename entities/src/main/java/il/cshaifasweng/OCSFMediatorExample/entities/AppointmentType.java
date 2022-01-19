@@ -8,6 +8,7 @@ public enum AppointmentType {
     COVID_TEST("Covid Test"),
     COVID_VACCINE("Covid Vaccine"),
     FLU_VACCINE("Flu Vaccine"),
+    FAMILY_OR_CHILDREN("Family/Children"),
     FAMILY("Family"),
     CHILDREN("Children"),
     CARDIO("Cardiology"),

@@ -19,6 +19,9 @@ public class Messages {
     public static String CANCEL_APPOINTMENT_SUCCESS = "Appointment was cancelled successfully!";
     public static String CANCEL_APPOINTMENT_NOT_RESERVED = "You didn't reserve this appointment!";
 
+    public static String ARRIVE_APPOINTMENT_SUCCESS = "Welcome! Please wait until your time slot.";
+    public static String ARRIVE_APPOINTMENT_TWICE = "You have already arrived to this appointment!";
+
     public static String GREEN_PASS_SUCCESS = "Green pass - Success!";
     public static String GREEN_PASS_NOT_VACCINATED = "You're not eligible for green pass!";
 

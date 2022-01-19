@@ -15,6 +15,10 @@ public class Patient extends User {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER, mappedBy = "patient")
     private List<Appointment> appointments;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "patientClinic")
+    protected Clinic patientClinic;
+
     @Column(name = "age", nullable = false)
     private int age;
 
@@ -25,10 +29,11 @@ public class Patient extends User {
         appointments = new ArrayList<>();
     }
 
-    public Patient(String username, String password, int age) {
+    public Patient(String username, String password, int age, Clinic clinic) {
         super(username, password);
         appointments = new ArrayList<>();
         this.age = age;
+        this.patientClinic = clinic;
     }
 
     public Patient(String username, String password, int age, String email) {
@@ -41,8 +46,8 @@ public class Patient extends User {
 
     public List<Appointment> getAppointments() {
         List<Appointment> reserveAppointments = new ArrayList<>();
-        for(Appointment appointment : appointments) {
-            if(!appointment.hasPatientArrived() && LocalDateTime.now().compareTo(appointment.getTreatmentDateTime()) > 0) {
+        for (Appointment appointment : appointments) {
+            if (!appointment.hasPatientArrived() && LocalDateTime.now().compareTo(appointment.getTreatmentDateTime()) > 0) {
                 reserveAppointments.add(appointment);
             }
         }
@@ -50,8 +55,8 @@ public class Patient extends User {
     }
 
     public boolean gotCovidVaccine() {
-        for(Appointment appointment : appointments) {
-            if(appointment.hasPatientArrived() && appointment instanceof CovidVaccineAppointment) {
+        for (Appointment appointment : appointments) {
+            if (appointment.hasPatientArrived() && appointment instanceof CovidVaccineAppointment) {
                 return true;
             }
         }
@@ -87,6 +92,14 @@ public class Patient extends User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Clinic getClinic() {
+        return patientClinic;
+    }
+
+    public void setClinic(Clinic clinic) {
+        this.patientClinic = clinic;
     }
 
     public void deleteAppointment(Appointment appointment) {

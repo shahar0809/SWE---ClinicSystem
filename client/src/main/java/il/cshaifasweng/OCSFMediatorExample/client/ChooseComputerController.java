@@ -7,7 +7,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
-public class ChooseComputerController {
+public class ChooseComputerController extends BaseController {
 
     @FXML
     private ResourceBundle resources;
@@ -18,12 +18,12 @@ public class ChooseComputerController {
     @FXML
     void Lab(ActionEvent event) throws IOException {
         App.setRoot("RegisterLogin");
-//        App.setRoot("PrimaryManager");
+//        App.App.setRoot("PrimaryManager");
     }
 
     @FXML
     void NotLab(ActionEvent event) throws IOException {
-//        App.setRoot("RegisterLogin");
+//        App.App.setRoot("RegisterLogin");
         App.setRoot("PrimaryManager");
     }
 

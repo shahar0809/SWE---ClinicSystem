@@ -15,7 +15,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.Pane;
 import org.greenrobot.eventbus.EventBus;
 
-public class ManagerPrimaryController {
+public class ManagerPrimaryController extends BaseController {
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -44,10 +44,13 @@ public class ManagerPrimaryController {
         assert toChnageShours != null : "fx:id=\"toChnageShours\" was not injected: check your FXML file 'primary.fxml'.";
         assert toMainWindow != null : "fx:id=\"toMainWindow\" was not injected: check your FXML file 'primary.fxml'.";
         assert updateHoursServicesWindow != null : "fx:id=\"updateHoursServicesWindow\" was not injected: check your FXML file 'primary.fxml'.";
+    }
 
+    @Override
+    public void start() {
         Parent parent = null;
         try {
-            parent = App.loadFXML("ClinicEditor");
+            parent = App.loadAndStartFXML("ClinicEditor");
             mainWindow.getChildren().clear();
             mainWindow.getChildren().add(parent);
         } catch (IOException e) {
@@ -55,7 +58,7 @@ public class ManagerPrimaryController {
         }
 
         try {
-            parent = App.loadFXML("UpdateHours");
+            parent = App.loadAndStartFXML("UpdateHours");
             updateHoursServicesWindow.getChildren().clear();
             updateHoursServicesWindow.getChildren().add(parent);
         } catch (IOException e) {
@@ -80,8 +83,6 @@ public class ManagerPrimaryController {
         }
 
     }
-
-
 
 }
 

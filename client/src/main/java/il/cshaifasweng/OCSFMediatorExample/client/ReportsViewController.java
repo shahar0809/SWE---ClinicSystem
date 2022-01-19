@@ -19,7 +19,7 @@ import javafx.scene.text.Text;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-public class ReportsViewController {
+public class ReportsViewController extends BaseController {
 
     public static void autoResizeColumns( TableView<?> table )
     {

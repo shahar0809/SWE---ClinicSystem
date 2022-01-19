@@ -10,6 +10,7 @@ public class GetFreeAppointmentsResponse<T extends Appointment> extends Response
 
     public GetFreeAppointmentsResponse(List<T> appointments, boolean isSuccessful) {
         super(isSuccessful);
+        Collections.sort(appointments);
         this.appointments = appointments;
     }
 

@@ -6,6 +6,7 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.Constants;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.time.temporal.ChronoUnit;
@@ -284,16 +287,13 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - UpdateClinicHoursRequest");
             }
-        }
-
-        if (msg instanceof UpdateFluVaccineHoursRequest) {
+        } else if (msg instanceof GetMemberAppointmentsRequest) {
             try {
-                client.sendToClient(updateFluVaccineHoursRequest((UpdateFluVaccineHoursRequest) msg));
+                client.sendToClient(handleGetMemberAppointments((GetMemberAppointmentsRequest) msg));
             } catch (IOException e) {
-                System.out.println("Error - updateFluVaccineHoursRequest");
+                System.out.println("Error - UpdateClinicHoursRequest");
             }
         }
-
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -338,7 +338,7 @@ public class SimpleServer extends AbstractServer {
             return new RegisterResponse(Messages.REGISTER_USERNAME_TAKEN, true);
         } catch (NoResultException ignored) {
         }
-        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age), true);
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age, dataBase.getClinic(request.clinic)), true);
     }
 
     protected Response handleLoginRequest(LoginRequest request) {
@@ -360,8 +360,19 @@ public class SimpleServer extends AbstractServer {
         GetFreeAppointmentsResponse<T> response;
 
         try {
-            for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
+            if (request.getEnumType() == AppointmentType.FAMILY_OR_CHILDREN) {
+                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), request.getPatient().getClinic(), request.getEnumType()));
+                List<T> limited_appointments = new ArrayList<>();
+                for (T appointment : appointments) {
+                    if ((LocalDateTime.now().plusWeeks(Constants.FOUR_WEEKS)).compareTo(appointment.getTreatmentDateTime()) < 0) {
+                        limited_appointments.add(appointment);
+                    }
+                }
+                appointments = limited_appointments;
+            } else {
+                for (Clinic clinic : dataBase.getAll(Clinic.class)) {
+                    appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
+                }
             }
 
             response = new GetFreeAppointmentsResponse<>(appointments, true);
@@ -392,7 +403,7 @@ public class SimpleServer extends AbstractServer {
         List<Appointment> appointments = new ArrayList<>();
         GetPatientAppointmentResponse allAppointments;
         try {
-            appointments = ((Patient) request.getUser()).getAppointments();
+            appointments = dataBase.getUserAppointment((Patient) request.getUser());
             allAppointments = new GetPatientAppointmentResponse(appointments, true);
         } catch (Exception e) {
             allAppointments = new GetPatientAppointmentResponse(appointments, false, e.getMessage());
@@ -404,7 +415,7 @@ public class SimpleServer extends AbstractServer {
     protected Response addAppointmentsRequest(ReserveAppointmentRequest request) {
         ReserveAppointmentResponse response;
         try {
-            if (request.getAppointment() instanceof CovidVaccineAppointment) {
+            if (request.getAppointment() instanceof CovidTestAppointment) {
                 if (!dataBase.hasAnsweredCovidQuestionnaire(request.getUser())) {
                     return new ReserveAppointmentResponse(false, Messages.COVID_TEST_NO_QUESTIONNAIRE);
                 }
@@ -442,6 +453,18 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
+    protected Response arriveAppointmentsRequest(ArriveAppointmentRequest request) {
+        ArriveAppointmentResponse response;
+        try {
+            request.getAppointment().setPatientArrived(true);
+            dataBase.updateAppointment(request.getAppointment());
+            response = new ArriveAppointmentResponse(true);
+        } catch (Exception e) {
+            response = new ArriveAppointmentResponse(false, e.getMessage());
+        }
+        return response;
+    }
+
     protected Response updateCovidTestHoursRequest(UpdateCovidTestHoursRequest request) {
         UpdateCovidTestHoursResponse response;
         try {
@@ -467,6 +490,12 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("X after closing");
             }
 
+            if(newStartH.isBefore(clinic.getOpeningHours())){
+                newStartH = clinic.getOpeningHours();
+            }
+            if(newEndH.isAfter(clinic.getClosingHours())){
+                newEndH = clinic.getClosingHours();
+            }
             List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
 
             if(!allAppointments.isEmpty()){
@@ -721,14 +750,11 @@ public class SimpleServer extends AbstractServer {
     }
 
     protected Response saveAnswerRequest(SaveAnswerRequest request) {
-        Patient patient = null;
         SaveAnswerResponse response;
         try {
-            patient = ((Patient) request.user);
             dataBase.insertEntity(request.answer);
             response = new SaveAnswerResponse(true);
         } catch (Exception e) {
-            assert patient != null;
             response = new SaveAnswerResponse(false, e.getMessage());
         }
         return response;

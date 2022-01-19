@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.PatientController">
+
+    <children>
+      <TabPane fx:id="tabPane" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <tabs>
+          <Tab fx:id="patientAppointmentsTab" text="My Appointments">
+            <content>
+                <Pane fx:id="patientAppointments" prefHeight="200.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+          <Tab fx:id="availableAppointmentsTab" text="Available Appointments">
+            <content>
+                <Pane fx:id="availableAppointments" prefHeight="200.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+            <Tab fx:id="greenPassTab" text="Green Pass">
+                <content>
+                    <Pane fx:id="greenPass" prefHeight="200.0" prefWidth="200.0" />
+                </content>
+            </Tab>
+            <Tab fx:id="identifyTab" text="Identify">
+                <content>
+                    <Pane fx:id="identify" prefHeight="200.0" prefWidth="200.0" />
+                </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <Button layoutX="525.0" layoutY="560.0" mnemonicParsing="false" onAction="#signOut" text="Sign out" />
+   </children>
+</AnchorPane>

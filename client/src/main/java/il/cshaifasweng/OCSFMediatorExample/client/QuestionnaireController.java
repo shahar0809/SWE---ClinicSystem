@@ -1,9 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Patient;
 import il.cshaifasweng.OCSFMediatorExample.entities.Question;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetQuestionRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.SaveAnswerRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.GetQuestionsResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.SaveAnswerResponse;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,25 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-enum PossibleAnswers {
-    YES("Yes"),
-    NO("No");
-
-    private final String type;
-
-    PossibleAnswers(final String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return type;
-    }
-}
-
-public class QuestionnaireController {
+public class QuestionnaireController extends BaseController {
     List<Question> questions = new ArrayList<>();
     boolean hasAnsweredQuestionnaire = false;
+    int answersCounter = 0;
 
     @FXML
     private AnchorPane Covid;
@@ -57,26 +44,33 @@ public class QuestionnaireController {
     @FXML
     void initialize() {
         EventBus.getDefault().register(this);
-        App.getClient().sendRequest(new GetQuestionRequest());
 
         question1.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
         question2.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
         question3.getItems().addAll(FXCollections.observableArrayList(PossibleAnswers.values()));
     }
 
+    @Override
+    public void start() {
+        App.getClient().sendRequest(new GetQuestionRequest());
+    }
+
     @FXML
     void Continue(ActionEvent event) throws IOException {
         if (question1.getValue() == null || question2.getValue() == null || question3.getValue() == null) {
-            //alertUser()
+            informUser("Please answer all the questions!");
             return;
         }
 
-        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(0), question1.getValue().toString()));
-        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(1), question2.getValue().toString()));
-        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(2), question3.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest((Patient) App.getActiveUser(), questions.get(0), question1.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest((Patient) App.getActiveUser(), questions.get(1), question2.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest((Patient) App.getActiveUser(), questions.get(2), question3.getValue().toString()));
 
-        hasAnsweredQuestionnaire = true;
-        App.setRoot("ReserveAppointment");
+        if (answersCounter == 3) {
+            hasAnsweredQuestionnaire = true;
+        }
+        answersCounter = 0;
+        App.setRoot("PatientHome");
     }
 
     @Subscribe
@@ -88,6 +82,13 @@ public class QuestionnaireController {
             q1.setText(questions.get(0).getQuestion());
             q2.setText(questions.get(1).getQuestion());
             q3.setText(questions.get(2).getQuestion());
+        }
+    }
+
+    @Subscribe
+    public void getAnswer(SaveAnswerResponse response) {
+        if (response.isSuccessful()) {
+            answersCounter++;
         }
     }
 }

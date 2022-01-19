@@ -1,22 +1,33 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 
+import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
+import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
+import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
 import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
 import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
 import il.cshaifasweng.OCSFMediatorExample.requests.LoginRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.RegisterRequest;
+import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.LoginResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.RegisterResponse;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-public class RegisterLoginController {
+public class RegisterLoginController extends BaseController {
 
     @FXML
     private Button loginButton;
@@ -34,8 +45,18 @@ public class RegisterLoginController {
     private TextField ageField;
 
     @FXML
+    private ComboBox<String> comboBox;
+    private ArrayList<String> clinicList;
+
+    @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
+        clinicList = new ArrayList<>();
+    }
+
+    @Override
+    public void start() {
+        App.getClient().sendRequest(new GetAllClinicsRequest());
     }
 
     @FXML
@@ -95,7 +116,15 @@ public class RegisterLoginController {
             alert.show();
             return;
         }
-        App.getClient().sendRequest(new RegisterRequest(username, password, age));
+        String selectedClinic = comboBox.getValue();
+        if (selectedClinic == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Clinic must be selected!", ButtonType.OK);
+            alert.setHeaderText("Error");
+            alert.show();
+            return;
+        }
+
+        App.getClient().sendRequest(new RegisterRequest(username, password, age, selectedClinic));
     }
 
     @Subscribe
@@ -112,7 +141,7 @@ public class RegisterLoginController {
         } else if (App.getActiveUser() instanceof ClinicMember) {
             App.setRoot("MemberScreen");
         } else {
-            App.setRoot("ReserveAppointment");
+                App.setRoot("PatientHome");
         }
     }
 
@@ -125,11 +154,18 @@ public class RegisterLoginController {
             return;
         }
         App.setActiveUser(response.user);
-        App.setRoot("ReserveAppointment");
+        App.setRoot("PatientHome");
     }
 
     public void stop() throws Exception {
         EventBus.getDefault().unregister(this);
     }
 
+    @Subscribe
+    public void updateListOfClinic(GetAllClinicsResponse response) {
+        for (Clinic clinic : response.clinics) {
+            clinicList.add(clinic.getName());
+        }
+        comboBox.setItems(FXCollections.observableArrayList(clinicList));
+    }
 }
