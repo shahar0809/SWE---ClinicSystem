@@ -527,14 +527,11 @@ public class SimpleServer extends AbstractServer {
     }
 
     protected Response saveAnswerRequest(SaveAnswerRequest request) {
-        Patient patient = null;
         SaveAnswerResponse response;
         try {
-            patient = ((Patient) request.user);
             dataBase.insertEntity(request.answer);
             response = new SaveAnswerResponse(true);
         } catch (Exception e) {
-            assert patient != null;
             response = new SaveAnswerResponse(false, e.getMessage());
         }
         return response;

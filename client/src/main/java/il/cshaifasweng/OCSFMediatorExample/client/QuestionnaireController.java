@@ -19,23 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-enum PossibleAnswers {
-    YES("Yes"),
-    NO("No");
-
-    private final String type;
-
-    PossibleAnswers(final String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return type;
-    }
-}
-
-public class QuestionnaireController {
+public class QuestionnaireController extends BaseController {
     List<Question> questions = new ArrayList<>();
     boolean hasAnsweredQuestionnaire = false;
     int answersCounter = 0;
@@ -70,7 +54,7 @@ public class QuestionnaireController {
     @FXML
     void Continue(ActionEvent event) throws IOException {
         if (question1.getValue() == null || question2.getValue() == null || question3.getValue() == null) {
-            //alertUser()
+            informUser("Please answer all the questions!");
             return;
         }
 
