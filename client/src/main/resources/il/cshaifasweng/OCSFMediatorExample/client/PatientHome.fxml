@@ -26,11 +26,6 @@
                     <Pane fx:id="greenPass" prefHeight="200.0" prefWidth="200.0" />
                 </content>
             </Tab>
-            <Tab fx:id="identifyTab" text="Identify">
-                <content>
-                    <Pane fx:id="identify" prefHeight="200.0" prefWidth="200.0" />
-                </content>
-            </Tab>
         </tabs>
       </TabPane>
       <Button layoutX="525.0" layoutY="560.0" mnemonicParsing="false" onAction="#signOut" text="Sign out" />

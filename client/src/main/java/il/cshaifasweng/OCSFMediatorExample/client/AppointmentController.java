@@ -62,6 +62,10 @@ public class AppointmentController extends BaseController {
         types.remove(AppointmentType.CHILDREN);
         comboBox.setItems(FXCollections.observableArrayList(types));
         comboBox.setValue(AppointmentType.COVID_TEST);
+    }
+
+    @Override
+    public void start() {
         onAppointmentChoice(null);
     }
 

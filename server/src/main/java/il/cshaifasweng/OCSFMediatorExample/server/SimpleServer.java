@@ -244,7 +244,13 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - DeleteAppointmentRequest");
             }
-        } else if (msg instanceof GetGreenPassRequest) {
+        } else if (msg instanceof ArriveAppointmentRequest) {
+             try {
+                 client.sendToClient(arriveAppointmentsRequest((ArriveAppointmentRequest) msg));
+             } catch (IOException e) {
+                 System.out.println("Error - ArriveAppointmentRequest");
+             }
+         } else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
@@ -440,12 +446,12 @@ public class SimpleServer extends AbstractServer {
         DeleteAppointmentResponse response;
         try {
             request.getAppointment().setAvailable(true);
-            request.getAppointment().setPatient(null);
             ((Patient) request.getUser()).deleteAppointment(request.getAppointment());
             dataBase.updateAppointment(request.getAppointment());
 
             Mail mail = new Mail();
             mail.Cancel(request.getAppointment().getPatient().getEmail(), request.getAppointment());
+            request.getAppointment().setPatient(null);
             response = new DeleteAppointmentResponse(true);
         } catch (Exception e) {
             response = new DeleteAppointmentResponse(false, e.getMessage());
@@ -802,7 +808,7 @@ public class SimpleServer extends AbstractServer {
             if (appointment.getTreatmentDateTime().isBefore(LocalDateTime.now().minusDays(1)) || !appointment.hasPatientArrived())
                 continue;
             dayVisits++;
-            waitingTime += ChronoUnit.MINUTES.between(appointment.getArrivalDateTime(), appointment.getTreatmentDateTime());
+            waitingTime += Math.max(ChronoUnit.MINUTES.between(appointment.getArrivalDateTime(), appointment.getTreatmentDateTime()), 0);
         }
 
         List<Report> reports = new ArrayList<>();

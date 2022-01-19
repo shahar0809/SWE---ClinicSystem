@@ -62,6 +62,10 @@ public class ReportsViewController extends BaseController {
         reportsTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         reportsTable.getColumns().get(0).setCellValueFactory(new PropertyValueFactory("name"));
         reportsTable.getColumns().get(1).setCellValueFactory(new PropertyValueFactory("result"));
+    }
+
+    @Override
+    public void start() {
         GetAllClinicsRequest requestAllClinic = new GetAllClinicsRequest();
         App.getClient().sendRequest(requestAllClinic);
     }

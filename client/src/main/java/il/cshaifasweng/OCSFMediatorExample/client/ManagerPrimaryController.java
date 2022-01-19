@@ -75,7 +75,7 @@ public class ManagerPrimaryController extends BaseController {
         toChnageShours.setDisable(App.getActiveUser() instanceof HospitalManager);
 
         try {
-            parent = App.loadFXML("ReportsView");
+            parent = App.loadAndStartFXML("ReportsView");
             ReportsWindow.getChildren().clear();
             ReportsWindow.getChildren().add(parent);
         } catch (IOException e) {

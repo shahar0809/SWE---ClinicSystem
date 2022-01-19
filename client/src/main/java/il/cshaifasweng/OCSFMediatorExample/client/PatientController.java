@@ -15,8 +15,6 @@ public class PatientController extends BaseController {
     public Pane availableAppointments;
     @FXML
     public Pane greenPass;
-    @FXML
-    public Pane identify;
 
     @FXML
     TabPane tabPane;
@@ -26,8 +24,6 @@ public class PatientController extends BaseController {
     Tab availableAppointmentsTab;
     @FXML
     Tab greenPassTab;
-    @FXML
-    Tab identifyTab;
 
     @Override
     public void start() {
@@ -53,14 +49,6 @@ public class PatientController extends BaseController {
             parent = App.loadAndStartFXML("GreenPass");
             greenPass.getChildren().clear();
             greenPass.getChildren().add(parent);
-        } catch (IOException e) {
-            alertUserError(e.getMessage());
-        }
-
-        try {
-            parent = App.loadAndStartFXML("PatientIdentify");
-            identify.getChildren().clear();
-            identify.getChildren().add(parent);
         } catch (IOException e) {
             alertUserError(e.getMessage());
         }
