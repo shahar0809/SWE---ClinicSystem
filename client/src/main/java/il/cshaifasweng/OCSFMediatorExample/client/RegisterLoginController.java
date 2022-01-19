@@ -108,7 +108,7 @@ public class RegisterLoginController {
         if (App.getActiveUser() instanceof ClinicManager) {
             App.setRoot("PrimaryManager");
         } else {
-            App.setRoot("ReserveAppointment");
+            App.setRoot("PatientHome");
         }
     }
 
