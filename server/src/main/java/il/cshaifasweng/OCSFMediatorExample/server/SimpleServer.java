@@ -5,6 +5,7 @@ import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.AbstractServer;
 import il.cshaifasweng.OCSFMediatorExample.server.ocsf.ConnectionToClient;
+import il.cshaifasweng.OCSFMediatorExample.utils.Constants;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import il.cshaifasweng.OCSFMediatorExample.utils.Messages;
 import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
@@ -39,10 +40,10 @@ public class SimpleServer extends AbstractServer {
         List<Clinic> clinics = dataBase.getAll(Clinic.class);
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
-            dataBase.insertEntity(new Patient("p1", "pass1", 16));
-            dataBase.insertEntity(new Patient("p1", "pass1", 17));
-            dataBase.insertEntity(new Patient("p1", "pass1", 18));
-            dataBase.insertEntity(new Patient("p1", "pass1", 19));
+            dataBase.insertEntity(new Patient("p1", "pass1", 16, clinics.get(0)));
+            dataBase.insertEntity(new Patient("p1", "pass1", 17, clinics.get(0)));
+            dataBase.insertEntity(new Patient("p1", "pass1", 18, clinics.get(1)));
+            dataBase.insertEntity(new Patient("p1", "pass1", 19, clinics.get(2)));
         }
         List<Patient> patientList = dataBase.getAll(Patient.class);
 
@@ -141,6 +142,15 @@ public class SimpleServer extends AbstractServer {
             return;
         }
 
+        if (request instanceof GetAllClinicsRequest) {
+            try {
+                client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getALLClinicRequest");
+            }
+            return;
+        }
+
         User user;
         try {
             user = dataBase.getUserByToken(request.getToken());
@@ -156,14 +166,8 @@ public class SimpleServer extends AbstractServer {
         }
         // ALL REQUESTS ASIDE FROM LOGIN AND REGISTER MUST BE BELOW THIS LINE!!!
 
-        if (request instanceof GetAllClinicsRequest) {
-            try {
-                client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
-            } catch (IOException e) {
-                System.out.println("Error - getALLClinicRequest");
-            }
-            return;
-        } else if (msg instanceof GetClinicRequest) {
+
+        if (msg instanceof GetClinicRequest) {
             try {
                 client.sendToClient(getClinicRequest((GetClinicRequest) msg));
             } catch (IOException e) {
@@ -177,11 +181,61 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - updateActiveHoursRequest");
             }
             return;
+        }
+
+        if (msg instanceof UpdateCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(updateCovidVaccineHoursRequest((UpdateCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidVaccineHoursRequest");
+            }
+        } else if (msg instanceof GetCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getClinicRequest");
+            }
+        } else if (msg instanceof GetFreeAppointmentRequest) {
+            try {
+                client.sendToClient(getFreeAppointmentsRequest((GetFreeAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getALLCovidVaccineRequest");
+            }
+        } else if (msg instanceof GetPatientAppointmentRequest) {
+            try {
+                client.sendToClient(getPatientAppointmentsRequest((GetPatientAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetPatientAppointmentRequest");
+            }
+        } else if (msg instanceof ReserveAppointmentRequest) {
+            try {
+                client.sendToClient(addAppointmentsRequest((ReserveAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - AddAppointmentRequest");
+            }
+        } else if (msg instanceof DeleteAppointmentRequest) {
+            try {
+                client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - DeleteAppointmentRequest");
+            }
         } else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetGreenPassRequest");
+            }
+        } else if (msg instanceof SaveAnswerRequest) {
+            try {
+                client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - SaveAnswerRequest");
+            }
+        } else if (msg instanceof GetQuestionRequest) {
+            try {
+                client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetQuestionsRequest");
             }
         }
     }
@@ -228,7 +282,7 @@ public class SimpleServer extends AbstractServer {
             return new RegisterResponse(Messages.REGISTER_USERNAME_TAKEN, true);
         } catch (NoResultException ignored) {
         }
-        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age), true);
+        return new RegisterResponse(dataBase.createPatient(request.username, request.password, request.age, dataBase.getClinic(request.clinic)), true);
     }
 
     protected Response handleLoginRequest(LoginRequest request) {
@@ -250,8 +304,19 @@ public class SimpleServer extends AbstractServer {
         GetFreeAppointmentsResponse<T> response;
 
         try {
-            for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
+            if (request.getEnumType() == AppointmentType.FAMILY_OR_CHILDREN) {
+                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), request.getPatient().getClinic(), request.getEnumType()));
+                List<T> limited_appointments = new ArrayList<>();
+                for (T appointment : appointments) {
+                    if ((LocalDateTime.now().plusWeeks(Constants.FOUR_WEEKS)).compareTo(appointment.getTreatmentDateTime()) < 0) {
+                        limited_appointments.add(appointment);
+                    }
+                }
+                appointments = limited_appointments;
+            } else {
+                for (Clinic clinic : dataBase.getAll(Clinic.class)) {
+                    appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
+                }
             }
 
             response = new GetFreeAppointmentsResponse<>(appointments, true);
@@ -266,7 +331,7 @@ public class SimpleServer extends AbstractServer {
         List<Appointment> appointments = new ArrayList<>();
         GetPatientAppointmentResponse allAppointments;
         try {
-            appointments = ((Patient) request.getUser()).getAppointments();
+            appointments = dataBase.getUserAppointment((Patient) request.getUser());
             allAppointments = new GetPatientAppointmentResponse(appointments, true);
         } catch (Exception e) {
             allAppointments = new GetPatientAppointmentResponse(appointments, false, e.getMessage());
@@ -278,7 +343,7 @@ public class SimpleServer extends AbstractServer {
     protected Response addAppointmentsRequest(ReserveAppointmentRequest request) {
         ReserveAppointmentResponse response;
         try {
-            if (request.getAppointment() instanceof CovidVaccineAppointment) {
+            if (request.getAppointment() instanceof CovidTestAppointment) {
                 if (!dataBase.hasAnsweredCovidQuestionnaire(request.getUser())) {
                     return new ReserveAppointmentResponse(false, Messages.COVID_TEST_NO_QUESTIONNAIRE);
                 }
@@ -462,14 +527,11 @@ public class SimpleServer extends AbstractServer {
     }
 
     protected Response saveAnswerRequest(SaveAnswerRequest request) {
-        Patient patient = null;
         SaveAnswerResponse response;
         try {
-            patient = ((Patient) request.user);
             dataBase.insertEntity(request.answer);
             response = new SaveAnswerResponse(true);
         } catch (Exception e) {
-            assert patient != null;
             response = new SaveAnswerResponse(false, e.getMessage());
         }
         return response;

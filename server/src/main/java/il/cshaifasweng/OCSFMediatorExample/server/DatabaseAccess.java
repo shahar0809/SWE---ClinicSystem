@@ -129,11 +129,11 @@ public final class DatabaseAccess {
      * @param username Username
      * @param password Not encrypted password
      */
-    public Patient createPatient(String username, String password, int age) {
+    public Patient createPatient(String username, String password, int age, Clinic clinic) {
         Patient patient = null;
         session.beginTransaction();
         try {
-            patient = new Patient(username, password, age);
+            patient = new Patient(username, password, age, clinic);
             patient.refreshToken();
             session.save(patient);
             session.getTransaction().commit();
@@ -202,6 +202,18 @@ public final class DatabaseAccess {
         } catch (Exception e) {
             session.getTransaction().rollback();
         }
+    }
+
+    public List<Appointment> getUserAppointment(Patient patient) {
+        CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+        Root<Appointment> rootEntry = criteriaQuery.from(Appointment.class);
+
+        criteriaQuery.where(builder.and(
+                        builder.equal(rootEntry.get("isAvailable"), false),
+                        builder.equal(rootEntry.get("patient"), patient)));
+
+        Query<Appointment> query = session.createQuery(criteriaQuery);
+        return query.getResultList();
     }
 
     /**
