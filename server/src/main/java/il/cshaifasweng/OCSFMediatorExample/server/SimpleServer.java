@@ -244,10 +244,18 @@ public class SimpleServer extends AbstractServer {
         GetFreeAppointmentsResponse<T> response;
 
         try {
-            for (Clinic clinic : dataBase.getAll(Clinic.class)) {
-                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
+            if (request.getAppointmentType() == FAMILY_OR_CHILDREN) {
+                appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), response.getPatient().getClinic(), request.getEnumType()));
+                for (Appointment appointment : appointments) {
+                    if ((LocalDateTime.now().plusDays(28)).compareTo(appointment.getTreatmentDateTime()) > 0) {
+                        appointments.remove(appointment);
+                    }
+                }
+            } else {
+                for (Clinic clinic : dataBase.getAll(Clinic.class)) {
+                    appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), clinic, request.getEnumType()));
+                }
             }
-
             response = new GetFreeAppointmentsResponse<>(appointments, true);
         } catch (Exception e) {
             response = new GetFreeAppointmentsResponse<>(appointments, false, e.getMessage());

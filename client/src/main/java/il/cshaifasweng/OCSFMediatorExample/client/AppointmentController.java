@@ -130,6 +130,7 @@ public class AppointmentController {
     @FXML
     public void onAppointmentChoice(ActionEvent actionEvent) {
         AppointmentType selected = comboBox.getValue();
+        Patient patient = ((Patient) App.getActiveUser);
 
         if (selected == null)
             return;
@@ -138,29 +139,30 @@ public class AppointmentController {
         switch (selected) {
             case COVID_TEST:
                 questionnaireButton.setVisible(true);
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected, patient));
                 break;
             case COVID_VACCINE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class, selected, patient));
                 break;
             case NURSE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class, selected, patient));
                 break;
             case FLU_VACCINE:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected, patient));
                 break;
-            case FAMILY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected));
-                break;
-            case CHILDREN:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected));
+            case FAMILY_OR_CHILDREN:
+                if(patient.getAge() >= AGE) {
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected , patient));
+                } else {
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected, patient));
+                }
                 break;
             case CARDIO:
             case ORTHOPEDICS:
             case GYNECOLOGY:
             case OTOLARYNGOLOGY:
             case GASTROLOGY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected));
+                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected, patient));
                 break;
         }
     }
