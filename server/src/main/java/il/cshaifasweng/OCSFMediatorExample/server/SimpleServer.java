@@ -1,5 +1,6 @@
 package il.cshaifasweng.OCSFMediatorExample.server;
 
+import il.cshaifasweng.OCSFMediatorExample.Mail;
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
 import il.cshaifasweng.OCSFMediatorExample.response.*;
@@ -11,8 +12,11 @@ import il.cshaifasweng.OCSFMediatorExample.utils.SecureUtils;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -24,6 +28,21 @@ public class SimpleServer extends AbstractServer {
 
         dataBase = DatabaseAccess.getInstance();
         initDatabase();
+
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0); // same for minutes and seconds
+        System.out.println("before sending");
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                           @Override
+                           public void run() {
+                               System.out.println("Sending reminder");
+                               sendReminders();
+                           }
+                       }
+                , today.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+
     }
 
     /**
@@ -38,10 +57,10 @@ public class SimpleServer extends AbstractServer {
         List<Clinic> clinics = dataBase.getAll(Clinic.class);
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
-            dataBase.insertEntity(new Patient("p1", "pass1", 16));
-            dataBase.insertEntity(new Patient("p2", "pass1", 17));
-            dataBase.insertEntity(new Patient("p3", "pass1", 18));
-            dataBase.insertEntity(new Patient("p4", "pass1", 19));
+            dataBase.insertEntity(new Patient("p1", "pass1", 16, "dianaSk4fun@gmail.com"));
+            dataBase.insertEntity(new Patient("p2", "pass1", 17, "dianasaker4@gmail.com"));
+            dataBase.insertEntity(new Patient("p3", "pass1", 18, "dianasaker4869@gmail.com"));
+            dataBase.insertEntity(new Patient("p4", "pass1", 19, "dianasakerp@gmail.com"));
         }
         List<Patient> patientList = dataBase.getAll(Patient.class);
 
@@ -88,17 +107,17 @@ public class SimpleServer extends AbstractServer {
         List<Question> questionList = dataBase.getAll(Question.class);
 
         if (dataBase.getAll(Appointment.class).isEmpty()) {
-            dataBase.insertEntity(new NurseAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new NurseAppointment(nursesList.get(0), LocalDateTime.now().plusDays(1), clinics.get(0)));
             dataBase.insertEntity(new NurseAppointment(nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new NurseAppointment(patientList.get(3), nursesList.get(2), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new NurseAppointment(patientList.get(3), nursesList.get(2), LocalDateTime.now().plusHours(3), clinics.get(0)));
 
             dataBase.insertEntity(new ProfessionDoctorAppointment(AppointmentType.GYNECOLOGY, professionDoctorList.get(1), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new ProfessionDoctorAppointment(AppointmentType.CARDIO, professionDoctorList.get(3), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new ProfessionDoctorAppointment(AppointmentType.GASTROLOGY, patientList.get(1), professionDoctorList.get(2), LocalDateTime.now(), clinics.get(0)));
 
-            dataBase.insertEntity(new FamilyDoctorAppointment(familyDoctorsList.get(1), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new FamilyDoctorAppointment(familyDoctorsList.get(1), LocalDateTime.now().plusDays(2).plusHours(1), clinics.get(0)));
             dataBase.insertEntity(new FamilyDoctorAppointment(familyDoctorsList.get(3), LocalDateTime.now(), clinics.get(0)));
-            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(2), familyDoctorsList.get(0), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new FamilyDoctorAppointment(patientList.get(2), familyDoctorsList.get(0), LocalDateTime.now().plusHours(3), clinics.get(0)));
 
             dataBase.insertEntity(new CovidTestAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new CovidTestAppointment(patientList.get(0), nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
@@ -345,6 +364,22 @@ public class SimpleServer extends AbstractServer {
         return response;
     }
 
+    protected void sendReminders() {
+        List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
+
+        if(allAppointments.isEmpty()){
+            System.out.println("Empty Tomorrow appointment list");
+            return;
+        }
+        Mail mail = new Mail();
+        for(Appointment app:allAppointments){
+            if(app.getTreatmentDateTime().toLocalDate().isEqual(LocalDate.now().plusDays(1))){
+                mail.ReminderTW(app.getPatient().getEmail(),app);
+            }
+        }
+        return;
+    }
+
     protected Response getPatientAppointmentsRequest(GetPatientAppointmentRequest request) {
         List<Appointment> appointments = new ArrayList<>();
         GetPatientAppointmentResponse allAppointments;
@@ -374,6 +409,8 @@ public class SimpleServer extends AbstractServer {
             dataBase.updateAppointment(request.getAppointment());
 
             response = new ReserveAppointmentResponse(true);
+            Mail mail = new Mail();
+            mail.Confirmation(request.getAppointment().getPatient().getEmail(), request.getAppointment());
         } catch (Exception e) {
             response = new ReserveAppointmentResponse(false, e.getMessage());
         }
@@ -388,6 +425,8 @@ public class SimpleServer extends AbstractServer {
             ((Patient) request.getUser()).deleteAppointment(request.getAppointment());
             dataBase.updateAppointment(request.getAppointment());
 
+            Mail mail = new Mail();
+            mail.Cancel(request.getAppointment().getPatient().getEmail(), request.getAppointment());
             response = new DeleteAppointmentResponse(true);
         } catch (Exception e) {
             response = new DeleteAppointmentResponse(false, e.getMessage());
