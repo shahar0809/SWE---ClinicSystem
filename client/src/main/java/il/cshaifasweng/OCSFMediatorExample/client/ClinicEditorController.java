@@ -1,6 +1,8 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
+import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
+import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateActiveHoursRequest;
@@ -65,8 +67,13 @@ public class ClinicEditorController extends BaseController {
 
     @Subscribe
     public void updateListOfClinic(GetAllClinicsResponse response) {
-        for (Clinic clinic : response.clinics) {
-            clinicList.getItems().add(clinic.getName());
+        clinicList.getItems().clear();
+        if (App.getActiveUser() instanceof HospitalManager) {
+            for (Clinic clinic : response.clinics) {
+                clinicList.getItems().add(clinic.getName());
+            }
+        } else if (App.getActiveUser() instanceof ClinicManager) {
+            clinicList.getItems().add(((ClinicManager)App.getActiveUser()).getClinic().getName());
         }
     }
 

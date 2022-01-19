@@ -280,6 +280,9 @@ public final class DatabaseAccess {
         return clinic.getCovidVaccineEndHour();
     }
 
+    public LocalTime getClinicOpeningHour(Clinic clinic) { return clinic.getOpeningHours();}
+
+    public LocalTime getClinicClosingHour(Clinic clinic) { return clinic.getClosingHours();}
 
     public void refreshUserToken(User user) {
         session.beginTransaction();
@@ -287,5 +290,23 @@ public final class DatabaseAccess {
         session.save(user);
         session.flush();
         session.getTransaction().commit();
+    }
+
+    public List<Appointment> getUnavailableAppointments() {
+        CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+        Root<Appointment> rootEntry = criteriaQuery.from(Appointment.class);
+        criteriaQuery.where(builder.equal(rootEntry.get("isAvailable"), false));
+        Query<Appointment> query = session.createQuery(criteriaQuery);
+        return query.getResultList();
+    }
+
+    public List<Appointment> getMemberAppointments(ClinicMember member) {
+        CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+        Root<Appointment> rootEntry = criteriaQuery.from(Appointment.class);
+
+        criteriaQuery.where(builder.equal(rootEntry.get("member"), member));
+
+        Query<Appointment> query = session.createQuery(criteriaQuery);
+        return query.getResultList();
     }
 }

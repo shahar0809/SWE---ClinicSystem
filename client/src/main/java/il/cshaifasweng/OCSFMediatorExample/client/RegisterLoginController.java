@@ -1,10 +1,7 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.AppointmentType;
-import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
-import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
+import il.cshaifasweng.OCSFMediatorExample.entities.*;
 
-import il.cshaifasweng.OCSFMediatorExample.entities.Patient;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.LoginRequest;
@@ -137,8 +134,10 @@ public class RegisterLoginController extends BaseController {
         App.setActiveUser(response.user);
         if (App.getActiveUser() instanceof ClinicManager) {
             App.setRoot("PrimaryManager");
+        } else if (App.getActiveUser() instanceof ClinicMember) {
+            App.setRoot("MemberScreen");
         } else {
-            App.setRoot("PatientHome");
+                App.setRoot("PatientHome");
         }
     }
 

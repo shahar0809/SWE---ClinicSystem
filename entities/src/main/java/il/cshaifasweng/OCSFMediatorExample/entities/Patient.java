@@ -95,4 +95,10 @@ public class Patient extends User {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        // TODO: Replace to name when supported
+        return username;
+    }
 }
