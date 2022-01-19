@@ -2,6 +2,7 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
 import il.cshaifasweng.OCSFMediatorExample.requests.LoginRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.RegisterRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.LoginResponse;
@@ -107,7 +108,10 @@ public class RegisterLoginController {
         App.setActiveUser(response.user);
         if (App.getActiveUser() instanceof ClinicManager) {
             App.setRoot("PrimaryManager");
-        } else {
+        } else if (App.getActiveUser() instanceof ClinicMember) {
+            App.setRoot("MemberScreen");
+        }
+        else {
             App.setRoot("ReserveAppointment");
         }
     }
