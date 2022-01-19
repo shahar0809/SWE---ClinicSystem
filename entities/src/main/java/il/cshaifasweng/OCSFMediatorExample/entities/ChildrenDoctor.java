@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-public class FamilyDoctor extends ClinicMember {
-    public FamilyDoctor(String username, String password, int employeeNum, String firstName, String lastName, String email, String role) {
-        super(AppointmentType.FAMILY, username, password, employeeNum, firstName, lastName, email, role);
+public class ChildrenDoctor extends ClinicMember {
+    public ChildrenDoctor(String username, String password, int employeeNum, String firstName, String lastName, String email, String role) {
+        super(AppointmentType.CHILDREN, username, password, employeeNum, firstName, lastName, email, role);
         super.appointmentDuration = 15;
     }
 
-    public FamilyDoctor() {
+    public ChildrenDoctor() {
         super();
         super.appointmentDuration = 15;
     }
@@ -20,7 +20,7 @@ public class FamilyDoctor extends ClinicMember {
     public void addReceptionHours(Clinic clinic, LocalDate day, LocalTime t1, LocalTime t2) {
         LocalDateTime curTime = LocalDateTime.of(day, t1);
         while (t2.isAfter(LocalTime.from(curTime))) {
-            FamilyDoctorAppointment newApp = new FamilyDoctorAppointment(this, curTime, clinic);
+            ChildrenDoctorAppointment newApp = new ChildrenDoctorAppointment(this, curTime, clinic);
             if (this.checkIfFree(newApp.treatmentDateTime))
                 this.addAppointment(newApp);
             curTime = curTime.plusMinutes(this.appointmentDuration);

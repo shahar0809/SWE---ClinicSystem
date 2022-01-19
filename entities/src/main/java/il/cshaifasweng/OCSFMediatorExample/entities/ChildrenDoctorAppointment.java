@@ -14,12 +14,12 @@ public class ChildrenDoctorAppointment extends Appointment {
         return "Children";
     }
 
-    public ChildrenDoctorAppointment(ClinicMember member, LocalDateTime treatmentDateTime, Clinic clinic) {
+    public ChildrenDoctorAppointment(ChildrenDoctor member, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(treatmentDateTime, member, clinic);
         this.type = AppointmentType.CHILDREN;
     }
 
-    public ChildrenDoctorAppointment(Patient patient, ClinicMember member, LocalDateTime treatmentDateTime, Clinic clinic) {
+    public ChildrenDoctorAppointment(Patient patient, ChildrenDoctor member, LocalDateTime treatmentDateTime, Clinic clinic) {
         super(patient, treatmentDateTime, member, clinic);
         this.type = AppointmentType.CHILDREN;
     }

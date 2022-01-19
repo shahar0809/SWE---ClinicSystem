@@ -66,10 +66,10 @@ public class SimpleServer extends AbstractServer {
         List<HospitalManager> hospitalManagersList = dataBase.getAll(HospitalManager.class);
 
         if (dataBase.getAll(ProfessionDoctor.class).isEmpty()) {
-            dataBase.insertEntity(new ProfessionDoctor("d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
-            dataBase.insertEntity(new ProfessionDoctor("d2", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor"));
-            dataBase.insertEntity(new ProfessionDoctor("d3", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor"));
-            dataBase.insertEntity(new ProfessionDoctor("d4", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor"));
+            dataBase.insertEntity(new ProfessionDoctor(AppointmentType.GASTROLOGY, "d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
+            dataBase.insertEntity(new ProfessionDoctor(AppointmentType.CARDIO, "d2", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor"));
+            dataBase.insertEntity(new ProfessionDoctor(AppointmentType.GYNECOLOGY, "d3", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor"));
+            dataBase.insertEntity(new ProfessionDoctor(AppointmentType.ORTHOPEDICS, "d4", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor"));
         }
         List<ProfessionDoctor> professionDoctorList = dataBase.getAll(ProfessionDoctor.class);
 
@@ -177,6 +177,12 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - updateActiveHoursRequest");
             }
             return;
+        } else if (msg instanceof GetAllDoctorsRequest) {
+            try {
+                client.sendToClient(getAllDoctorsRequest((GetAllDoctorsRequest)msg));
+            } catch(IOException e) {
+                System.out.println("Error - getAllDoctorsRequest");
+            }
         }
     }
 
@@ -214,6 +220,18 @@ public class SimpleServer extends AbstractServer {
             allClinics = new GetAllClinicsResponse(clinics, false);
         }
         return allClinics;
+    }
+
+    protected Response getAllDoctorsRequest(GetAllDoctorsRequest request) {
+        GetAllDoctorsResponse response;
+        List<ClinicMember> doctors = new ArrayList<>();
+        try {
+            doctors = dataBase.getAll(ClinicMember.class);
+            response = new GetAllDoctorsResponse(doctors, true);
+        } catch (Exception e) {
+            response = new GetAllDoctorsResponse(doctors, false);
+        }
+        return response;
     }
 
     protected Response handleRegisterRequest(RegisterRequest request) {
