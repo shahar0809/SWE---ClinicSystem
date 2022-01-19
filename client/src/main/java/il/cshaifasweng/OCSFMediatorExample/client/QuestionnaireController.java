@@ -76,7 +76,7 @@ public class QuestionnaireController {
         App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(2), question3.getValue().toString()));
 
         hasAnsweredQuestionnaire = true;
-        App.setRoot("ReserveAppointment");
+        App.setRoot("PatientHome");
     }
 
     @Subscribe

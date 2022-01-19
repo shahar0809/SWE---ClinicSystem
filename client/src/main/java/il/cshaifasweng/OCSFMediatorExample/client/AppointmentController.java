@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 import java.io.IOException;
 
-public class AppointmentController {
+public class AppointmentController extends BaseController {
     @FXML
     TableView<Appointment> table = new TableView<>();
     @FXML
@@ -80,46 +80,22 @@ public class AppointmentController {
             table.setItems(appointments);
             table.refresh();
         } else {
-            alertUser(response.getError());
+            alertUserError(response.getError());
         }
     }
 
     @Subscribe
     public void reserveResponse(ReserveAppointmentResponse response) {
         if (response.isSuccessful()) {
-            alertUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
+            informUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
             if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
-                alertUser("You have to fill the questionnaire!");
+                informUser("You have to fill the questionnaire!");
             } else {
-                alertUser(response.getError());
+                alertUserError(response.getError());
             }
         }
         onRefresh(null);
-    }
-
-    @Subscribe
-    public void cancelResponse(DeleteAppointmentResponse response) {
-        if (response.isSuccessful()) {
-            alertUser(Messages.CANCEL_APPOINTMENT_SUCCESS);
-        } else {
-            alertUser(response.getError());
-        }
-        onRefresh(null);
-    }
-
-    @Subscribe
-    public void greenPassResponse(GetGreenPassResponse response) {
-        if (response.isSuccessful()) {
-            alertUser(Messages.GREEN_PASS_SUCCESS);
-        } else {
-            alertUser(response.getError());
-        }
-    }
-
-    public void alertUser(String message) {
-        Alert alert  = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
-        alert.show();
     }
 
     @FXML

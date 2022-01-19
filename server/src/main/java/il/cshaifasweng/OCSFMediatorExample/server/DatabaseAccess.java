@@ -204,6 +204,18 @@ public final class DatabaseAccess {
         }
     }
 
+    public List<Appointment> getUserAppointment(Patient patient) {
+        CriteriaQuery<Appointment> criteriaQuery = builder.createQuery(Appointment.class);
+        Root<Appointment> rootEntry = criteriaQuery.from(Appointment.class);
+
+        criteriaQuery.where(builder.and(
+                        builder.equal(rootEntry.get("isAvailable"), false),
+                        builder.equal(rootEntry.get("patient"), patient)));
+
+        Query<Appointment> query = session.createQuery(criteriaQuery);
+        return query.getResultList();
+    }
+
     /**
      * Gets free appointments of a certain type.
      * @param clinic The clinic to search within

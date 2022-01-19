@@ -154,8 +154,6 @@ public class SimpleServer extends AbstractServer {
             }
             return;
         }
-        // ALL REQUESTS ASIDE FROM LOGIN AND REGISTER MUST BE BELOW THIS LINE!!!
-
         if (request instanceof GetAllClinicsRequest) {
             try {
                 client.sendToClient(getALLClinicRequest((GetAllClinicsRequest) msg));
@@ -163,25 +161,62 @@ public class SimpleServer extends AbstractServer {
                 System.out.println("Error - getALLClinicRequest");
             }
             return;
-        } else if (msg instanceof GetClinicRequest) {
+        }
+        // ALL REQUESTS ASIDE FROM LOGIN AND REGISTER MUST BE BELOW THIS LINE!!!
+
+        if (msg instanceof UpdateCovidVaccineHoursRequest) {
             try {
-                client.sendToClient(getClinicRequest((GetClinicRequest) msg));
+                client.sendToClient(updateCovidVaccineHoursRequest((UpdateCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidVaccineHoursRequest");
+            }
+        } else if (msg instanceof GetCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - getClinicRequest");
             }
-            return;
-        } else if (msg instanceof UpdateActiveHoursRequest) {
+        } else if (msg instanceof GetFreeAppointmentRequest) {
             try {
-                client.sendToClient(updateActiveHoursRequest((UpdateActiveHoursRequest) msg));
+                client.sendToClient(getFreeAppointmentsRequest((GetFreeAppointmentRequest) msg));
             } catch (IOException e) {
-                System.out.println("Error - updateActiveHoursRequest");
+                System.out.println("Error - getALLCovidVaccineRequest");
             }
-            return;
+        } else if (msg instanceof GetPatientAppointmentRequest) {
+            try {
+                client.sendToClient(getPatientAppointmentsRequest((GetPatientAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetPatientAppointmentRequest");
+            }
+        } else if (msg instanceof ReserveAppointmentRequest) {
+            try {
+                client.sendToClient(addAppointmentsRequest((ReserveAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - AddAppointmentRequest");
+            }
+        } else if (msg instanceof DeleteAppointmentRequest) {
+            try {
+                client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - DeleteAppointmentRequest");
+            }
         } else if (msg instanceof GetGreenPassRequest) {
             try {
                 client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - GetGreenPassRequest");
+            }
+        } else if (msg instanceof SaveAnswerRequest) {
+            try {
+                client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - SaveAnswerRequest");
+            }
+        } else if (msg instanceof GetQuestionRequest) {
+            try {
+                client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetQuestionsRequest");
             }
         }
     }
@@ -266,7 +301,7 @@ public class SimpleServer extends AbstractServer {
         List<Appointment> appointments = new ArrayList<>();
         GetPatientAppointmentResponse allAppointments;
         try {
-            appointments = ((Patient) request.getUser()).getAppointments();
+            appointments = dataBase.getUserAppointment((Patient) request.getUser());
             allAppointments = new GetPatientAppointmentResponse(appointments, true);
         } catch (Exception e) {
             allAppointments = new GetPatientAppointmentResponse(appointments, false, e.getMessage());
