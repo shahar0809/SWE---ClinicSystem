@@ -1,9 +1,11 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
+import il.cshaifasweng.OCSFMediatorExample.entities.Patient;
 import il.cshaifasweng.OCSFMediatorExample.entities.Question;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetQuestionRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.SaveAnswerRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.GetQuestionsResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.SaveAnswerResponse;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,6 +38,7 @@ enum PossibleAnswers {
 public class QuestionnaireController {
     List<Question> questions = new ArrayList<>();
     boolean hasAnsweredQuestionnaire = false;
+    int answersCounter = 0;
 
     @FXML
     private AnchorPane Covid;
@@ -71,11 +74,14 @@ public class QuestionnaireController {
             return;
         }
 
-        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(0), question1.getValue().toString()));
-        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(1), question2.getValue().toString()));
-        App.getClient().sendRequest(new SaveAnswerRequest(App.getActiveUser(), questions.get(2), question3.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest((Patient) App.getActiveUser(), questions.get(0), question1.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest((Patient) App.getActiveUser(), questions.get(1), question2.getValue().toString()));
+        App.getClient().sendRequest(new SaveAnswerRequest((Patient) App.getActiveUser(), questions.get(2), question3.getValue().toString()));
 
-        hasAnsweredQuestionnaire = true;
+        if (answersCounter == 3) {
+            hasAnsweredQuestionnaire = true;
+        }
+        answersCounter = 0;
         App.setRoot("PatientHome");
     }
 
@@ -88,6 +94,13 @@ public class QuestionnaireController {
             q1.setText(questions.get(0).getQuestion());
             q2.setText(questions.get(1).getQuestion());
             q3.setText(questions.get(2).getQuestion());
+        }
+    }
+
+    @Subscribe
+    public void getAnswer(SaveAnswerResponse response) {
+        if (response.isSuccessful()) {
+            answersCounter++;
         }
     }
 }

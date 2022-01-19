@@ -10,18 +10,18 @@ public class Answer implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "patient")
     protected User patient;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "question")
     protected Question question;
 
     @Column(name = "answer")
     protected String answer;
 
-    public Answer(User patient, Question question, String answer) {
+    public Answer(Patient patient, Question question, String answer) {
         this.patient = patient;
         this.question = question;
         this.answer = answer;
