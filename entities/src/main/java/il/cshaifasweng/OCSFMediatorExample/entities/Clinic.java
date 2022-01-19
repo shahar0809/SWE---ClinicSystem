@@ -33,6 +33,11 @@ public class Clinic implements Serializable {
     @Column(name = "CovidVaccinesEndHour")
     protected LocalTime CVendHour;
 
+    @Column(name = "FluVaccinesStartHour")
+    protected LocalTime FVstartHour;
+    @Column(name = "FluVaccinesEndHour")
+    protected LocalTime FVendHour;
+
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     @JoinColumn(name = "clinicManager")
     ClinicManager clinicManager;
@@ -55,6 +60,8 @@ public class Clinic implements Serializable {
         this.CTendHour = LocalTime.of(00, 00);
         this.CVstartHour = LocalTime.of(00, 00);
         this.CVendHour = LocalTime.of(00, 00);
+        this.FVstartHour = LocalTime.of(00, 00);
+        this.FVendHour = LocalTime.of(00, 00);
     }
 
     public Clinic(String name) {
@@ -140,5 +147,21 @@ public class Clinic implements Serializable {
 
     public void setCovidVaccineEndHour(LocalTime endHour) {
         this.CVendHour = endHour;
+    }
+
+    public LocalTime getFluVaccineStartHour() {
+        return FVstartHour;
+    }
+
+    public void setFluVaccineStartHour(LocalTime startHour) {
+        this.FVstartHour = startHour;
+    }
+
+    public LocalTime getFluVaccineEndHour() {
+        return FVendHour;
+    }
+
+    public void setFluVaccineEndHour(LocalTime endHour) {
+        this.FVendHour = endHour;
     }
 }

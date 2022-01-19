@@ -127,7 +127,7 @@ public class SimpleServer extends AbstractServer {
 
             dataBase.insertEntity(new FluVaccineAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
             dataBase.insertEntity(new FluVaccineAppointment(nursesList.get(2), LocalDateTime.now(), clinics.get(1)));
-            dataBase.insertEntity(new FluVaccineAppointment(patientList.get(3), nursesList.get(1), LocalDateTime.now(), clinics.get(0)));
+            dataBase.insertEntity(new FluVaccineAppointment(patientList.get(3), nursesList.get(1), LocalDateTime.now().plusHours(11), clinics.get(0)));
 
             dataBase.insertEntity(new NurseAppointment(nursesList.get(0), LocalDateTime.now(), clinics.get(0)));
         }
@@ -283,6 +283,14 @@ public class SimpleServer extends AbstractServer {
                 client.sendToClient(updateClinicHoursRequest((UpdateClinicHoursRequest) msg));
             } catch (IOException e) {
                 System.out.println("Error - UpdateClinicHoursRequest");
+            }
+        }
+
+        if (msg instanceof UpdateFluVaccineHoursRequest) {
+            try {
+                client.sendToClient(updateFluVaccineHoursRequest((UpdateFluVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - updateFluVaccineHoursRequest");
             }
         }
 
@@ -447,13 +455,16 @@ public class SimpleServer extends AbstractServer {
                 LocalTime temp = newStartH;
                 newStartH = newEndH;
                 newEndH = temp;
+                System.out.println("switch places");
             }
 
             if(newStartH.isBefore(clinic.getOpeningHours())){
                 newStartH = clinic.getOpeningHours();
+                System.out.println("X before opening ");
             }
             if(newEndH.isAfter(clinic.getClosingHours())){
                 newEndH = clinic.getClosingHours();
+                System.out.println("X after closing");
             }
 
             List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
@@ -467,6 +478,8 @@ public class SimpleServer extends AbstractServer {
                         if(app.getTreatmentDateTime().toLocalTime().isBefore(newStartH)){
                             if(!app.isAvailable()){
                                 newStartH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                                System.out.print("there is app before ");
+                                System.out.println(app.getTreatmentDateTime().toLocalTime());
                             }else{
                                 app.setAvailable(false);
                             }
@@ -474,6 +487,8 @@ public class SimpleServer extends AbstractServer {
                         if(app.getTreatmentDateTime().toLocalTime().isAfter(newEndH)){
                             if(!app.isAvailable()){
                                 newEndH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                                System.out.print("there is app after ");
+                                System.out.println(app.getTreatmentDateTime().toLocalTime());
                             }else{
                                 app.setAvailable(false);
                             }
@@ -544,6 +559,61 @@ public class SimpleServer extends AbstractServer {
             response = new UpdateCovidVaccineHoursResponse(true);
         } catch (Exception e) {
             response = new UpdateCovidVaccineHoursResponse(false, e.getMessage());
+        }
+
+        return response;
+    }
+
+    protected Response updateFluVaccineHoursRequest(UpdateFluVaccineHoursRequest request) {
+        UpdateFluVaccineHoursResponse response;
+        try {
+            Clinic clinic = dataBase.getClinic(request.clinicName);
+            LocalTime newStartH = request.activeHours.getOpeningHours(), newEndH = request.activeHours.getClosingHours();
+
+            if (newEndH.isBefore(newStartH)) {
+                LocalTime temp = newStartH;
+                newStartH = newEndH;
+                newEndH = temp;
+            }
+
+            if(newStartH.isBefore(clinic.getOpeningHours())){
+                newStartH = clinic.getOpeningHours();
+            }
+            if(newEndH.isAfter(clinic.getClosingHours())){
+                newEndH = clinic.getClosingHours();
+            }
+
+            List<Appointment> allAppointments = dataBase.getUnavailableAppointments();
+
+            if(!allAppointments.isEmpty()){
+                for(Appointment app:allAppointments){
+                    if(app instanceof FluVaccineAppointment){
+                        if(!app.isAvailable() && app.getPatient()==null){//wasn't available because of hours
+                            app.setAvailable(true);
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isBefore(newStartH)){
+                            if(!app.isAvailable()){
+                                newStartH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                        if(app.getTreatmentDateTime().toLocalTime().isAfter(newEndH)){
+                            if(!app.isAvailable()){
+                                newEndH = LocalTime.of(app.getTreatmentDateTime().getHour(), app.getTreatmentDateTime().getMinute());
+                            }else{
+                                app.setAvailable(false);
+                            }
+                        }
+                    }
+                }
+            }
+
+            dataBase.setFluVaccineStartHour(clinic, newStartH);
+            dataBase.setFluVaccineEndHour(clinic, newEndH);
+            response = new UpdateFluVaccineHoursResponse(true);
+        } catch (Exception e) {
+            response = new UpdateFluVaccineHoursResponse(false, e.getMessage());
         }
 
         return response;
