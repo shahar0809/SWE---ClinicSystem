@@ -61,8 +61,8 @@ public class AppointmentController {
         types.remove(AppointmentType.FAMILY);
         types.remove(AppointmentType.CHILDREN);
         comboBox.setItems(FXCollections.observableArrayList(types));
-
-        questionnaireButton.setVisible(false);
+        comboBox.setValue(AppointmentType.COVID_TEST);
+        onAppointmentChoice(null);
     }
 
     @FXML
@@ -154,9 +154,9 @@ public class AppointmentController {
                 break;
             case FAMILY_OR_CHILDREN:
                 if (patient.getAge() >= Constants.AGE) {
-                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, selected, patient));
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, AppointmentType.FAMILY, patient));
                 } else {
-                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, selected, patient));
+                    App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ChildrenDoctorAppointment.class, AppointmentType.CHILDREN, patient));
                 }
                 break;
             case CARDIO:

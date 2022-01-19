@@ -182,6 +182,62 @@ public class SimpleServer extends AbstractServer {
             }
             return;
         }
+
+        if (msg instanceof UpdateCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(updateCovidVaccineHoursRequest((UpdateCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - UpdateCovidVaccineHoursRequest");
+            }
+        } else if (msg instanceof GetCovidVaccineHoursRequest) {
+            try {
+                client.sendToClient(getCovidVaccineHoursRequest((GetCovidVaccineHoursRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getClinicRequest");
+            }
+        } else if (msg instanceof GetFreeAppointmentRequest) {
+            try {
+                client.sendToClient(getFreeAppointmentsRequest((GetFreeAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getALLCovidVaccineRequest");
+            }
+        } else if (msg instanceof GetPatientAppointmentRequest) {
+            try {
+                client.sendToClient(getPatientAppointmentsRequest((GetPatientAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetPatientAppointmentRequest");
+            }
+        } else if (msg instanceof ReserveAppointmentRequest) {
+            try {
+                client.sendToClient(addAppointmentsRequest((ReserveAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - AddAppointmentRequest");
+            }
+        } else if (msg instanceof DeleteAppointmentRequest) {
+            try {
+                client.sendToClient(deleteAppointmentsRequest((DeleteAppointmentRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - DeleteAppointmentRequest");
+            }
+        } else if (msg instanceof GetGreenPassRequest) {
+            try {
+                client.sendToClient(getGreenPassRequest((GetGreenPassRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetGreenPassRequest");
+            }
+        } else if (msg instanceof SaveAnswerRequest) {
+            try {
+                client.sendToClient(saveAnswerRequest((SaveAnswerRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - SaveAnswerRequest");
+            }
+        } else if (msg instanceof GetQuestionRequest) {
+            try {
+                client.sendToClient(getQuestionsRequest((GetQuestionRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - GetQuestionsRequest");
+            }
+        }
     }
 
     protected Response updateActiveHoursRequest(UpdateActiveHoursRequest request) {
@@ -286,7 +342,7 @@ public class SimpleServer extends AbstractServer {
     protected Response addAppointmentsRequest(ReserveAppointmentRequest request) {
         ReserveAppointmentResponse response;
         try {
-            if (request.getAppointment() instanceof CovidVaccineAppointment) {
+            if (request.getAppointment() instanceof CovidTestAppointment) {
                 if (!dataBase.hasAnsweredCovidQuestionnaire(request.getUser())) {
                     return new ReserveAppointmentResponse(false, Messages.COVID_TEST_NO_QUESTIONNAIRE);
                 }
@@ -470,14 +526,11 @@ public class SimpleServer extends AbstractServer {
     }
 
     protected Response saveAnswerRequest(SaveAnswerRequest request) {
-        Patient patient = null;
         SaveAnswerResponse response;
         try {
-            patient = ((Patient) request.user);
             dataBase.insertEntity(request.answer);
             response = new SaveAnswerResponse(true);
         } catch (Exception e) {
-            assert patient != null;
             response = new SaveAnswerResponse(false, e.getMessage());
         }
         return response;
