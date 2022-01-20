@@ -22,6 +22,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class SimpleServer extends AbstractServer {
     protected DatabaseAccess dataBase;
@@ -60,17 +64,17 @@ public class SimpleServer extends AbstractServer {
         List<Clinic> clinics = dataBase.getAll(Clinic.class);
 
         if (dataBase.getAll(Patient.class).isEmpty()) {
-            dataBase.insertEntity(new Patient("p1", "pass1", 16, "dianaSk4fun@gmail.com"));
-            dataBase.insertEntity(new Patient("p2", "pass1", 17, "dianasaker4@gmail.com"));
-            dataBase.insertEntity(new Patient("p3", "pass1", 18, "dianasaker4869@gmail.com"));
-            dataBase.insertEntity(new Patient("p4", "pass1", 19, "dianasakerp@gmail.com"));
+            dataBase.insertEntity(new Patient("p1", "pass1", 16, clinics.get(0), "dianaSk4fun@gmail.com"));
+            dataBase.insertEntity(new Patient("p2", "pass1", 17, clinics.get(0), "dianasaker4@gmail.com"));
+            dataBase.insertEntity(new Patient("p3", "pass1", 18, clinics.get(1), "dianasaker4869@gmail.com"));
+            dataBase.insertEntity(new Patient("p4", "pass1", 19, clinics.get(2), "dianasakerp@gmail.com"));
         }
         List<Patient> patientList = dataBase.getAll(Patient.class);
 
         if (dataBase.getAll(Nurse.class).isEmpty()) {
-            dataBase.insertEntity(new Nurse("n1", "passnurse1", 0, "Nurse1", "LastNurse1", "n1@g.com", "Nurse"));
-            dataBase.insertEntity(new Nurse("n2", "passnurse2", 1, "Nurse2", "LastNurse2", "n2@g.com", "Nurse"));
-            dataBase.insertEntity(new Nurse("n3", "passnurse3", 2, "Nurse3", "LastNurse3", "n3@g.com", "Nurse"));
+            dataBase.insertEntity(new Nurse("n1", "passnurse1", 0, "Nurse1", "LastNurse1", "n1@g.com", "Nurse", clinics.get(0)));
+            dataBase.insertEntity(new Nurse("n2", "passnurse2", 1, "Nurse2", "LastNurse2", "n2@g.com", "Nurse", clinics.get(1)));
+            dataBase.insertEntity(new Nurse("n3", "passnurse3", 2, "Nurse3", "LastNurse3", "n3@g.com", "Nurse", clinics.get(2)));
         }
         List<Nurse> nursesList = dataBase.getAll(Nurse.class);
 
@@ -87,18 +91,18 @@ public class SimpleServer extends AbstractServer {
         List<HospitalManager> hospitalManagersList = dataBase.getAll(HospitalManager.class);
 
         if (dataBase.getAll(ProfessionDoctor.class).isEmpty()) {
-            dataBase.insertEntity(new ProfessionDoctor("d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
-            dataBase.insertEntity(new ProfessionDoctor("d2", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor"));
-            dataBase.insertEntity(new ProfessionDoctor("d3", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor"));
-            dataBase.insertEntity(new ProfessionDoctor("d4", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor"));
+            dataBase.insertEntity(new ProfessionDoctor("d1", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor", clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctor("d2", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor", clinics.get(0)));
+            dataBase.insertEntity(new ProfessionDoctor("d3", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor", clinics.get(1)));
+            dataBase.insertEntity(new ProfessionDoctor("d4", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor", clinics.get(2)));
         }
         List<ProfessionDoctor> professionDoctorList = dataBase.getAll(ProfessionDoctor.class);
 
         if (dataBase.getAll(FamilyDoctor.class).isEmpty()) {
-            dataBase.insertEntity(new FamilyDoctor("d21", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor"));
-            dataBase.insertEntity(new FamilyDoctor("d22", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor"));
-            dataBase.insertEntity(new FamilyDoctor("d23", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor"));
-            dataBase.insertEntity(new FamilyDoctor("d24", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor"));
+            dataBase.insertEntity(new FamilyDoctor("d21", "passdoctor1", 3, "Doctor1", "LastDoctor1", "d1@g.com", "Doctor", clinics.get(0)));
+            dataBase.insertEntity(new FamilyDoctor("d22", "passdoctor2", 4, "Doctor2", "LastDoctor2", "d2@g.com", "Doctor", clinics.get(0)));
+            dataBase.insertEntity(new FamilyDoctor("d23", "passdoctor1", 5, "Doctor3", "LastDoctor3", "d3@g.com", "Doctor", clinics.get(1)));
+            dataBase.insertEntity(new FamilyDoctor("d24", "passdoctor1", 6, "Doctor4", "LastDoctor4", "d4@g.com", "Doctor", clinics.get(2)));
         }
         List<FamilyDoctor> familyDoctorsList = dataBase.getAll(FamilyDoctor.class);
 
@@ -293,11 +297,17 @@ public class SimpleServer extends AbstractServer {
             } catch (IOException e) {
                 System.out.println("Error - UpdateClinicHoursRequest");
             }
-        } else if (msg instanceof GetMemberAppointmentsRequest) {
+        } else if (msg instanceof GetProfessionDoctorAppointmentsRequest) {
             try {
-                client.sendToClient(handleGetMemberAppointments((GetMemberAppointmentsRequest) msg));
+                client.sendToClient(getProfessionDoctorAppointmentsRequest((GetProfessionDoctorAppointmentsRequest) msg));
             } catch (IOException e) {
-                System.out.println("Error - UpdateClinicHoursRequest");
+                System.out.println("Error - GetProfessionDoctorAppointmentsRequest");
+            }
+        } else if (msg instanceof GetProfessionDoctorClinicsRequest) {
+            try {
+                client.sendToClient(getProfessionDoctorClinicsRequest((GetProfessionDoctorClinicsRequest) msg));
+            } catch (IOException e) {
+                System.out.println("Error - getALLCovidVaccineRequest");
             }
         }
     }
@@ -370,7 +380,7 @@ public class SimpleServer extends AbstractServer {
                 appointments.addAll(dataBase.getFreeAppointments(request.getAppointmentType(), request.getPatient().getClinic(), request.getEnumType()));
                 List<T> limited_appointments = new ArrayList<>();
                 for (T appointment : appointments) {
-                    if ((LocalDateTime.now().plusWeeks(Constants.FOUR_WEEKS)).compareTo(appointment.getTreatmentDateTime()) < 0) {
+                    if ((LocalDateTime.now().plusWeeks(Constants.FOUR_WEEKS)).isAfter(appointment.getTreatmentDateTime())) {
                         limited_appointments.add(appointment);
                     }
                 }
@@ -838,4 +848,67 @@ public class SimpleServer extends AbstractServer {
 
         return allAppointments;
     }
+
+    protected Response getProfessionDoctorClinicsRequest(GetProfessionDoctorClinicsRequest request) {
+        List<Appointment> newAppointments = new ArrayList<>();
+        List<Appointment> arrivedAppointments;
+        List<Appointment> sortedAppointment;
+        List<ClinicMember> doctors = new ArrayList<>();
+        GetProfessionDoctorClinicsResponse response;
+        try {
+            arrivedAppointments = request.getPatient().getArrivedAppointments(request.getEnumType());
+            for (Clinic clinic : dataBase.getAll(Clinic.class)) {
+                for (Appointment appointment : dataBase.getFreeAppointments(ProfessionDoctorAppointment.class, clinic, request.getEnumType())) {
+                    if (appointment.getEnumType() == request.getEnumType()) {
+                        newAppointments.add(appointment);
+                    }
+                }
+            }
+            Collections.sort(arrivedAppointments);
+            sortedAppointment = sortAppointmentByDoctors(arrivedAppointments, newAppointments);
+            for (Appointment appointment : sortedAppointment) {
+                doctors.add(appointment.getMember());
+            }
+            response = new GetProfessionDoctorClinicsResponse(doctors, true);
+        } catch (Exception e) {
+            response = new GetProfessionDoctorClinicsResponse(doctors, false);
+        }
+        return response;
+    }
+
+    public List<Appointment> sortAppointmentByDoctors(List<Appointment> how, List<Appointment> what) {
+        List<Appointment> sortedAppointment = new ArrayList<>();
+        for (Appointment sortAppointment : how) {
+            for (Appointment newAppointment : what) {
+                if (Objects.equals(sortAppointment.getMember().getFirstName(), newAppointment.getMember().getFirstName()) && Objects.equals(sortAppointment.getMember().getLastName(), newAppointment.getMember().getLastName())) {
+                    sortedAppointment.add(newAppointment);
+                }
+            }
+        }
+        what.removeAll(sortedAppointment);
+        sortedAppointment.addAll(what);
+        return sortedAppointment;
+    }
+
+    protected Response getProfessionDoctorAppointmentsRequest(GetProfessionDoctorAppointmentsRequest request) {
+        List<Appointment> appointments = new ArrayList<>();
+        GetProfessionDoctorAppointmentsResponse response;
+        try {
+            appointments = dataBase.getMemberAppointments(request.doctor);
+            List<Appointment> limited_appointments = new ArrayList<>();
+            for (Appointment appointment : appointments) {
+                if ((LocalDateTime.now().plusMonths(Constants.MONTHS)).isAfter(appointment.getTreatmentDateTime()) && appointment.isAvailable()) {
+                    limited_appointments.add(appointment);
+                }
+            }
+            response = new GetProfessionDoctorAppointmentsResponse(limited_appointments, true);
+        } catch (Exception e) {
+            response = new GetProfessionDoctorAppointmentsResponse(appointments, false, e.getMessage());
+        }
+        return response;
+    }
+
+
 }
+
+

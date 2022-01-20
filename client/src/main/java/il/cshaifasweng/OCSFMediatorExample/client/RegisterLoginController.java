@@ -1,6 +1,9 @@
 package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
+import il.cshaifasweng.OCSFMediatorExample.entities.AppointmentType;
+import il.cshaifasweng.OCSFMediatorExample.entities.Clinic;
+import il.cshaifasweng.OCSFMediatorExample.entities.ClinicManager;
 
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
@@ -8,6 +11,9 @@ import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
 import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
 import il.cshaifasweng.OCSFMediatorExample.entities.ClinicMember;
 import il.cshaifasweng.OCSFMediatorExample.entities.HospitalManager;
+import il.cshaifasweng.OCSFMediatorExample.entities.Patient;
+import il.cshaifasweng.OCSFMediatorExample.requests.GetAllClinicsRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.LoginRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.RegisterRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.GetAllClinicsResponse;

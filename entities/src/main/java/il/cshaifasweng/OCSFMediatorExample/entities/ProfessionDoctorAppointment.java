@@ -14,8 +14,6 @@ public class ProfessionDoctorAppointment extends Appointment {
         return type.toString();
     }
 
-    private AppointmentType type;
-
     public AppointmentType getAppointmentType() {
         return type;
     }

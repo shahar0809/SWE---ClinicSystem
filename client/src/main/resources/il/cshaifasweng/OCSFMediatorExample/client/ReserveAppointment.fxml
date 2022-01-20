@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.AppointmentController">
+<VBox alignment="CENTER" prefHeight="425.0" prefWidth="586.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.AppointmentController">
       <Label text="Reserve Appointment">
           <font>
               <Font size="24.0" />
@@ -22,7 +22,7 @@
             <Label contentDisplay="CENTER" text="Choose Appointment type:" />
             <ComboBox fx:id="comboBox" onAction="#onAppointmentChoice" prefHeight="25.0" prefWidth="185.0" />
          <Region prefHeight="38.0" prefWidth="28.0" />
-            <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#onReserve" text="Reserve" />
+            <Button fx:id="reserveButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onReserve" text="Reserve" />
          <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#onRefresh" text="Refresh" />
       </children>
    </HBox>
@@ -37,6 +37,11 @@
    <Button fx:id="questionnaireButton" mnemonicParsing="false" onAction="#onQuestionnaire" text="Covid Questionnaire" textFill="#7c37b2">
       <VBox.margin>
          <Insets top="4.0" />
+      </VBox.margin>
+   </Button>
+   <Button fx:id="nextButton" layoutX="241.0" layoutY="342.0" mnemonicParsing="false" onAction="#onChooseDoctor" text="Choose Doctor" textFill="#7c37b2">
+      <VBox.margin>
+         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
       </VBox.margin>
    </Button>
    <padding>

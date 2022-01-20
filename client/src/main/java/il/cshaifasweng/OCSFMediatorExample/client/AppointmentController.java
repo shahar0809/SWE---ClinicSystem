@@ -2,6 +2,8 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.requests.*;
+import il.cshaifasweng.OCSFMediatorExample.response.*;
+import il.cshaifasweng.OCSFMediatorExample.utils.Constants;
 import il.cshaifasweng.OCSFMediatorExample.response.DeleteAppointmentResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetFreeAppointmentsResponse;
 import il.cshaifasweng.OCSFMediatorExample.response.GetGreenPassResponse;
@@ -21,8 +23,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AppointmentController extends BaseController {
+    static AppointmentType comboType = null;
+    static ClinicMember doctor = null;
+
     @FXML
     TableView<Appointment> table = new TableView<>();
     @FXML
@@ -44,6 +50,12 @@ public class AppointmentController extends BaseController {
     private Button questionnaireButton;
 
     @FXML
+    private Button nextButton;
+
+    public AppointmentController() {
+    }
+
+    @FXML
     public void initialize() {
         EventBus.getDefault().register(this);
         appointments = FXCollections.observableArrayList();
@@ -61,7 +73,12 @@ public class AppointmentController extends BaseController {
         types.remove(AppointmentType.FAMILY);
         types.remove(AppointmentType.CHILDREN);
         comboBox.setItems(FXCollections.observableArrayList(types));
-        comboBox.setValue(AppointmentType.COVID_TEST);
+        comboBox.setValue(comboType);
+        if(!(comboType == AppointmentType.CARDIO || comboType ==  AppointmentType.ORTHOPEDICS || comboType == AppointmentType.GYNECOLOGY || comboType == AppointmentType.OTOLARYNGOLOGY || comboType == AppointmentType.GASTROLOGY))
+            nextButton.setVisible(false);
+        if(comboType != AppointmentType.COVID_TEST) {
+            questionnaireButton.setVisible(false);
+        }
     }
 
     @Override
@@ -85,6 +102,19 @@ public class AppointmentController extends BaseController {
             appointments.addAll(response.getAppointments());
             table.setItems(appointments);
             table.refresh();
+        } else {
+            alertUserError(response.getError());
+        }
+    }
+
+    @Subscribe
+    public void doctorFreeAppointmentsResponse(GetProfessionDoctorAppointmentsResponse response) {
+        if (response.isSuccessful()) {
+            appointments.clear();
+            appointments.addAll(response.getAppointments());
+            table.setItems(appointments);
+            table.refresh();
+            doctor = null;
         } else {
             alertUserError(response.getError());
         }
@@ -118,21 +148,27 @@ public class AppointmentController extends BaseController {
             return;
 
         questionnaireButton.setVisible(false);
+        nextButton.setVisible(false);
         switch (selected) {
             case COVID_TEST:
                 questionnaireButton.setVisible(true);
+                comboType = AppointmentType.COVID_TEST;
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidTestAppointment.class, selected, patient));
                 break;
             case COVID_VACCINE:
+                comboType = AppointmentType.COVID_VACCINE;
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(CovidVaccineAppointment.class, selected, patient));
                 break;
             case NURSE:
+                comboType = AppointmentType.NURSE;
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(NurseAppointment.class, selected, patient));
                 break;
             case FLU_VACCINE:
+                comboType = AppointmentType.FLU_VACCINE;
                 App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FluVaccineAppointment.class, selected, patient));
                 break;
             case FAMILY_OR_CHILDREN:
+                comboType = AppointmentType.FAMILY_OR_CHILDREN;
                 if (patient.getAge() >= Constants.AGE) {
                     App.getClient().sendRequest(new GetFreeAppointmentRequest<>(FamilyDoctorAppointment.class, AppointmentType.FAMILY, patient));
                 } else {
@@ -140,17 +176,43 @@ public class AppointmentController extends BaseController {
                 }
                 break;
             case CARDIO:
-            case ORTHOPEDICS:
-            case GYNECOLOGY:
-            case OTOLARYNGOLOGY:
-            case GASTROLOGY:
-                App.getClient().sendRequest(new GetFreeAppointmentRequest<>(ProfessionDoctorAppointment.class, selected, patient));
+                comboType = AppointmentType.CARDIO;
+                professionDoctorCase();
                 break;
+            case ORTHOPEDICS:
+                comboType = AppointmentType.ORTHOPEDICS;
+                professionDoctorCase();
+                break;
+            case GYNECOLOGY:
+                comboType = AppointmentType.GYNECOLOGY;
+                professionDoctorCase();
+                break;
+            case OTOLARYNGOLOGY:
+                comboType = AppointmentType.OTOLARYNGOLOGY;
+                professionDoctorCase();
+                break;
+            case GASTROLOGY:
+                comboType = AppointmentType.GASTROLOGY;
+                professionDoctorCase();
+                break;
+        }
+    }
+
+    public void professionDoctorCase() {
+        nextButton.setVisible(true);
+        if (doctor == null) {
+            appointments.clear();
+        } else {
+            App.getClient().sendRequest(new GetProfessionDoctorAppointmentsRequest(doctor));
         }
     }
 
     public void onQuestionnaire(ActionEvent actionEvent) throws IOException {
         App.setRoot("CovidQuestionnaire");
+    }
+
+    public void onChooseDoctor(ActionEvent actionEvent) throws IOException {
+        App.setRoot("ChooseDoctor");
     }
 }
 

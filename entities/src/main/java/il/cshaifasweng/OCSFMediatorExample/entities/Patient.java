@@ -36,10 +36,11 @@ public class Patient extends User {
         this.patientClinic = clinic;
     }
 
-    public Patient(String username, String password, int age, String email) {
+    public Patient(String username, String password, int age, Clinic clinic, String email) {
         super(username, password);
         appointments = new ArrayList<>();
         this.age = age;
+        this.patientClinic = clinic;
         this.email = email;
     }
 
@@ -52,6 +53,16 @@ public class Patient extends User {
             }
         }
         return reserveAppointments;
+    }
+
+    public List<Appointment> getArrivedAppointments(AppointmentType type) {
+        List<Appointment> arrivedAppointments = new ArrayList<>();
+        for (Appointment appointment : appointments) {
+            if (appointment.hasPatientArrived() && type == appointment.getEnumType()) {
+                arrivedAppointments.add(appointment);
+            }
+        }
+        return arrivedAppointments;
     }
 
     public boolean gotCovidVaccine() {

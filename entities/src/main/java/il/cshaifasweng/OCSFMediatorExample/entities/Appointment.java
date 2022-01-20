@@ -6,6 +6,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "Appointments")
@@ -66,6 +69,10 @@ public abstract class Appointment implements Serializable, Comparable<Appointmen
         this.clinic = clinic;
         this.isAvailable = false;
         this.patientArrived = false;
+    }
+
+    public AppointmentType getEnumType() {
+        return type;
     }
 
     public abstract String getType();
