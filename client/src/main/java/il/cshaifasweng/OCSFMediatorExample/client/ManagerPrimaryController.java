@@ -35,6 +35,9 @@ public class ManagerPrimaryController extends BaseController {
     @FXML // fx:id="updateHoursServicesWindow"
     private Pane updateHoursServicesWindow; // Value injected by FXMLLoader
 
+    @FXML // fx:id="updateHoursServicesWindow"
+    private Pane SetDoctorHours; // Value injected by FXMLLoader
+
     @FXML
     private Pane ReportsWindow;
 
@@ -61,6 +64,14 @@ public class ManagerPrimaryController extends BaseController {
             parent = App.loadAndStartFXML("UpdateHours");
             updateHoursServicesWindow.getChildren().clear();
             updateHoursServicesWindow.getChildren().add(parent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            parent = App.loadFXML("UpdateDoctorReceptionHours");
+            SetDoctorHours.getChildren().clear();
+            SetDoctorHours.getChildren().add(parent);
         } catch (IOException e) {
             e.printStackTrace();
         }
