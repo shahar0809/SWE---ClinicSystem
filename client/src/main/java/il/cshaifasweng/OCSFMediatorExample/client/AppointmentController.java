@@ -125,7 +125,7 @@ public class AppointmentController extends BaseController {
         if (response.isSuccessful()) {
             informUser(Messages.RESERVE_APPOINTMENT_SUCCESS);
         } else {
-            if (response.getError().equals(Messages.COVID_TEST_NO_QUESTIONNAIRE)) {
+            if (Messages.COVID_TEST_NO_QUESTIONNAIRE.equals(response.getError())) {
                 informUser("You have to fill the questionnaire!");
             } else {
                 alertUserError(response.getError());

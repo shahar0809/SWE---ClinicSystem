@@ -18,7 +18,7 @@ public class SimpleClient extends AbstractClient {
 
     public static SimpleClient getClient() {
         if (client == null) {
-            client = new SimpleClient("localhost", 3000);
+            client = new SimpleClient("109.67.0.211", 3000);
         }
         return client;
     }
