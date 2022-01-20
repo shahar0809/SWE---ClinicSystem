@@ -17,7 +17,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 
-public class ChooseDoctorController {
+public class ChooseDoctorController extends BaseController {
     @FXML
     private ObservableList<ClinicMember> doctors;
 

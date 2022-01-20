@@ -7,8 +7,8 @@ import java.time.LocalTime;
 
 @Entity
 public class ChildrenDoctor extends ClinicMember {
-    public ChildrenDoctor(String username, String password, int employeeNum, String firstName, String lastName, String email, String role) {
-        super(AppointmentType.CHILDREN, username, password, employeeNum, firstName, lastName, email, role);
+    public ChildrenDoctor(String username, String password, int employeeNum, String firstName, String lastName, String email, String role, Clinic clinic) {
+        super(AppointmentType.CHILDREN, username, password, employeeNum, firstName, lastName, email, role, clinic);
         super.appointmentDuration = 15;
     }
 

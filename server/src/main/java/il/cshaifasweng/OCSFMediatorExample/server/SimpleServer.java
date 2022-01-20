@@ -338,7 +338,7 @@ public class SimpleServer extends AbstractServer {
             }
             response = new UpdateDoctorHoursResponse(true);
         } catch(Exception e) {
-            response = new UpdateDoctorHoursResponse(false);
+            response = new UpdateDoctorHoursResponse(false, e.getMessage());
         }
         return response;
     }

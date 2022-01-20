@@ -10,10 +10,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.UpdateHoursController">
+<VBox alignment="CENTER" prefHeight="500.0" prefWidth="386.0" spacing="10.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="il.cshaifasweng.OCSFMediatorExample.client.SetDoctorHoursController">
    <children>
       <Label alignment="CENTER" text="Doctors" />
-      <ListView fx:id="nameList" onMouseClicked="#onMouseClick" />
+      <ListView fx:id="nameList" onMouseClicked="#onMouseClick" prefHeight="250.0" />
       <HBox alignment="CENTER" spacing="5.0">
          <children>
             <Button fx:id="SelectDate" mnemonicParsing="false" onAction="#onDateSelect" text="Select Date" />
@@ -28,10 +28,9 @@
       </TableView>
       <HBox alignment="CENTER" spacing="5.0">
          <children>
-            <Button fx:id="ReserveHours" mnemonicParsing="false" onAction="#onReserveHours" text="Reserve Hours" />
-            <Button fx:id="FreeHours" mnemonicParsing="false" onAction="#onFreeHours" text="Free Hours" />
-            <TextField fx:id="DoctorStartingHour1" promptText="Starting hour" />
-            <TextField fx:id="DoctorEndingHour1" promptText="Ending hour" />
+            <Button fx:id="ReserveHours" mnemonicParsing="false" onAction="#onReserveHours" text="Reserve" />
+            <TextField fx:id="DoctorStartingHour1" prefWidth="120.0" promptText="Starting hour" />
+            <TextField fx:id="DoctorEndingHour1" prefWidth="120.0" promptText="Ending hour" />
          </children>
       </HBox>
    </children>

@@ -69,7 +69,7 @@ public class AppointmentController extends BaseController {
 
         // Initialize combo box with appointment types
         ArrayList<AppointmentType> types = new ArrayList<>(Arrays.asList(AppointmentType.values()));
-        types.remove(AppointmentType.NURSE);
+        //types.remove(AppointmentType.NURSE);
         types.remove(AppointmentType.FAMILY);
         types.remove(AppointmentType.CHILDREN);
         comboBox.setItems(FXCollections.observableArrayList(types));

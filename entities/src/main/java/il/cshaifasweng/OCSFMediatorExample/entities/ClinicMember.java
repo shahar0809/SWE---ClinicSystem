@@ -51,16 +51,6 @@ public abstract class ClinicMember extends ClinicEmployee {
         return appointments;
     }
 
-    public List<Appointment> getAppointmentsOnDate(LocalDate date) {
-        ArrayList<Appointment> res = new ArrayList<>();
-        for (Appointment a : appointments) {
-            if (LocalDate.from(a.getTreatmentDateTime()).isEqual(date)) {
-                res.add(a);
-            }
-        }
-        return res;
-    }
-
     public boolean checkIfFree(LocalDateTime timeToCheck) {
         for (Appointment a : this.appointments) {
             if (timeToCheck.isAfter(a.treatmentDateTime) && timeToCheck.isBefore(a.treatmentDateTime.plusMinutes(this.appointmentDuration))) {

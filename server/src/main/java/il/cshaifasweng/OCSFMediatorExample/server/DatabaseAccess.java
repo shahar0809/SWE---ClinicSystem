@@ -278,7 +278,6 @@ public final class DatabaseAccess {
     public void addNurseReceptionHours(Clinic clinic, Nurse nurse, LocalDate day, LocalTime t1, LocalTime t2) {
         LocalDateTime curTime = LocalDateTime.of(day, t1);
         while (t2.isAfter(LocalTime.from(curTime))) {
-            AppointmentType a = nurse.getType();
             NurseAppointment newApp = new NurseAppointment(nurse, curTime, clinic);
             if (nurse.checkIfFree(newApp.getTreatmentDateTime())) {
                 insertEntity(newApp);

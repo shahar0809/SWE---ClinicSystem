@@ -3,11 +3,15 @@ package il.cshaifasweng.OCSFMediatorExample.client;
 import il.cshaifasweng.OCSFMediatorExample.entities.*;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetAllDoctorsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.GetClinicRequest;
+import il.cshaifasweng.OCSFMediatorExample.requests.GetMemberAppointmentsRequest;
 import il.cshaifasweng.OCSFMediatorExample.requests.UpdateDoctorHoursRequest;
 import il.cshaifasweng.OCSFMediatorExample.response.GetAllDoctorsResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.GetMemberAppointmentsResponse;
+import il.cshaifasweng.OCSFMediatorExample.response.UpdateDoctorHoursResponse;
 import il.cshaifasweng.OCSFMediatorExample.utils.Hours;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,9 +24,10 @@ import java.util.ArrayList;
 import java.time.LocalTime;
 import java.time.LocalDate;
 
-public class SetDoctorHoursController {
+public class SetDoctorHoursController  extends BaseController {
     private List<ClinicMember> doctorList;
     private ClinicMember doctorToSelect;
+    private List<Appointment> doctorAppointments;
     private LocalDate day;
     @FXML
     private TextField DoctorDate;
@@ -33,8 +38,6 @@ public class SetDoctorHoursController {
     @FXML
     private TextField DoctorStartingHour1;
 
-    @FXML
-    private Button FreeHours;
 
     @FXML
     private Button ReserveHours;
@@ -67,6 +70,8 @@ public class SetDoctorHoursController {
         });
         day = null;
         doctorToSelect = null;
+        hourColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTreatmentDateTimeString()));
+        reservedColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().isAvailable()?"no":"yes"));
     }
 
     @Subscribe
@@ -90,10 +95,28 @@ public class SetDoctorHoursController {
                 break;
             }
         }
+        App.getClient().sendRequest(new GetMemberAppointmentsRequest(doctorToSelect));
+    }
+
+    @Subscribe
+    public void onGetMemberAppointments(GetMemberAppointmentsResponse response) {
+        if (response.isSuccessful()) {
+            doctorAppointments = response.getAppointments();
+        }
+    }
+
+    public List<Appointment> getAppointmentsOnDate(LocalDate date) {
+        ArrayList<Appointment> res = new ArrayList<>();
+        for (Appointment a : doctorAppointments) {
+            if (LocalDate.from(a.getTreatmentDateTime()).isEqual(date)) {
+                res.add(a);
+            }
+        }
+        return res;
     }
 
     @FXML
-    void onDateSelect(ActionEvent event) {
+    public void onDateSelect(ActionEvent event) {
         try {
             day = LocalDate.parse(DoctorDate.getText());
         } catch (Exception e) {
@@ -103,9 +126,18 @@ public class SetDoctorHoursController {
             day = null;
             return;
         }
-        List<Appointment> apps =  doctorToSelect.getAppointmentsOnDate(day);
-        hourColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTreatmentDateTimeString()));
-        reservedColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().isAvailable()?"no":"yes"));
+        List<Appointment> apps = getAppointmentsOnDate(day);
+        table.setItems(FXCollections.observableList(apps));
+      }
+
+    @Subscribe
+    public void onUpdateResponse(UpdateDoctorHoursResponse response) {
+        if (response.isSuccessful()) {
+            informUser("Hours updated succesfully!");
+        } else {
+            alertUserError(response.getError());
+        }
+        App.getClient().sendRequest(new GetMemberAppointmentsRequest(doctorToSelect));
     }
 
     @FXML
@@ -122,7 +154,7 @@ public class SetDoctorHoursController {
             alert.show();
             return;
         }
-        UpdateDoctorHoursRequest requestToSend = new UpdateDoctorHoursRequest(null, doctorToSelect, day, t1, t2);
+        UpdateDoctorHoursRequest requestToSend = new UpdateDoctorHoursRequest(doctorToSelect.getClinic(), doctorToSelect, day, t1, t2);
         App.getClient().sendRequest(requestToSend);
     }
 
